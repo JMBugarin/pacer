@@ -43,8 +43,8 @@ def main() -> None:
                 "traces": [t],
             }
         )
-    models = {str(i): str(ROOT / f"models/v2/fast_{t}.json") for i, t in enumerate(TRACES)}
-    models |= {str(i + 10): str(ROOT / f"models/v2/hazard_{t}.json") for i, t in enumerate(TRACES)}
+    models = {str(i): str(ROOT / f"models/fast_{t}.json") for i, t in enumerate(TRACES)}
+    models |= {str(i + 10): str(ROOT / f"models/hazard_{t}.json") for i, t in enumerate(TRACES)}
     out: list[dict] = []
     with tempfile.TemporaryDirectory() as d:
         for rep in range(REPEATS):

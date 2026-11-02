@@ -169,7 +169,7 @@ def auc_chart(reports: dict[str, dict], out: Path) -> None:
 def main() -> None:
     ap = argparse.ArgumentParser()
     ap.add_argument("--summary", default="results/final_summary.json")
-    ap.add_argument("--hazard", default="results/v2/fast_{trace}.json")
+    ap.add_argument("--hazard", default="results/training/fast_{trace}.json")
     ap.add_argument("--out", default="docs/images")
     a = ap.parse_args()
     out = Path(a.out)

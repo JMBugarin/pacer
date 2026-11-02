@@ -61,7 +61,7 @@ def main() -> None:
     )
     ap.add_argument("--cap", type=float, default=0.1, help="capacity as a fraction of n_keys")
     ap.add_argument("--policies", default=",".join(rp.DEFAULT_POLICIES))
-    ap.add_argument("--hazard-model", default=str(ROOT / "models/v2/fast_traceA.json"))
+    ap.add_argument("--hazard-model", default=str(ROOT / "models/fast_traceA.json"))
     ap.add_argument("--repeats", type=int, default=2)
     ap.add_argument("--check", type=int, default=200, help="arrivals in the logits check")
     ap.add_argument("--check-policy", default="lru")

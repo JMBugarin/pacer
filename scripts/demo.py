@@ -37,7 +37,7 @@ def main() -> None:
         "caps": [a.cap],
         "time": True,
         "policies": policies,
-        "models": {"0": str(ROOT / "models" / "v2" / f"fast_{a.trace}.json")},
+        "models": {"0": str(ROOT / "models" / f"fast_{a.trace}.json")},
     }
     with tempfile.TemporaryDirectory() as d:
         sp, out = Path(d) / "spec.json", Path(d) / "out.jsonl"

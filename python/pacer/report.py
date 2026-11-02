@@ -21,7 +21,7 @@ TRACE_LABEL = {
     "thinking": "Thinking",
 }
 CAPS = [0.01, 0.02, 0.05, 0.1]
-TUNED = ["s3fifo", "lruqd", "gdsf", "arc"]
+TUNED = ["s3fifo", "lruqd", "gdsf", "arc", "wa"]
 HEURISTICS = ["lru", "fifo", "lfu", "sieve", "arc", "s3fifo", "lruqd", "gdsf", "wa"]
 BOUNDS = ["sampled-belady", "belady"]
 NAMES = {
@@ -69,7 +69,7 @@ def test_spec(best: dict, traces: list[str]) -> dict:
                     policies.append(
                         {"name": fam, "params": b["params"], "caps": [c], "traces": [t]}
                     )
-    for name in ["lru", "fifo", "lfu", "sieve", "wa", "sampled-lru", "oracle-dead"]:
+    for name in ["lru", "fifo", "lfu", "sieve", "sampled-lru", "oracle-dead"]:
         policies.append({"name": name})
     for h in [60, 300]:
         policies.append(
@@ -84,7 +84,7 @@ def test_spec(best: dict, traces: list[str]) -> dict:
         "caps": CAPS,
         "time": True,
         "policies": policies,
-        "wa_fits": {t: f"models/v2/wa_{t}.json" for t in traces},
+        "wa_fits": {t: f"models/wa_{t}.json" for t in traces},
     }
 
 
@@ -93,7 +93,7 @@ def pacer_test_spec(valid: list[dict], traces: list[str]) -> dict:
     the horizon multiplier that won on validation for each trace and size."""
     best: dict = {}
     for r in valid:
-        if r["label"].startswith("v2full"):
+        if r["label"].startswith("full"):
             k = (r["trace"], r["cap_frac"])
             if k not in best or r["hit_ratio"] > best[k]["hit_ratio"]:
                 best[k] = r
@@ -117,8 +117,8 @@ def pacer_test_spec(valid: list[dict], traces: list[str]) -> dict:
                     "caps": [c],
                 }
             )
-    models = {str(i): f"models/v2/fast_{t}.json" for i, t in enumerate(traces)}
-    models |= {str(i + 10): f"models/v2/hazard_{t}.json" for i, t in enumerate(traces)}
+    models = {str(i): f"models/fast_{t}.json" for i, t in enumerate(traces)}
+    models |= {str(i + 10): f"models/hazard_{t}.json" for i, t in enumerate(traces)}
     return {
         "traces": [
             {"path": f"data/raw/qwen_{t}_blksz_16.jsonl", "window": [3600, 7200]} for t in traces
@@ -234,7 +234,7 @@ def main() -> None:
     s1.add_argument("validation")
     s1.add_argument("pacer_validation")
     s1.add_argument("--out", default="configs/test.json")
-    s1.add_argument("--pacer-out", default="configs/test_v2.json")
+    s1.add_argument("--pacer-out", default="configs/test_pacer.json")
     s2 = sub.add_parser("summarize")
     s2.add_argument("test", nargs="+")
     s2.add_argument("--out", required=True)
@@ -516,8 +516,8 @@ def fill(path: Path, blocks: dict[str, str]) -> None:
 def fill_main() -> None:
     ap = argparse.ArgumentParser()
     ap.add_argument("--summary", default="results/final_summary.json")
-    ap.add_argument("--transfer", default="results/v2/transfer.jsonl")
-    ap.add_argument("--ablations", default="results/v2/ablations.jsonl")
+    ap.add_argument("--transfer", default="results/transfer.jsonl")
+    ap.add_argument("--ablations", default="results/ablations.jsonl")
     ap.add_argument("files", nargs="+")
     a = ap.parse_args()
     summary = json.loads(Path(a.summary).read_text())
@@ -525,7 +525,7 @@ def fill_main() -> None:
     blocks = markdown(summary, transfer)
     auc_rows = []
     for t in TRACES:
-        f = Path(f"results/v2/fast_{t}.json")
+        f = Path(f"results/training/fast_{t}.json")
         if f.exists():
             r = json.loads(f.read_text())
             auc_rows.append(

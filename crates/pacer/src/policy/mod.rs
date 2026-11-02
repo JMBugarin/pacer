@@ -41,7 +41,7 @@ pub fn param(p: &Params, k: &str, default: f64) -> f64 {
 pub struct Resources {
     pub models: BTreeMap<String, Arc<Gbdt>>,
     /// ATC'25 workload parameters per trace name, fitted in Python with censoring handled;
-    /// without one, the policy falls back to a simple in-Rust fit up to `fit_end`.
+    /// without one (or with `naive=1`), the policy uses a simple in-Rust fit up to `fit_end`.
     pub wa_fits: BTreeMap<String, Arc<wa::Fit>>,
 }
 
@@ -75,8 +75,8 @@ pub fn make(
         "lruqd" => Box::new(LruQd::new(n, cap, param(params, "small", 0.1))),
         "wa" => {
             let fit = match res.wa_fits.get(&tr.name) {
-                Some(f) => f.clone(),
-                None => Arc::new(wa::Fit::from_trace(tr, param(params, "fit_end", 3600.0))),
+                Some(f) if param(params, "naive", 0.0) < 0.5 => f.clone(),
+                _ => Arc::new(wa::Fit::from_trace(tr, param(params, "fit_end", 3600.0))),
             };
             Box::new(WorkloadAware::new(n, fit))
         }

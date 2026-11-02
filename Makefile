@@ -17,39 +17,39 @@ data:
 
 # Cache-independent hazard rows from each trace's first hour (seconds).
 rows: build
-	mkdir -p data/labels/v2
+	mkdir -p data/labels/hazard
 	for t in $(TRACES); do \
 		$(BIN) hazard --trace data/raw/qwen_$${t}_blksz_16.jsonl --cutoff 3600 --rate 0.15 \
-			--per-touch 8 --out data/labels/v2/$${t}_hazard.npy; \
+			--per-touch 8 --out data/labels/hazard/$${t}.npy; \
 	done
 
 # Compact models (fixed configuration) and larger models (horizon-tuned configuration).
 models: rows
-	mkdir -p models/v2 results/v2
+	mkdir -p models results/training
 	for t in $(TRACES); do \
-		PYTHONPATH=python $(PY) -m pacer.hazard data/labels/v2/$${t}_hazard.npy \
-			--num-leaves 31 --learning-rate 0.25 --wa-out models/v2/wa_$${t}.json \
-			--out models/v2/fast_$${t}.json --report results/v2/fast_$${t}.json; \
-		PYTHONPATH=python $(PY) -m pacer.hazard data/labels/v2/$${t}_hazard.npy \
-			--out models/v2/hazard_$${t}.json --report results/v2/hazard_$${t}.json; \
+		PYTHONPATH=python $(PY) -m pacer.hazard data/labels/hazard/$${t}.npy \
+			--num-leaves 31 --learning-rate 0.25 --wa-out models/wa_$${t}.json \
+			--out models/fast_$${t}.json --report results/training/fast_$${t}.json; \
+		PYTHONPATH=python $(PY) -m pacer.hazard data/labels/hazard/$${t}.npy \
+			--out models/hazard_$${t}.json --report results/training/hazard_$${t}.json; \
 	done
 
 # Every choice is made on t = 45-60 min of hour 1.
 validate: build
 	$(BIN) sweep --spec configs/validation_heuristics.json \
 		--out results/validation_heuristics.jsonl --threads $(THREADS)
-	$(BIN) sweep --spec configs/validation_v2.json --out results/v2/validation.jsonl \
+	$(BIN) sweep --spec configs/validation_pacer.json --out results/validation_pacer.jsonl \
 		--threads $(THREADS)
 
 select:
-	$(REPORT) select results/validation_heuristics.jsonl results/v2/validation.jsonl \
-		--out configs/test.json --pacer-out configs/test_v2.json
+	$(REPORT) select results/validation_heuristics.jsonl results/validation_pacer.jsonl \
+		--out configs/test.json --pacer-out configs/test_pacer.json
 
 # The held-out hour, once.
 test: build
 	$(BIN) sweep --spec configs/test.json --out results/test_baselines.jsonl --threads $(THREADS)
-	$(BIN) sweep --spec configs/test_v2.json --out results/v2/test.jsonl --threads $(THREADS)
-	cat results/test_baselines.jsonl results/v2/test.jsonl > results/final_test.jsonl
+	$(BIN) sweep --spec configs/test_pacer.json --out results/test_pacer.jsonl --threads $(THREADS)
+	cat results/test_baselines.jsonl results/test_pacer.jsonl > results/final_test.jsonl
 
 summary:
 	$(REPORT) summarize results/final_test.jsonl --out results/final_summary.json
@@ -84,16 +84,16 @@ lrb: build
 ablations: build
 	for t in traceA coder; do \
 		for v in nosession:"prev_gap mean_gap a_over_gap session_age turn" nohistory:"n_access fanout"; do \
-			PYTHONPATH=python $(PY) -m pacer.hazard data/labels/v2/$${t}_hazard.npy \
+			PYTHONPATH=python $(PY) -m pacer.hazard data/labels/hazard/$${t}.npy \
 				--num-leaves 31 --learning-rate 0.25 --drop $${v#*:} \
-				--out models/v2/ablate_$${v%%:*}_$${t}.json \
-				--report results/v2/ablate_$${v%%:*}_$${t}.json; \
+				--out models/ablate_$${v%%:*}_$${t}.json \
+				--report results/training/ablate_$${v%%:*}_$${t}.json; \
 		done; \
 	done
-	$(BIN) sweep --spec configs/ablations_v2.json --out results/v2/ablations.jsonl --threads $(THREADS)
+	$(BIN) sweep --spec configs/ablations.json --out results/ablations.jsonl --threads $(THREADS)
 
 transfer: build
-	$(BIN) sweep --spec configs/transfer.json --out results/v2/transfer.jsonl --threads $(THREADS)
+	$(BIN) sweep --spec configs/transfer.json --out results/transfer.jsonl --threads $(THREADS)
 
 overhead: build
 	PYTHONPATH=python $(PY) scripts/overhead.py
