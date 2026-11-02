@@ -23,14 +23,14 @@ def main() -> None:
         subprocess.run([str(ROOT / "scripts" / "fetch_data.sh")], check=True)
     policies = [
         {"name": "lru", "label": "LRU (vLLM default)"},
-        {"name": "s3fifo", "label": "S3-FIFO"},
-        {"name": "wa", "label": "ATC'25 workload-aware", "params": {"fit_end": 3600}},
+        {"name": "s3fifo", "label": "S3-FIFO (default settings)"},
+        {"name": "wa", "label": "ATC'25 workload-aware"},
         {
             "name": "pacer",
             "label": "Pacer",
             "params": {"model": 0, "mult": 1.0, "k": 32, "reuse": 4},
         },
-        {"name": "belady", "label": "Belady (offline bound)"},
+        {"name": "belady", "label": "Belady (offline reference)"},
     ]
     spec = {
         "traces": [{"path": str(raw), "window": [3600, 7200]}],
@@ -38,6 +38,7 @@ def main() -> None:
         "time": True,
         "policies": policies,
         "models": {"0": str(ROOT / "models" / f"fast_{a.trace}.json")},
+        "wa_fits": {a.trace: str(ROOT / "models" / f"wa_{a.trace}.json")},
     }
     with tempfile.TemporaryDirectory() as d:
         sp, out = Path(d) / "spec.json", Path(d) / "out.jsonl"
@@ -45,7 +46,7 @@ def main() -> None:
         subprocess.run([str(BIN), "sweep", "--spec", str(sp), "--out", str(out)], check=True)
         rows = {r["label"]: r for r in map(json.loads, out.read_text().splitlines())}
     lru = rows["LRU (vLLM default)"]["hit_ratio"]
-    bel = rows["Belady (offline bound)"]["hit_ratio"]
+    bel = rows["Belady (offline reference)"]["hit_ratio"]
     print(f"\n{a.trace}, cache = {100 * a.cap:g}% of unique blocks, test hour (t = 1-2 h)\n")
     print(f"{'policy':26s} {'hit ratio':>9s} {'vs LRU':>8s} {'gap closed':>11s} {'us/evict':>9s}")
     for p in policies:
