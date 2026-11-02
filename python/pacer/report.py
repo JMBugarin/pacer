@@ -366,7 +366,7 @@ def markdown(summary: dict, transfer: list[dict] | None = None) -> dict[str, str
 
 ABLATIONS = [
     ("pacer", "Pacer, fixed configuration (compact model, K = 32, reuse 4, h x1)"),
-    ("pacer-full", "larger model (85-114 trees), K = 64, no reuse"),
+    ("pacer-full", "larger model (63 leaves, 85-172 trees), K = 64, no reuse"),
     ("pacer-nosession", "without session features (gaps, turn, session age)"),
     ("pacer-nohistory", "without block history (hit count, fan-out)"),
     ("pacer-k8", "K = 8"),
@@ -414,8 +414,8 @@ COST_LABELS = [
     ("arc", "ARC"),
     ("wa", "ATC'25"),
     ("sampled-lru", "sampled LRU (K = 32)"),
-    ("pacer-fixed", "Pacer (fixed: 16-19 trees, K = 32, reuse 4)"),
-    ("pacer-full-k64", "Pacer with the 85-114 tree model, K = 64"),
+    ("pacer-fixed", "Pacer (fixed: 13-37 trees, K = 32, reuse 4)"),
+    ("pacer-full-k64", "Pacer with the 85-213 tree model, K = 64"),
 ]
 
 
