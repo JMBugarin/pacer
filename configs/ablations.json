@@ -1,0 +1,414 @@
+{
+ "traces": [
+  {
+   "path": "data/raw/qwen_traceA_blksz_16.jsonl",
+   "window": [
+    3600,
+    7200
+   ]
+  },
+  {
+   "path": "data/raw/qwen_coder_blksz_16.jsonl",
+   "window": [
+    3600,
+    7200
+   ]
+  }
+ ],
+ "caps": [
+  0.01,
+  0.02,
+  0.05,
+  0.1
+ ],
+ "time": true,
+ "policies": [
+  {
+   "name": "pacer",
+   "label": "pacer",
+   "params": {
+    "model": 0,
+    "mult": 1.0,
+    "k": 32,
+    "reuse": 4
+   },
+   "traces": [
+    "traceA"
+   ]
+  },
+  {
+   "name": "pacer",
+   "label": "pacer-nosession",
+   "params": {
+    "model": 10,
+    "mult": 1.0,
+    "k": 32,
+    "reuse": 4
+   },
+   "traces": [
+    "traceA"
+   ]
+  },
+  {
+   "name": "pacer",
+   "label": "pacer-nohistory",
+   "params": {
+    "model": 20,
+    "mult": 1.0,
+    "k": 32,
+    "reuse": 4
+   },
+   "traces": [
+    "traceA"
+   ]
+  },
+  {
+   "name": "pacer",
+   "label": "pacer-full",
+   "params": {
+    "model": 40,
+    "mult": 1.0,
+    "k": 64,
+    "reuse": 1
+   },
+   "traces": [
+    "traceA"
+   ]
+  },
+  {
+   "name": "pacer",
+   "label": "pacer-k8",
+   "params": {
+    "model": 0,
+    "mult": 1.0,
+    "k": 8,
+    "reuse": 4
+   },
+   "traces": [
+    "traceA"
+   ]
+  },
+  {
+   "name": "pacer",
+   "label": "pacer-k16",
+   "params": {
+    "model": 0,
+    "mult": 1.0,
+    "k": 16,
+    "reuse": 4
+   },
+   "traces": [
+    "traceA"
+   ]
+  },
+  {
+   "name": "pacer",
+   "label": "pacer-k64",
+   "params": {
+    "model": 0,
+    "mult": 1.0,
+    "k": 64,
+    "reuse": 4
+   },
+   "traces": [
+    "traceA"
+   ]
+  },
+  {
+   "name": "pacer",
+   "label": "pacer-k128",
+   "params": {
+    "model": 0,
+    "mult": 1.0,
+    "k": 128,
+    "reuse": 4
+   },
+   "traces": [
+    "traceA"
+   ]
+  },
+  {
+   "name": "pacer",
+   "label": "pacer-reuse1",
+   "params": {
+    "model": 0,
+    "mult": 1.0,
+    "k": 32,
+    "reuse": 1
+   },
+   "traces": [
+    "traceA"
+   ]
+  },
+  {
+   "name": "pacer",
+   "label": "pacer-m0.5",
+   "params": {
+    "model": 0,
+    "mult": 0.5,
+    "k": 32,
+    "reuse": 4
+   },
+   "traces": [
+    "traceA"
+   ]
+  },
+  {
+   "name": "pacer",
+   "label": "pacer-m2",
+   "params": {
+    "model": 0,
+    "mult": 2,
+    "k": 32,
+    "reuse": 4
+   },
+   "traces": [
+    "traceA"
+   ]
+  },
+  {
+   "name": "pacer",
+   "label": "pacer-m4",
+   "params": {
+    "model": 0,
+    "mult": 4,
+    "k": 32,
+    "reuse": 4
+   },
+   "traces": [
+    "traceA"
+   ]
+  },
+  {
+   "name": "pacer",
+   "label": "pacer-nofollow",
+   "params": {
+    "model": 0,
+    "mult": 1.0,
+    "k": 32,
+    "reuse": 4,
+    "follow": 0
+   },
+   "traces": [
+    "traceA"
+   ],
+   "caps": [
+    0.02,
+    0.1
+   ]
+  },
+  {
+   "name": "sampled-lru",
+   "params": {
+    "k": 32
+   },
+   "traces": [
+    "traceA"
+   ]
+  },
+  {
+   "name": "pacer",
+   "label": "pacer",
+   "params": {
+    "model": 1,
+    "mult": 1.0,
+    "k": 32,
+    "reuse": 4
+   },
+   "traces": [
+    "coder"
+   ]
+  },
+  {
+   "name": "pacer",
+   "label": "pacer-nosession",
+   "params": {
+    "model": 11,
+    "mult": 1.0,
+    "k": 32,
+    "reuse": 4
+   },
+   "traces": [
+    "coder"
+   ]
+  },
+  {
+   "name": "pacer",
+   "label": "pacer-nohistory",
+   "params": {
+    "model": 21,
+    "mult": 1.0,
+    "k": 32,
+    "reuse": 4
+   },
+   "traces": [
+    "coder"
+   ]
+  },
+  {
+   "name": "pacer",
+   "label": "pacer-full",
+   "params": {
+    "model": 41,
+    "mult": 1.0,
+    "k": 64,
+    "reuse": 1
+   },
+   "traces": [
+    "coder"
+   ]
+  },
+  {
+   "name": "pacer",
+   "label": "pacer-k8",
+   "params": {
+    "model": 1,
+    "mult": 1.0,
+    "k": 8,
+    "reuse": 4
+   },
+   "traces": [
+    "coder"
+   ]
+  },
+  {
+   "name": "pacer",
+   "label": "pacer-k16",
+   "params": {
+    "model": 1,
+    "mult": 1.0,
+    "k": 16,
+    "reuse": 4
+   },
+   "traces": [
+    "coder"
+   ]
+  },
+  {
+   "name": "pacer",
+   "label": "pacer-k64",
+   "params": {
+    "model": 1,
+    "mult": 1.0,
+    "k": 64,
+    "reuse": 4
+   },
+   "traces": [
+    "coder"
+   ]
+  },
+  {
+   "name": "pacer",
+   "label": "pacer-k128",
+   "params": {
+    "model": 1,
+    "mult": 1.0,
+    "k": 128,
+    "reuse": 4
+   },
+   "traces": [
+    "coder"
+   ]
+  },
+  {
+   "name": "pacer",
+   "label": "pacer-reuse1",
+   "params": {
+    "model": 1,
+    "mult": 1.0,
+    "k": 32,
+    "reuse": 1
+   },
+   "traces": [
+    "coder"
+   ]
+  },
+  {
+   "name": "pacer",
+   "label": "pacer-m0.5",
+   "params": {
+    "model": 1,
+    "mult": 0.5,
+    "k": 32,
+    "reuse": 4
+   },
+   "traces": [
+    "coder"
+   ]
+  },
+  {
+   "name": "pacer",
+   "label": "pacer-m2",
+   "params": {
+    "model": 1,
+    "mult": 2,
+    "k": 32,
+    "reuse": 4
+   },
+   "traces": [
+    "coder"
+   ]
+  },
+  {
+   "name": "pacer",
+   "label": "pacer-m4",
+   "params": {
+    "model": 1,
+    "mult": 4,
+    "k": 32,
+    "reuse": 4
+   },
+   "traces": [
+    "coder"
+   ]
+  },
+  {
+   "name": "pacer",
+   "label": "pacer-nofollow",
+   "params": {
+    "model": 1,
+    "mult": 1.0,
+    "k": 32,
+    "reuse": 4,
+    "follow": 0
+   },
+   "traces": [
+    "coder"
+   ],
+   "caps": [
+    0.02,
+    0.1
+   ]
+  },
+  {
+   "name": "sampled-lru",
+   "params": {
+    "k": 32
+   },
+   "traces": [
+    "coder"
+   ]
+  },
+  {
+   "name": "pacer-lrb",
+   "label": "lrb-imitation",
+   "params": {
+    "model": 30
+   },
+   "traces": [
+    "traceA"
+   ]
+  }
+ ],
+ "models": {
+  "0": "models/fast_traceA.json",
+  "1": "models/fast_coder.json",
+  "10": "models/ablate_nosession_traceA.json",
+  "11": "models/ablate_nosession_coder.json",
+  "20": "models/ablate_nohistory_traceA.json",
+  "21": "models/ablate_nohistory_coder.json",
+  "40": "models/hazard_traceA.json",
+  "41": "models/hazard_coder.json",
+  "30": "models/lrb_traceA.json"
+ }
+}

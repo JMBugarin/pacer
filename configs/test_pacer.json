@@ -1,0 +1,343 @@
+{
+ "traces": [
+  {
+   "path": "data/raw/qwen_traceA_blksz_16.jsonl",
+   "window": [
+    3600,
+    7200
+   ]
+  },
+  {
+   "path": "data/raw/qwen_traceB_blksz_16.jsonl",
+   "window": [
+    3600,
+    7200
+   ]
+  },
+  {
+   "path": "data/raw/qwen_coder_blksz_16.jsonl",
+   "window": [
+    3600,
+    7200
+   ]
+  },
+  {
+   "path": "data/raw/qwen_thinking_blksz_16.jsonl",
+   "window": [
+    3600,
+    7200
+   ]
+  }
+ ],
+ "caps": [
+  0.01,
+  0.02,
+  0.05,
+  0.1
+ ],
+ "time": true,
+ "policies": [
+  {
+   "name": "pacer",
+   "label": "pacer-fixed",
+   "params": {
+    "model": 0,
+    "mult": 1.0,
+    "k": 32,
+    "reuse": 4
+   },
+   "traces": [
+    "traceA"
+   ]
+  },
+  {
+   "name": "pacer",
+   "label": "pacer",
+   "params": {
+    "k": 64.0,
+    "model": 10.0,
+    "mult": 1.0
+   },
+   "traces": [
+    "traceA"
+   ],
+   "caps": [
+    0.01
+   ]
+  },
+  {
+   "name": "pacer",
+   "label": "pacer",
+   "params": {
+    "k": 64.0,
+    "model": 10.0,
+    "mult": 2.0
+   },
+   "traces": [
+    "traceA"
+   ],
+   "caps": [
+    0.02
+   ]
+  },
+  {
+   "name": "pacer",
+   "label": "pacer",
+   "params": {
+    "k": 64.0,
+    "model": 10.0,
+    "mult": 1.0
+   },
+   "traces": [
+    "traceA"
+   ],
+   "caps": [
+    0.05
+   ]
+  },
+  {
+   "name": "pacer",
+   "label": "pacer",
+   "params": {
+    "k": 64.0,
+    "model": 10.0,
+    "mult": 0.5
+   },
+   "traces": [
+    "traceA"
+   ],
+   "caps": [
+    0.1
+   ]
+  },
+  {
+   "name": "pacer",
+   "label": "pacer-fixed",
+   "params": {
+    "model": 1,
+    "mult": 1.0,
+    "k": 32,
+    "reuse": 4
+   },
+   "traces": [
+    "traceB"
+   ]
+  },
+  {
+   "name": "pacer",
+   "label": "pacer",
+   "params": {
+    "k": 64.0,
+    "model": 11.0,
+    "mult": 2.0
+   },
+   "traces": [
+    "traceB"
+   ],
+   "caps": [
+    0.01
+   ]
+  },
+  {
+   "name": "pacer",
+   "label": "pacer",
+   "params": {
+    "k": 64.0,
+    "model": 11.0,
+    "mult": 2.0
+   },
+   "traces": [
+    "traceB"
+   ],
+   "caps": [
+    0.02
+   ]
+  },
+  {
+   "name": "pacer",
+   "label": "pacer",
+   "params": {
+    "k": 64.0,
+    "model": 11.0,
+    "mult": 1.0
+   },
+   "traces": [
+    "traceB"
+   ],
+   "caps": [
+    0.05
+   ]
+  },
+  {
+   "name": "pacer",
+   "label": "pacer",
+   "params": {
+    "k": 64.0,
+    "model": 11.0,
+    "mult": 2.0
+   },
+   "traces": [
+    "traceB"
+   ],
+   "caps": [
+    0.1
+   ]
+  },
+  {
+   "name": "pacer",
+   "label": "pacer-fixed",
+   "params": {
+    "model": 2,
+    "mult": 1.0,
+    "k": 32,
+    "reuse": 4
+   },
+   "traces": [
+    "coder"
+   ]
+  },
+  {
+   "name": "pacer",
+   "label": "pacer",
+   "params": {
+    "k": 64.0,
+    "model": 12.0,
+    "mult": 0.5
+   },
+   "traces": [
+    "coder"
+   ],
+   "caps": [
+    0.01
+   ]
+  },
+  {
+   "name": "pacer",
+   "label": "pacer",
+   "params": {
+    "k": 64.0,
+    "model": 12.0,
+    "mult": 0.5
+   },
+   "traces": [
+    "coder"
+   ],
+   "caps": [
+    0.02
+   ]
+  },
+  {
+   "name": "pacer",
+   "label": "pacer",
+   "params": {
+    "k": 64.0,
+    "model": 12.0,
+    "mult": 0.5
+   },
+   "traces": [
+    "coder"
+   ],
+   "caps": [
+    0.05
+   ]
+  },
+  {
+   "name": "pacer",
+   "label": "pacer",
+   "params": {
+    "k": 64.0,
+    "model": 12.0,
+    "mult": 1.0
+   },
+   "traces": [
+    "coder"
+   ],
+   "caps": [
+    0.1
+   ]
+  },
+  {
+   "name": "pacer",
+   "label": "pacer-fixed",
+   "params": {
+    "model": 3,
+    "mult": 1.0,
+    "k": 32,
+    "reuse": 4
+   },
+   "traces": [
+    "thinking"
+   ]
+  },
+  {
+   "name": "pacer",
+   "label": "pacer",
+   "params": {
+    "k": 64.0,
+    "model": 13.0,
+    "mult": 1.0
+   },
+   "traces": [
+    "thinking"
+   ],
+   "caps": [
+    0.01
+   ]
+  },
+  {
+   "name": "pacer",
+   "label": "pacer",
+   "params": {
+    "k": 64.0,
+    "model": 13.0,
+    "mult": 2.0
+   },
+   "traces": [
+    "thinking"
+   ],
+   "caps": [
+    0.02
+   ]
+  },
+  {
+   "name": "pacer",
+   "label": "pacer",
+   "params": {
+    "k": 64.0,
+    "model": 13.0,
+    "mult": 0.5
+   },
+   "traces": [
+    "thinking"
+   ],
+   "caps": [
+    0.05
+   ]
+  },
+  {
+   "name": "pacer",
+   "label": "pacer",
+   "params": {
+    "k": 64.0,
+    "model": 13.0,
+    "mult": 2.0
+   },
+   "traces": [
+    "thinking"
+   ],
+   "caps": [
+    0.1
+   ]
+  }
+ ],
+ "models": {
+  "0": "models/fast_traceA.json",
+  "1": "models/fast_traceB.json",
+  "2": "models/fast_coder.json",
+  "3": "models/fast_thinking.json",
+  "10": "models/hazard_traceA.json",
+  "11": "models/hazard_traceB.json",
+  "12": "models/hazard_coder.json",
+  "13": "models/hazard_thinking.json"
+ }
+}

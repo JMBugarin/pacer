@@ -1,0 +1,671 @@
+{
+ "traces": [
+  {
+   "path": "data/raw/qwen_traceA_blksz_16.jsonl",
+   "window": [
+    2700,
+    3600
+   ]
+  },
+  {
+   "path": "data/raw/qwen_traceB_blksz_16.jsonl",
+   "window": [
+    2700,
+    3600
+   ]
+  },
+  {
+   "path": "data/raw/qwen_coder_blksz_16.jsonl",
+   "window": [
+    2700,
+    3600
+   ]
+  },
+  {
+   "path": "data/raw/qwen_thinking_blksz_16.jsonl",
+   "window": [
+    2700,
+    3600
+   ]
+  }
+ ],
+ "caps": [
+  0.01,
+  0.02,
+  0.05,
+  0.1
+ ],
+ "time": true,
+ "policies": [
+  {
+   "name": "pacer",
+   "label": "pacerfast-m0.5-k32-r1",
+   "params": {
+    "model": 0,
+    "mult": 0.5,
+    "k": 32,
+    "reuse": 1
+   },
+   "traces": [
+    "traceA"
+   ]
+  },
+  {
+   "name": "pacer",
+   "label": "pacerfast-m0.5-k32-r4",
+   "params": {
+    "model": 0,
+    "mult": 0.5,
+    "k": 32,
+    "reuse": 4
+   },
+   "traces": [
+    "traceA"
+   ]
+  },
+  {
+   "name": "pacer",
+   "label": "pacerfast-m0.5-k64-r1",
+   "params": {
+    "model": 0,
+    "mult": 0.5,
+    "k": 64,
+    "reuse": 1
+   },
+   "traces": [
+    "traceA"
+   ]
+  },
+  {
+   "name": "pacer",
+   "label": "pacerfast-m0.5-k64-r4",
+   "params": {
+    "model": 0,
+    "mult": 0.5,
+    "k": 64,
+    "reuse": 4
+   },
+   "traces": [
+    "traceA"
+   ]
+  },
+  {
+   "name": "pacer",
+   "label": "pacerfast-m1-k32-r1",
+   "params": {
+    "model": 0,
+    "mult": 1,
+    "k": 32,
+    "reuse": 1
+   },
+   "traces": [
+    "traceA"
+   ]
+  },
+  {
+   "name": "pacer",
+   "label": "pacerfast-m1-k32-r4",
+   "params": {
+    "model": 0,
+    "mult": 1,
+    "k": 32,
+    "reuse": 4
+   },
+   "traces": [
+    "traceA"
+   ]
+  },
+  {
+   "name": "pacer",
+   "label": "pacerfast-m1-k64-r1",
+   "params": {
+    "model": 0,
+    "mult": 1,
+    "k": 64,
+    "reuse": 1
+   },
+   "traces": [
+    "traceA"
+   ]
+  },
+  {
+   "name": "pacer",
+   "label": "pacerfast-m1-k64-r4",
+   "params": {
+    "model": 0,
+    "mult": 1,
+    "k": 64,
+    "reuse": 4
+   },
+   "traces": [
+    "traceA"
+   ]
+  },
+  {
+   "name": "pacer",
+   "label": "pacerfast-m2-k32-r1",
+   "params": {
+    "model": 0,
+    "mult": 2,
+    "k": 32,
+    "reuse": 1
+   },
+   "traces": [
+    "traceA"
+   ]
+  },
+  {
+   "name": "pacer",
+   "label": "pacerfast-m2-k32-r4",
+   "params": {
+    "model": 0,
+    "mult": 2,
+    "k": 32,
+    "reuse": 4
+   },
+   "traces": [
+    "traceA"
+   ]
+  },
+  {
+   "name": "pacer",
+   "label": "pacerfast-m2-k64-r1",
+   "params": {
+    "model": 0,
+    "mult": 2,
+    "k": 64,
+    "reuse": 1
+   },
+   "traces": [
+    "traceA"
+   ]
+  },
+  {
+   "name": "pacer",
+   "label": "pacerfast-m2-k64-r4",
+   "params": {
+    "model": 0,
+    "mult": 2,
+    "k": 64,
+    "reuse": 4
+   },
+   "traces": [
+    "traceA"
+   ]
+  },
+  {
+   "name": "pacer",
+   "label": "pacerfast-m0.5-k32-r1",
+   "params": {
+    "model": 1,
+    "mult": 0.5,
+    "k": 32,
+    "reuse": 1
+   },
+   "traces": [
+    "traceB"
+   ]
+  },
+  {
+   "name": "pacer",
+   "label": "pacerfast-m0.5-k32-r4",
+   "params": {
+    "model": 1,
+    "mult": 0.5,
+    "k": 32,
+    "reuse": 4
+   },
+   "traces": [
+    "traceB"
+   ]
+  },
+  {
+   "name": "pacer",
+   "label": "pacerfast-m0.5-k64-r1",
+   "params": {
+    "model": 1,
+    "mult": 0.5,
+    "k": 64,
+    "reuse": 1
+   },
+   "traces": [
+    "traceB"
+   ]
+  },
+  {
+   "name": "pacer",
+   "label": "pacerfast-m0.5-k64-r4",
+   "params": {
+    "model": 1,
+    "mult": 0.5,
+    "k": 64,
+    "reuse": 4
+   },
+   "traces": [
+    "traceB"
+   ]
+  },
+  {
+   "name": "pacer",
+   "label": "pacerfast-m1-k32-r1",
+   "params": {
+    "model": 1,
+    "mult": 1,
+    "k": 32,
+    "reuse": 1
+   },
+   "traces": [
+    "traceB"
+   ]
+  },
+  {
+   "name": "pacer",
+   "label": "pacerfast-m1-k32-r4",
+   "params": {
+    "model": 1,
+    "mult": 1,
+    "k": 32,
+    "reuse": 4
+   },
+   "traces": [
+    "traceB"
+   ]
+  },
+  {
+   "name": "pacer",
+   "label": "pacerfast-m1-k64-r1",
+   "params": {
+    "model": 1,
+    "mult": 1,
+    "k": 64,
+    "reuse": 1
+   },
+   "traces": [
+    "traceB"
+   ]
+  },
+  {
+   "name": "pacer",
+   "label": "pacerfast-m1-k64-r4",
+   "params": {
+    "model": 1,
+    "mult": 1,
+    "k": 64,
+    "reuse": 4
+   },
+   "traces": [
+    "traceB"
+   ]
+  },
+  {
+   "name": "pacer",
+   "label": "pacerfast-m2-k32-r1",
+   "params": {
+    "model": 1,
+    "mult": 2,
+    "k": 32,
+    "reuse": 1
+   },
+   "traces": [
+    "traceB"
+   ]
+  },
+  {
+   "name": "pacer",
+   "label": "pacerfast-m2-k32-r4",
+   "params": {
+    "model": 1,
+    "mult": 2,
+    "k": 32,
+    "reuse": 4
+   },
+   "traces": [
+    "traceB"
+   ]
+  },
+  {
+   "name": "pacer",
+   "label": "pacerfast-m2-k64-r1",
+   "params": {
+    "model": 1,
+    "mult": 2,
+    "k": 64,
+    "reuse": 1
+   },
+   "traces": [
+    "traceB"
+   ]
+  },
+  {
+   "name": "pacer",
+   "label": "pacerfast-m2-k64-r4",
+   "params": {
+    "model": 1,
+    "mult": 2,
+    "k": 64,
+    "reuse": 4
+   },
+   "traces": [
+    "traceB"
+   ]
+  },
+  {
+   "name": "pacer",
+   "label": "pacerfast-m0.5-k32-r1",
+   "params": {
+    "model": 2,
+    "mult": 0.5,
+    "k": 32,
+    "reuse": 1
+   },
+   "traces": [
+    "coder"
+   ]
+  },
+  {
+   "name": "pacer",
+   "label": "pacerfast-m0.5-k32-r4",
+   "params": {
+    "model": 2,
+    "mult": 0.5,
+    "k": 32,
+    "reuse": 4
+   },
+   "traces": [
+    "coder"
+   ]
+  },
+  {
+   "name": "pacer",
+   "label": "pacerfast-m0.5-k64-r1",
+   "params": {
+    "model": 2,
+    "mult": 0.5,
+    "k": 64,
+    "reuse": 1
+   },
+   "traces": [
+    "coder"
+   ]
+  },
+  {
+   "name": "pacer",
+   "label": "pacerfast-m0.5-k64-r4",
+   "params": {
+    "model": 2,
+    "mult": 0.5,
+    "k": 64,
+    "reuse": 4
+   },
+   "traces": [
+    "coder"
+   ]
+  },
+  {
+   "name": "pacer",
+   "label": "pacerfast-m1-k32-r1",
+   "params": {
+    "model": 2,
+    "mult": 1,
+    "k": 32,
+    "reuse": 1
+   },
+   "traces": [
+    "coder"
+   ]
+  },
+  {
+   "name": "pacer",
+   "label": "pacerfast-m1-k32-r4",
+   "params": {
+    "model": 2,
+    "mult": 1,
+    "k": 32,
+    "reuse": 4
+   },
+   "traces": [
+    "coder"
+   ]
+  },
+  {
+   "name": "pacer",
+   "label": "pacerfast-m1-k64-r1",
+   "params": {
+    "model": 2,
+    "mult": 1,
+    "k": 64,
+    "reuse": 1
+   },
+   "traces": [
+    "coder"
+   ]
+  },
+  {
+   "name": "pacer",
+   "label": "pacerfast-m1-k64-r4",
+   "params": {
+    "model": 2,
+    "mult": 1,
+    "k": 64,
+    "reuse": 4
+   },
+   "traces": [
+    "coder"
+   ]
+  },
+  {
+   "name": "pacer",
+   "label": "pacerfast-m2-k32-r1",
+   "params": {
+    "model": 2,
+    "mult": 2,
+    "k": 32,
+    "reuse": 1
+   },
+   "traces": [
+    "coder"
+   ]
+  },
+  {
+   "name": "pacer",
+   "label": "pacerfast-m2-k32-r4",
+   "params": {
+    "model": 2,
+    "mult": 2,
+    "k": 32,
+    "reuse": 4
+   },
+   "traces": [
+    "coder"
+   ]
+  },
+  {
+   "name": "pacer",
+   "label": "pacerfast-m2-k64-r1",
+   "params": {
+    "model": 2,
+    "mult": 2,
+    "k": 64,
+    "reuse": 1
+   },
+   "traces": [
+    "coder"
+   ]
+  },
+  {
+   "name": "pacer",
+   "label": "pacerfast-m2-k64-r4",
+   "params": {
+    "model": 2,
+    "mult": 2,
+    "k": 64,
+    "reuse": 4
+   },
+   "traces": [
+    "coder"
+   ]
+  },
+  {
+   "name": "pacer",
+   "label": "pacerfast-m0.5-k32-r1",
+   "params": {
+    "model": 3,
+    "mult": 0.5,
+    "k": 32,
+    "reuse": 1
+   },
+   "traces": [
+    "thinking"
+   ]
+  },
+  {
+   "name": "pacer",
+   "label": "pacerfast-m0.5-k32-r4",
+   "params": {
+    "model": 3,
+    "mult": 0.5,
+    "k": 32,
+    "reuse": 4
+   },
+   "traces": [
+    "thinking"
+   ]
+  },
+  {
+   "name": "pacer",
+   "label": "pacerfast-m0.5-k64-r1",
+   "params": {
+    "model": 3,
+    "mult": 0.5,
+    "k": 64,
+    "reuse": 1
+   },
+   "traces": [
+    "thinking"
+   ]
+  },
+  {
+   "name": "pacer",
+   "label": "pacerfast-m0.5-k64-r4",
+   "params": {
+    "model": 3,
+    "mult": 0.5,
+    "k": 64,
+    "reuse": 4
+   },
+   "traces": [
+    "thinking"
+   ]
+  },
+  {
+   "name": "pacer",
+   "label": "pacerfast-m1-k32-r1",
+   "params": {
+    "model": 3,
+    "mult": 1,
+    "k": 32,
+    "reuse": 1
+   },
+   "traces": [
+    "thinking"
+   ]
+  },
+  {
+   "name": "pacer",
+   "label": "pacerfast-m1-k32-r4",
+   "params": {
+    "model": 3,
+    "mult": 1,
+    "k": 32,
+    "reuse": 4
+   },
+   "traces": [
+    "thinking"
+   ]
+  },
+  {
+   "name": "pacer",
+   "label": "pacerfast-m1-k64-r1",
+   "params": {
+    "model": 3,
+    "mult": 1,
+    "k": 64,
+    "reuse": 1
+   },
+   "traces": [
+    "thinking"
+   ]
+  },
+  {
+   "name": "pacer",
+   "label": "pacerfast-m1-k64-r4",
+   "params": {
+    "model": 3,
+    "mult": 1,
+    "k": 64,
+    "reuse": 4
+   },
+   "traces": [
+    "thinking"
+   ]
+  },
+  {
+   "name": "pacer",
+   "label": "pacerfast-m2-k32-r1",
+   "params": {
+    "model": 3,
+    "mult": 2,
+    "k": 32,
+    "reuse": 1
+   },
+   "traces": [
+    "thinking"
+   ]
+  },
+  {
+   "name": "pacer",
+   "label": "pacerfast-m2-k32-r4",
+   "params": {
+    "model": 3,
+    "mult": 2,
+    "k": 32,
+    "reuse": 4
+   },
+   "traces": [
+    "thinking"
+   ]
+  },
+  {
+   "name": "pacer",
+   "label": "pacerfast-m2-k64-r1",
+   "params": {
+    "model": 3,
+    "mult": 2,
+    "k": 64,
+    "reuse": 1
+   },
+   "traces": [
+    "thinking"
+   ]
+  },
+  {
+   "name": "pacer",
+   "label": "pacerfast-m2-k64-r4",
+   "params": {
+    "model": 3,
+    "mult": 2,
+    "k": 64,
+    "reuse": 4
+   },
+   "traces": [
+    "thinking"
+   ]
+  }
+ ],
+ "models": {
+  "0": "models/fast_traceA.json",
+  "1": "models/fast_traceB.json",
+  "2": "models/fast_coder.json",
+  "3": "models/fast_thinking.json"
+ }
+}

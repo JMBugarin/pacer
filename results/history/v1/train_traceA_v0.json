@@ -1,0 +1,39 @@
+{
+  "train_rows": 1629184,
+  "valid_rows": 624512,
+  "best_iteration": 20,
+  "valid_rmse": 2.4067079162550606,
+  "valid_rmse_const": 2.5032443319309947,
+  "model": {
+    "decisions": 9758,
+    "top1": 0.9769419963107194,
+    "regret_log": 0.11355852940869786,
+    "chosen_ttnu_median_s": 20000.00397935877
+  },
+  "age": {
+    "decisions": 9758,
+    "top1": 0.7868415658946506,
+    "regret_log": 1.1006977676945946,
+    "chosen_ttnu_median_s": 20000.00397935877
+  },
+  "importance_gain": {
+    "age": 2723159.6948242188,
+    "output_len": 1733538.1282958984,
+    "input_len": 1044613.8811035156,
+    "turn": 1021351.9827880859,
+    "prev_gap": 998324.9012451172,
+    "mean_gap": 955052.5860595703,
+    "rel_depth": 421758.8917236328,
+    "depth": 348522.6604003906,
+    "since_done": 229689.72119140625,
+    "rtype": 221171.40014648438,
+    "arrivals_60s": 151624.34985351562,
+    "session_age": 111374.07971191406,
+    "age_insert": 51915.870361328125,
+    "fanout": 9276.610107421875,
+    "evict_age_ewma": 4774.7301025390625,
+    "n_access": 0.0,
+    "is_output": 0.0,
+    "child_arrived": 0.0
+  }
+}

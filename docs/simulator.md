@@ -31,18 +31,23 @@ those blocks when the request completes:
 - The request's full sequence has `(input_length + output_length) // 16` full blocks; the ones
   past the input are its *decode-completed* blocks (the first of them also holds the input's
   partial tail).
-- If the request has a child whose chain contains the request's full input chain, the
-  decode-completed keys are the child's keys at those positions. Otherwise they are fresh keys
-  that are never used again (they still take space).
+- If the request's first follow-up turn starts with the request's full input chain and its
+  prompt is at least as long as the request's prompt plus its output (so it can contain the
+  answer verbatim), the decode-completed keys are the follow-up's keys at those positions.
+  Otherwise they are fresh keys that are never used again (they still take space). A thinking
+  model's follow-up often drops the reasoning (319 of 1,200 thinking follow-ups, 165 of 16,605
+  on coder, none on chat); its blocks are then not the ones the server decoded.
 
-This uses the child's hashes only to name blocks the server would have produced; no policy
-sees them before the child arrives.
+This uses the follow-up's hashes only to name blocks the server would have produced; no policy
+sees them before the follow-up arrives.
 
 ## Time
 
 Requests arrive at their trace timestamps. A request completes at
 `t + 0.02 s * output_length` (50 tokens/s decoding), capped to land before its first child
-arrives. Completions are processed before arrivals that have the same time.
+arrives. Completions are processed before arrivals that have the same time. Every policy hook
+receives the index of the first arrival not processed yet; "the future" (for Belady, the
+oracles and every training label) means arrivals from that index on.
 
 ## Arrival
 
@@ -60,8 +65,9 @@ arrives. Completions are processed before arrivals that have the same time.
 1. Decode-completed blocks are inserted (`on_insert`).
 2. The input blocks are unpinned.
 3. Every block of the request's chain is released from the deepest to the root
-   (`on_release`). LRU treats release as a recency update, matching vLLM's free-queue order;
-   other policies ignore it unless stated.
+   (`on_release`). LRU, the main queue of LRU with quick demotion, ATC'25 and one ARC variant
+   treat release as a recency update, matching vLLM's free-queue order; Belady recomputes the
+   block's next use; the others ignore it.
 4. Blocks are evicted until the cache is within capacity.
 
 ## Eviction and prefix closure
@@ -79,8 +85,10 @@ KV pool.
 
 For arrivals inside the measurement window: block hits, block accesses, and the sums of hit
 and access depths (so any cost model linear in depth gives a compute-weighted hit ratio). Hits
-are also bucketed per 5 minutes for paired bootstrap confidence intervals. The cache always
-starts empty at t = 0 and runs with the same policy through the warm-up before the window.
+are also bucketed per 5 minutes for paired confidence intervals. The cache always starts empty
+at t = 0 and runs with the same policy through the warm-up before the window; the run stops at
+the end of the window. Eviction counts and decision time cover the whole run, warm-up
+included.
 
 ## How each policy handles prefix closure
 
@@ -89,10 +97,10 @@ starts empty at t = 0 and runs with the same policy through the warm-up before t
 | LRU, FIFO, LFU, GDSF, Belady | Priority order over the evictable set (lazy min-heap). |
 | SIEVE | The hand skips blocks that are not evictable. |
 | S3-FIFO | A tail block that is not evictable goes back to the head of its queue, frequency unchanged; promotion is checked first. |
-| ARC | REPLACE takes the least recent evictable block of the chosen list, falling back to the other list; ghost lists bounded as in ARC. |
+| ARC | REPLACE takes the least recent evictable block of the chosen list, falling back to the other list; ghost lists bounded as in ARC. A variant also refreshes recency within the list at release; validation picks per cell. |
 | LRU + quick demotion | Probation FIFO for blocks never re-accessed, evicted first while it holds more than its share; LRU main queue. |
 | Workload-aware (ATC'25) | Per-(type, turn) LRU queues; the victim is the least likely to be reused among their heads. |
-| Sampled policies, Pacer | Sample K evictable blocks uniformly; evict the highest score; then follow the chain upward while the parent has the same history. |
+| Sampled policies, Pacer | Sample K evictable blocks uniformly with replacement; evict the highest score; then follow the chain upward while the parent has the same, unchanged history. |
 
 ## Belady
 
