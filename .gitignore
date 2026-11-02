@@ -1,0 +1,20 @@
+/target/
+.venv*/
+__pycache__/
+*.py[cod]
+.pytest_cache/
+.ruff_cache/
+.DS_Store
+.env
+.env.*
+
+# build output of the Python extension
+python/pacer/*.so
+
+# downloaded traces and generated training rows (make data, make models)
+/data/
+
+# experiment models; the ones the results use are under models/v2/
+/models/*
+!/models/v2/
+!/models/lrb_traceA.json
