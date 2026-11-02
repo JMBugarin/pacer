@@ -36,7 +36,7 @@ def hit_vs_capacity(summary: dict, out: Path) -> None:
     fig, axes = plt.subplots(1, 4, figsize=(13, 3.6), facecolor=SURFACE)
     xs = [100 * c for c in CAPS]
     series = [
-        ("Belady (offline bound)", "belady", GRAY_DARK, "--", None),
+        ("Belady (offline reference)", "belady", GRAY_DARK, "--", None),
         ("Sampled Belady (oracle)", "sampled_belady", GRAY, ":", None),
         ("Pacer", "pacer_fixed", BLUE, "-", "o"),
         ("Best tuned heuristic", "best_heuristic_hit", ORANGE, "-", "s"),
