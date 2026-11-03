@@ -1,0 +1,23 @@
+dry lru             hit 0.1427 prefill 768160 output 165728 tokens
+dry s3fifo          hit 0.1439 prefill 767088 output 165728 tokens
+dry sampled-belady  hit 0.1815 prefill 733440 output 165728 tokens
+dry pacer           hit 0.1585 prefill 753984 output 165728 tokens
+Fetching 9 files:   0%|          | 0/9 [00:00<?, ?it/s]Fetching 9 files: 100%|██████████| 9/9 [00:00<00:00, 4046.82it/s]
+400 requests, n_keys 56111, cap 4489 blocks (min 3277), pool 7.67 GiB, workspace 2.29 GiB
+check: 200 of 380 arrivals with a cached prefix (lru)
+check: argmax equal 0.9750, max|dlogit| p50 0.128 max 0.377
+rep 0 lru             wall  233.5s hit 0.1427 ttft p50   138.2 ms  (1/8, eta 1635s)
+rep 0 s3fifo          wall  232.3s hit 0.1439 ttft p50   134.9 ms  (2/8, eta 1398s)
+rep 0 sampled-belady  wall  224.6s hit 0.1815 ttft p50   122.7 ms  (3/8, eta 1151s)
+rep 0 pacer           wall  229.7s hit 0.1585 ttft p50   131.6 ms  (4/8, eta 920s)
+rep 1 s3fifo          wall  228.8s hit 0.1439 ttft p50   135.0 ms  (5/8, eta 689s)
+rep 1 sampled-belady  wall  224.2s hit 0.1815 ttft p50   124.2 ms  (6/8, eta 458s)
+rep 1 pacer           wall  229.0s hit 0.1585 ttft p50   132.2 ms  (7/8, eta 229s)
+rep 1 lru             wall  227.0s hit 0.1427 ttft p50   132.2 ms  (8/8, eta 0s)
+
+policy             hit   p50 ms            95% CI   p95 ms         vs lru p50
+lru              0.143    135.0 [ 126.1,  147.3]   1481.3  +0.0% [+0.0%,+0.0%]
+s3fifo           0.144    133.9 [ 123.9,  146.8]   1501.4  +0.9% [-2.8%,+5.3%]
+sampled-belady   0.181    126.1 [ 114.2,  135.5]   1440.6  +6.6% [+3.0%,+13.3%]
+pacer            0.159    132.5 [ 120.9,  140.7]   1469.6  +1.9% [-0.1%,+7.7%]
+wrote results/live/replay.json in 2145s

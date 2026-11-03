@@ -1,0 +1,36 @@
+{
+  "train_rows": 2647082,
+  "valid_rows": 484468,
+  "valid_positive_rate": 0.22749902986368553,
+  "best_iteration": 17,
+  "gbdt": {
+    "auc": 0.9877731435916378,
+    "logloss": 0.11813184382357625
+  },
+  "workload_exp": {
+    "auc": 0.7810869667751884,
+    "logloss": 0.44400874423642855
+  },
+  "constant": {
+    "logloss": 0.5378015179515324
+  },
+  "importance_gain": {
+    "n_access": 3756456.941253662,
+    "h": 164064.62573242188,
+    "a": 57803.42329406738,
+    "arrivals_60s": 28853.26905822754,
+    "input_len": 27389.557861328125,
+    "depth": 13517.761154174805,
+    "output_len": 13465.639923095703,
+    "rtype": 13048.168975830078,
+    "rel_depth": 8562.24609375,
+    "is_output": 3719.8798828125,
+    "fanout": 0.0,
+    "turn": 0.0,
+    "prev_gap": 0.0,
+    "mean_gap": 0.0,
+    "session_age": 0.0,
+    "a_over_gap": 0.0
+  },
+  "dropped": []
+}

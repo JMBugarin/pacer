@@ -11,10 +11,8 @@ __pycache__/
 # build output of the Python extension
 python/pacer/*.so
 
-# downloaded traces and generated training rows (make data, make models)
+# downloaded traces and generated training rows (make data, make rows)
 /data/
 
-# experiment models; the ones the results use are under models/v2/
-/models/*
-!/models/v2/
-!/models/lrb_traceA.json
+# models from earlier versions stay local; the results' models are in models/*.json
+/models/history/

@@ -1,0 +1,974 @@
+{
+ "traces": [
+  {
+   "path": "data/raw/qwen_traceA_blksz_16.jsonl",
+   "window": [
+    3600,
+    7200
+   ]
+  },
+  {
+   "path": "data/raw/qwen_traceB_blksz_16.jsonl",
+   "window": [
+    3600,
+    7200
+   ]
+  },
+  {
+   "path": "data/raw/qwen_coder_blksz_16.jsonl",
+   "window": [
+    3600,
+    7200
+   ]
+  },
+  {
+   "path": "data/raw/qwen_thinking_blksz_16.jsonl",
+   "window": [
+    3600,
+    7200
+   ]
+  }
+ ],
+ "caps": [
+  0.01,
+  0.02,
+  0.05,
+  0.1
+ ],
+ "time": true,
+ "policies": [
+  {
+   "name": "s3fifo",
+   "label": "s3fifo",
+   "params": {
+    "small": 0.1,
+    "threshold": 2.0
+   },
+   "caps": [
+    0.01
+   ],
+   "traces": [
+    "traceA"
+   ]
+  },
+  {
+   "name": "lruqd",
+   "label": "lruqd",
+   "params": {
+    "small": 0.9
+   },
+   "caps": [
+    0.01
+   ],
+   "traces": [
+    "traceA"
+   ]
+  },
+  {
+   "name": "gdsf",
+   "label": "gdsf",
+   "params": {
+    "c1": 0.0
+   },
+   "caps": [
+    0.01
+   ],
+   "traces": [
+    "traceA"
+   ]
+  },
+  {
+   "name": "pacer",
+   "label": "pacer",
+   "params": {
+    "k": 32.0,
+    "model": 0.0,
+    "mult": 2.0
+   },
+   "caps": [
+    0.01
+   ],
+   "traces": [
+    "traceA"
+   ]
+  },
+  {
+   "name": "s3fifo",
+   "label": "s3fifo",
+   "params": {
+    "small": 0.5,
+    "threshold": 2.0
+   },
+   "caps": [
+    0.02
+   ],
+   "traces": [
+    "traceA"
+   ]
+  },
+  {
+   "name": "lruqd",
+   "label": "lruqd",
+   "params": {
+    "small": 0.9
+   },
+   "caps": [
+    0.02
+   ],
+   "traces": [
+    "traceA"
+   ]
+  },
+  {
+   "name": "gdsf",
+   "label": "gdsf",
+   "params": {
+    "c1": 0.0
+   },
+   "caps": [
+    0.02
+   ],
+   "traces": [
+    "traceA"
+   ]
+  },
+  {
+   "name": "pacer",
+   "label": "pacer",
+   "params": {
+    "k": 64.0,
+    "model": 0.0,
+    "mult": 1.0
+   },
+   "caps": [
+    0.02
+   ],
+   "traces": [
+    "traceA"
+   ]
+  },
+  {
+   "name": "s3fifo",
+   "label": "s3fifo",
+   "params": {
+    "small": 0.5,
+    "threshold": 1.0
+   },
+   "caps": [
+    0.05
+   ],
+   "traces": [
+    "traceA"
+   ]
+  },
+  {
+   "name": "lruqd",
+   "label": "lruqd",
+   "params": {
+    "small": 0.7
+   },
+   "caps": [
+    0.05
+   ],
+   "traces": [
+    "traceA"
+   ]
+  },
+  {
+   "name": "gdsf",
+   "label": "gdsf",
+   "params": {
+    "c1": 0.0
+   },
+   "caps": [
+    0.05
+   ],
+   "traces": [
+    "traceA"
+   ]
+  },
+  {
+   "name": "pacer",
+   "label": "pacer",
+   "params": {
+    "k": 32.0,
+    "model": 0.0,
+    "mult": 2.0
+   },
+   "caps": [
+    0.05
+   ],
+   "traces": [
+    "traceA"
+   ]
+  },
+  {
+   "name": "s3fifo",
+   "label": "s3fifo",
+   "params": {
+    "small": 0.5,
+    "threshold": 1.0
+   },
+   "caps": [
+    0.1
+   ],
+   "traces": [
+    "traceA"
+   ]
+  },
+  {
+   "name": "lruqd",
+   "label": "lruqd",
+   "params": {
+    "small": 0.7
+   },
+   "caps": [
+    0.1
+   ],
+   "traces": [
+    "traceA"
+   ]
+  },
+  {
+   "name": "gdsf",
+   "label": "gdsf",
+   "params": {
+    "c1": 0.0
+   },
+   "caps": [
+    0.1
+   ],
+   "traces": [
+    "traceA"
+   ]
+  },
+  {
+   "name": "pacer",
+   "label": "pacer",
+   "params": {
+    "k": 64.0,
+    "model": 0.0,
+    "mult": 1.0
+   },
+   "caps": [
+    0.1
+   ],
+   "traces": [
+    "traceA"
+   ]
+  },
+  {
+   "name": "s3fifo",
+   "label": "s3fifo",
+   "params": {
+    "small": 0.05,
+    "threshold": 1.0
+   },
+   "caps": [
+    0.01
+   ],
+   "traces": [
+    "traceB"
+   ]
+  },
+  {
+   "name": "lruqd",
+   "label": "lruqd",
+   "params": {
+    "small": 0.5
+   },
+   "caps": [
+    0.01
+   ],
+   "traces": [
+    "traceB"
+   ]
+  },
+  {
+   "name": "gdsf",
+   "label": "gdsf",
+   "params": {
+    "c1": 0.0
+   },
+   "caps": [
+    0.01
+   ],
+   "traces": [
+    "traceB"
+   ]
+  },
+  {
+   "name": "pacer",
+   "label": "pacer",
+   "params": {
+    "k": 64.0,
+    "model": 1.0,
+    "mult": 0.5
+   },
+   "caps": [
+    0.01
+   ],
+   "traces": [
+    "traceB"
+   ]
+  },
+  {
+   "name": "s3fifo",
+   "label": "s3fifo",
+   "params": {
+    "small": 0.05,
+    "threshold": 1.0
+   },
+   "caps": [
+    0.02
+   ],
+   "traces": [
+    "traceB"
+   ]
+  },
+  {
+   "name": "lruqd",
+   "label": "lruqd",
+   "params": {
+    "small": 0.5
+   },
+   "caps": [
+    0.02
+   ],
+   "traces": [
+    "traceB"
+   ]
+  },
+  {
+   "name": "gdsf",
+   "label": "gdsf",
+   "params": {
+    "c1": 0.0
+   },
+   "caps": [
+    0.02
+   ],
+   "traces": [
+    "traceB"
+   ]
+  },
+  {
+   "name": "pacer",
+   "label": "pacer",
+   "params": {
+    "k": 32.0,
+    "model": 1.0,
+    "mult": 2.0
+   },
+   "caps": [
+    0.02
+   ],
+   "traces": [
+    "traceB"
+   ]
+  },
+  {
+   "name": "s3fifo",
+   "label": "s3fifo",
+   "params": {
+    "small": 0.05,
+    "threshold": 1.0
+   },
+   "caps": [
+    0.05
+   ],
+   "traces": [
+    "traceB"
+   ]
+  },
+  {
+   "name": "lruqd",
+   "label": "lruqd",
+   "params": {
+    "small": 0.3
+   },
+   "caps": [
+    0.05
+   ],
+   "traces": [
+    "traceB"
+   ]
+  },
+  {
+   "name": "gdsf",
+   "label": "gdsf",
+   "params": {
+    "c1": 0.0
+   },
+   "caps": [
+    0.05
+   ],
+   "traces": [
+    "traceB"
+   ]
+  },
+  {
+   "name": "pacer",
+   "label": "pacer",
+   "params": {
+    "k": 32.0,
+    "model": 1.0,
+    "mult": 2.0
+   },
+   "caps": [
+    0.05
+   ],
+   "traces": [
+    "traceB"
+   ]
+  },
+  {
+   "name": "s3fifo",
+   "label": "s3fifo",
+   "params": {
+    "small": 0.05,
+    "threshold": 1.0
+   },
+   "caps": [
+    0.1
+   ],
+   "traces": [
+    "traceB"
+   ]
+  },
+  {
+   "name": "lruqd",
+   "label": "lruqd",
+   "params": {
+    "small": 0.3
+   },
+   "caps": [
+    0.1
+   ],
+   "traces": [
+    "traceB"
+   ]
+  },
+  {
+   "name": "gdsf",
+   "label": "gdsf",
+   "params": {
+    "c1": 0.0
+   },
+   "caps": [
+    0.1
+   ],
+   "traces": [
+    "traceB"
+   ]
+  },
+  {
+   "name": "pacer",
+   "label": "pacer",
+   "params": {
+    "k": 32.0,
+    "model": 1.0,
+    "mult": 0.5
+   },
+   "caps": [
+    0.1
+   ],
+   "traces": [
+    "traceB"
+   ]
+  },
+  {
+   "name": "s3fifo",
+   "label": "s3fifo",
+   "params": {
+    "small": 0.05,
+    "threshold": 2.0
+   },
+   "caps": [
+    0.01
+   ],
+   "traces": [
+    "coder"
+   ]
+  },
+  {
+   "name": "lruqd",
+   "label": "lruqd",
+   "params": {
+    "small": 0.7
+   },
+   "caps": [
+    0.01
+   ],
+   "traces": [
+    "coder"
+   ]
+  },
+  {
+   "name": "gdsf",
+   "label": "gdsf",
+   "params": {
+    "c1": 0.00390625
+   },
+   "caps": [
+    0.01
+   ],
+   "traces": [
+    "coder"
+   ]
+  },
+  {
+   "name": "pacer",
+   "label": "pacer",
+   "params": {
+    "k": 32.0,
+    "model": 2.0,
+    "mult": 1.0
+   },
+   "caps": [
+    0.01
+   ],
+   "traces": [
+    "coder"
+   ]
+  },
+  {
+   "name": "s3fifo",
+   "label": "s3fifo",
+   "params": {
+    "small": 0.1,
+    "threshold": 2.0
+   },
+   "caps": [
+    0.02
+   ],
+   "traces": [
+    "coder"
+   ]
+  },
+  {
+   "name": "lruqd",
+   "label": "lruqd",
+   "params": {
+    "small": 0.7
+   },
+   "caps": [
+    0.02
+   ],
+   "traces": [
+    "coder"
+   ]
+  },
+  {
+   "name": "gdsf",
+   "label": "gdsf",
+   "params": {
+    "c1": 0.0
+   },
+   "caps": [
+    0.02
+   ],
+   "traces": [
+    "coder"
+   ]
+  },
+  {
+   "name": "pacer",
+   "label": "pacer",
+   "params": {
+    "k": 64.0,
+    "model": 2.0,
+    "mult": 1.0
+   },
+   "caps": [
+    0.02
+   ],
+   "traces": [
+    "coder"
+   ]
+  },
+  {
+   "name": "s3fifo",
+   "label": "s3fifo",
+   "params": {
+    "small": 0.5,
+    "threshold": 1.0
+   },
+   "caps": [
+    0.05
+   ],
+   "traces": [
+    "coder"
+   ]
+  },
+  {
+   "name": "lruqd",
+   "label": "lruqd",
+   "params": {
+    "small": 0.7
+   },
+   "caps": [
+    0.05
+   ],
+   "traces": [
+    "coder"
+   ]
+  },
+  {
+   "name": "gdsf",
+   "label": "gdsf",
+   "params": {
+    "c1": 0.0
+   },
+   "caps": [
+    0.05
+   ],
+   "traces": [
+    "coder"
+   ]
+  },
+  {
+   "name": "pacer",
+   "label": "pacer",
+   "params": {
+    "k": 32.0,
+    "model": 2.0,
+    "mult": 2.0
+   },
+   "caps": [
+    0.05
+   ],
+   "traces": [
+    "coder"
+   ]
+  },
+  {
+   "name": "s3fifo",
+   "label": "s3fifo",
+   "params": {
+    "small": 0.5,
+    "threshold": 1.0
+   },
+   "caps": [
+    0.1
+   ],
+   "traces": [
+    "coder"
+   ]
+  },
+  {
+   "name": "lruqd",
+   "label": "lruqd",
+   "params": {
+    "small": 0.5
+   },
+   "caps": [
+    0.1
+   ],
+   "traces": [
+    "coder"
+   ]
+  },
+  {
+   "name": "gdsf",
+   "label": "gdsf",
+   "params": {
+    "c1": 0.0
+   },
+   "caps": [
+    0.1
+   ],
+   "traces": [
+    "coder"
+   ]
+  },
+  {
+   "name": "pacer",
+   "label": "pacer",
+   "params": {
+    "k": 64.0,
+    "model": 2.0,
+    "mult": 1.0
+   },
+   "caps": [
+    0.1
+   ],
+   "traces": [
+    "coder"
+   ]
+  },
+  {
+   "name": "s3fifo",
+   "label": "s3fifo",
+   "params": {
+    "small": 0.05,
+    "threshold": 2.0
+   },
+   "caps": [
+    0.01
+   ],
+   "traces": [
+    "thinking"
+   ]
+  },
+  {
+   "name": "lruqd",
+   "label": "lruqd",
+   "params": {
+    "small": 0.7
+   },
+   "caps": [
+    0.01
+   ],
+   "traces": [
+    "thinking"
+   ]
+  },
+  {
+   "name": "gdsf",
+   "label": "gdsf",
+   "params": {
+    "c1": 0.0
+   },
+   "caps": [
+    0.01
+   ],
+   "traces": [
+    "thinking"
+   ]
+  },
+  {
+   "name": "pacer",
+   "label": "pacer",
+   "params": {
+    "k": 64.0,
+    "model": 3.0,
+    "mult": 1.0
+   },
+   "caps": [
+    0.01
+   ],
+   "traces": [
+    "thinking"
+   ]
+  },
+  {
+   "name": "s3fifo",
+   "label": "s3fifo",
+   "params": {
+    "small": 0.25,
+    "threshold": 2.0
+   },
+   "caps": [
+    0.02
+   ],
+   "traces": [
+    "thinking"
+   ]
+  },
+  {
+   "name": "lruqd",
+   "label": "lruqd",
+   "params": {
+    "small": 0.5
+   },
+   "caps": [
+    0.02
+   ],
+   "traces": [
+    "thinking"
+   ]
+  },
+  {
+   "name": "gdsf",
+   "label": "gdsf",
+   "params": {
+    "c1": 0.0
+   },
+   "caps": [
+    0.02
+   ],
+   "traces": [
+    "thinking"
+   ]
+  },
+  {
+   "name": "pacer",
+   "label": "pacer",
+   "params": {
+    "k": 64.0,
+    "model": 3.0,
+    "mult": 2.0
+   },
+   "caps": [
+    0.02
+   ],
+   "traces": [
+    "thinking"
+   ]
+  },
+  {
+   "name": "s3fifo",
+   "label": "s3fifo",
+   "params": {
+    "small": 0.5,
+    "threshold": 2.0
+   },
+   "caps": [
+    0.05
+   ],
+   "traces": [
+    "thinking"
+   ]
+  },
+  {
+   "name": "lruqd",
+   "label": "lruqd",
+   "params": {
+    "small": 0.7
+   },
+   "caps": [
+    0.05
+   ],
+   "traces": [
+    "thinking"
+   ]
+  },
+  {
+   "name": "gdsf",
+   "label": "gdsf",
+   "params": {
+    "c1": 0.0
+   },
+   "caps": [
+    0.05
+   ],
+   "traces": [
+    "thinking"
+   ]
+  },
+  {
+   "name": "pacer",
+   "label": "pacer",
+   "params": {
+    "k": 64.0,
+    "model": 3.0,
+    "mult": 0.5
+   },
+   "caps": [
+    0.05
+   ],
+   "traces": [
+    "thinking"
+   ]
+  },
+  {
+   "name": "s3fifo",
+   "label": "s3fifo",
+   "params": {
+    "small": 0.05,
+    "threshold": 1.0
+   },
+   "caps": [
+    0.1
+   ],
+   "traces": [
+    "thinking"
+   ]
+  },
+  {
+   "name": "lruqd",
+   "label": "lruqd",
+   "params": {
+    "small": 0.9
+   },
+   "caps": [
+    0.1
+   ],
+   "traces": [
+    "thinking"
+   ]
+  },
+  {
+   "name": "gdsf",
+   "label": "gdsf",
+   "params": {
+    "c1": 0.0
+   },
+   "caps": [
+    0.1
+   ],
+   "traces": [
+    "thinking"
+   ]
+  },
+  {
+   "name": "pacer",
+   "label": "pacer",
+   "params": {
+    "k": 32.0,
+    "model": 3.0,
+    "mult": 1.0
+   },
+   "caps": [
+    0.1
+   ],
+   "traces": [
+    "thinking"
+   ]
+  },
+  {
+   "name": "lru"
+  },
+  {
+   "name": "fifo"
+  },
+  {
+   "name": "lfu"
+  },
+  {
+   "name": "sieve"
+  },
+  {
+   "name": "arc"
+  },
+  {
+   "name": "sampled-lru"
+  },
+  {
+   "name": "oracle-dead"
+  },
+  {
+   "name": "wa",
+   "params": {
+    "fit_end": 3600.0
+   }
+  },
+  {
+   "name": "oracle-within",
+   "label": "oracle-within-60",
+   "params": {
+    "horizon": 60
+   }
+  },
+  {
+   "name": "oracle-within",
+   "label": "oracle-within-300",
+   "params": {
+    "horizon": 300
+   }
+  },
+  {
+   "name": "sampled-belady"
+  },
+  {
+   "name": "belady"
+  }
+ ],
+ "models": {
+  "0": "models/hazard_traceA.json",
+  "1": "models/hazard_traceB.json",
+  "2": "models/hazard_coder.json",
+  "3": "models/hazard_thinking.json"
+ }
+}

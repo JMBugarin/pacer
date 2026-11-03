@@ -1,0 +1,1647 @@
+cargo build --release -p pacer
+   Compiling pacer v0.1.0 (/Users/josh/Developer/my-workspace/personal/pacer/crates/pacer)
+    Finished `release` profile [optimized] target(s) in 5.50s
+mkdir -p data/labels/hazard
+for t in traceA traceB coder thinking; do \
+		target/release/pacer hazard --trace data/raw/qwen_${t}_blksz_16.jsonl --cutoff 3600 --rate 0.15 \
+			--per-touch 8 --out data/labels/hazard/${t}.npy; \
+	done
+traceA: 2041585 hazard rows before t=3600
+traceB: 3131550 hazard rows before t=3600
+coder: 4871728 hazard rows before t=3600
+thinking: 1960205 hazard rows before t=3600
+mkdir -p models results/training
+for t in traceA traceB coder thinking; do \
+		PYTHONPATH=python .venv-tests/bin/python -m pacer.hazard data/labels/hazard/${t}.npy \
+			--num-leaves 31 --learning-rate 0.25 --wa-out models/wa_${t}.json \
+			--out models/fast_${t}.json --report results/training/fast_${t}.json; \
+		PYTHONPATH=python .venv-tests/bin/python -m pacer.hazard data/labels/hazard/${t}.npy \
+			--out models/hazard_${t}.json --report results/training/hazard_${t}.json; \
+	done
+{
+  "train_rows": 1341588,
+  "early_stop_rows": 255764,
+  "valid_rows": 109614,
+  "valid_from": 2700.0,
+  "early_stop_until": 3144.4725341796875,
+  "valid_max_window_s": 452.51869201660156,
+  "valid_positive_rate": 0.16939442042074918,
+  "best_iteration": 13,
+  "gbdt": {
+    "auc": 0.8415819865921732,
+    "logloss": 0.31337502609632495
+  },
+  "workload_exp": {
+    "auc": 0.7362244400099327,
+    "logloss": 0.40724110739284586
+  },
+  "constant": {
+    "logloss": 0.46406221056849867
+  },
+  "auc_by_horizon": {
+    "h in [0, 60)": {
+      "rows": 67392,
+      "gbdt_auc": 0.8722525608175474,
+      "workload_exp_auc": 0.7112014758032296
+    },
+    "h in [60, 300)": {
+      "rows": 40091,
+      "gbdt_auc": 0.7063624323674915,
+      "workload_exp_auc": 0.6401404964355124
+    },
+    "h in [300, 1e+09)": {
+      "rows": 2131,
+      "gbdt_auc": 0.5475554672923094,
+      "workload_exp_auc": 0.5674013042434095
+    }
+  },
+  "importance_gain": {
+    "n_access": 349270.90495300293,
+    "h": 302343.81562805176,
+    "a": 67311.16882324219,
+    "output_len": 39219.081771850586,
+    "input_len": 32837.275970458984,
+    "session_age": 21209.32908630371,
+    "turn": 17326.25975036621,
+    "a_over_gap": 15331.378890991211,
+    "arrivals_60s": 14953.501007080078,
+    "prev_gap": 12801.968032836914,
+    "mean_gap": 11382.30485534668,
+    "rtype": 2340.303009033203,
+    "depth": 0.0,
+    "is_output": 0.0,
+    "fanout": 0.0,
+    "rel_depth": 0.0
+  },
+  "dropped": []
+}
+{
+  "train_rows": 1341588,
+  "early_stop_rows": 255764,
+  "valid_rows": 109614,
+  "valid_from": 2700.0,
+  "early_stop_until": 3144.4725341796875,
+  "valid_max_window_s": 452.51869201660156,
+  "valid_positive_rate": 0.16939442042074918,
+  "best_iteration": 85,
+  "gbdt": {
+    "auc": 0.8460860509238963,
+    "logloss": 0.30897219334360115
+  },
+  "workload_exp": {
+    "auc": 0.7362244400099327,
+    "logloss": 0.40724110739284586
+  },
+  "constant": {
+    "logloss": 0.46406221056849867
+  },
+  "auc_by_horizon": {
+    "h in [0, 60)": {
+      "rows": 67392,
+      "gbdt_auc": 0.8794328024700515,
+      "workload_exp_auc": 0.7112014758032296
+    },
+    "h in [60, 300)": {
+      "rows": 40091,
+      "gbdt_auc": 0.7149531024291195,
+      "workload_exp_auc": 0.6401404964355124
+    },
+    "h in [300, 1e+09)": {
+      "rows": 2131,
+      "gbdt_auc": 0.6165164138848349,
+      "workload_exp_auc": 0.5674013042434095
+    }
+  },
+  "importance_gain": {
+    "n_access": 1494559.842086792,
+    "h": 1414312.752204895,
+    "a": 369289.4284515381,
+    "input_len": 330690.3163070679,
+    "output_len": 296418.4594421387,
+    "arrivals_60s": 195601.87712860107,
+    "session_age": 135719.44973754883,
+    "prev_gap": 120150.28213500977,
+    "mean_gap": 115298.83711242676,
+    "turn": 101238.58776855469,
+    "a_over_gap": 47513.54108428955,
+    "rtype": 37465.06797790527,
+    "depth": 21667.95514678955,
+    "is_output": 6754.14794921875,
+    "rel_depth": 115.96600341796875,
+    "fanout": 0.0
+  },
+  "dropped": []
+}
+{
+  "train_rows": 2182390,
+  "early_stop_rows": 295083,
+  "valid_rows": 189385,
+  "valid_from": 2700.0,
+  "early_stop_until": 3144.8294677734375,
+  "valid_max_window_s": 451.3945837020874,
+  "valid_positive_rate": 0.24108561924122818,
+  "best_iteration": 16,
+  "gbdt": {
+    "auc": 0.9890591919409096,
+    "logloss": 0.11735694265935426
+  },
+  "workload_exp": {
+    "auc": 0.7732917610850022,
+    "logloss": 0.4635558295926067
+  },
+  "constant": {
+    "logloss": 0.5545538684729577
+  },
+  "auc_by_horizon": {
+    "h in [0, 60)": {
+      "rows": 114650,
+      "gbdt_auc": 0.9858473014244572,
+      "workload_exp_auc": 0.7754320294578091
+    },
+    "h in [60, 300)": {
+      "rows": 70337,
+      "gbdt_auc": 0.9921161873694492,
+      "workload_exp_auc": 0.7602903749423859
+    },
+    "h in [300, 1e+09)": {
+      "rows": 4398,
+      "gbdt_auc": 0.9941617267950593,
+      "workload_exp_auc": 0.7335573054414496
+    }
+  },
+  "importance_gain": {
+    "n_access": 3098594.5901260376,
+    "h": 147846.78161621094,
+    "a": 46619.541900634766,
+    "arrivals_60s": 29646.830932617188,
+    "input_len": 24929.258193969727,
+    "rtype": 12121.19303894043,
+    "output_len": 11973.77700805664,
+    "depth": 11024.930969238281,
+    "rel_depth": 8015.077087402344,
+    "is_output": 3263.860107421875,
+    "session_age": 579.7489929199219,
+    "fanout": 0.0,
+    "turn": 0.0,
+    "prev_gap": 0.0,
+    "mean_gap": 0.0,
+    "a_over_gap": 0.0
+  },
+  "dropped": []
+}
+{
+  "train_rows": 2182390,
+  "early_stop_rows": 295083,
+  "valid_rows": 189385,
+  "valid_from": 2700.0,
+  "early_stop_until": 3144.8294677734375,
+  "valid_max_window_s": 451.3945837020874,
+  "valid_positive_rate": 0.24108561924122818,
+  "best_iteration": 213,
+  "gbdt": {
+    "auc": 0.9895026949967312,
+    "logloss": 0.11334020697975589
+  },
+  "workload_exp": {
+    "auc": 0.7732917610850022,
+    "logloss": 0.4635558295926067
+  },
+  "constant": {
+    "logloss": 0.5545538684729577
+  },
+  "auc_by_horizon": {
+    "h in [0, 60)": {
+      "rows": 114650,
+      "gbdt_auc": 0.9857113301137695,
+      "workload_exp_auc": 0.7754320294578091
+    },
+    "h in [60, 300)": {
+      "rows": 70337,
+      "gbdt_auc": 0.9928365822382732,
+      "workload_exp_auc": 0.7602903749423859
+    },
+    "h in [300, 1e+09)": {
+      "rows": 4398,
+      "gbdt_auc": 0.9976100018991616,
+      "workload_exp_auc": 0.7335573054414496
+    }
+  },
+  "importance_gain": {
+    "n_access": 13694940.14661026,
+    "h": 685206.5402622223,
+    "a": 424902.2269773483,
+    "input_len": 317907.50207328796,
+    "arrivals_60s": 261316.53361606598,
+    "output_len": 244583.30994987488,
+    "depth": 114996.1430015564,
+    "rel_depth": 106054.47734165192,
+    "rtype": 70552.96625137329,
+    "session_age": 21944.571210861206,
+    "is_output": 12962.458702087402,
+    "fanout": 5423.526235580444,
+    "turn": 0.0,
+    "prev_gap": 0.0,
+    "mean_gap": 0.0,
+    "a_over_gap": 0.0
+  },
+  "dropped": []
+}
+{
+  "train_rows": 3275396,
+  "early_stop_rows": 552662,
+  "valid_rows": 332230,
+  "valid_from": 2700.0,
+  "early_stop_until": 3144.4219970703125,
+  "valid_max_window_s": 453.1415710449219,
+  "valid_positive_rate": 0.25345995244258496,
+  "best_iteration": 37,
+  "gbdt": {
+    "auc": 0.9008045929680832,
+    "logloss": 0.31925634010289766
+  },
+  "workload_exp": {
+    "auc": 0.7020028411301437,
+    "logloss": 0.5211154314425173
+  },
+  "constant": {
+    "logloss": 0.5669375270551021
+  },
+  "auc_by_horizon": {
+    "h in [0, 60)": {
+      "rows": 201362,
+      "gbdt_auc": 0.91971193682921,
+      "workload_exp_auc": 0.6982626991700009
+    },
+    "h in [60, 300)": {
+      "rows": 123712,
+      "gbdt_auc": 0.8442034661621518,
+      "workload_exp_auc": 0.658242643885334
+    },
+    "h in [300, 1e+09)": {
+      "rows": 7156,
+      "gbdt_auc": 0.8343256342184002,
+      "workload_exp_auc": 0.6332269629492852
+    }
+  },
+  "importance_gain": {
+    "n_access": 1698225.2911605835,
+    "h": 440297.7579727173,
+    "a": 420131.7797088623,
+    "output_len": 325973.1636657715,
+    "input_len": 241837.4362258911,
+    "mean_gap": 87239.41326141357,
+    "arrivals_60s": 76270.86113739014,
+    "session_age": 66373.06117248535,
+    "turn": 57408.52101135254,
+    "prev_gap": 38904.321868896484,
+    "depth": 13300.067031860352,
+    "a_over_gap": 9872.946899414062,
+    "rel_depth": 3509.842086791992,
+    "is_output": 772.3259735107422,
+    "fanout": 0.0,
+    "rtype": 0.0
+  },
+  "dropped": []
+}
+{
+  "train_rows": 3275396,
+  "early_stop_rows": 552662,
+  "valid_rows": 332230,
+  "valid_from": 2700.0,
+  "early_stop_until": 3144.4219970703125,
+  "valid_max_window_s": 453.1415710449219,
+  "valid_positive_rate": 0.25345995244258496,
+  "best_iteration": 172,
+  "gbdt": {
+    "auc": 0.9033854583518791,
+    "logloss": 0.31510563185938834
+  },
+  "workload_exp": {
+    "auc": 0.7020028411301437,
+    "logloss": 0.5211154314425173
+  },
+  "constant": {
+    "logloss": 0.5669375270551021
+  },
+  "auc_by_horizon": {
+    "h in [0, 60)": {
+      "rows": 201362,
+      "gbdt_auc": 0.9223494137275051,
+      "workload_exp_auc": 0.6982626991700009
+    },
+    "h in [60, 300)": {
+      "rows": 123712,
+      "gbdt_auc": 0.8468827825362806,
+      "workload_exp_auc": 0.658242643885334
+    },
+    "h in [300, 1e+09)": {
+      "rows": 7156,
+      "gbdt_auc": 0.8371602412642665,
+      "workload_exp_auc": 0.6332269629492852
+    }
+  },
+  "importance_gain": {
+    "n_access": 7315494.840179443,
+    "a": 2024289.4495544434,
+    "h": 1983160.8997802734,
+    "output_len": 1796279.1116256714,
+    "input_len": 1328508.9352416992,
+    "arrivals_60s": 552666.7987747192,
+    "session_age": 470831.2031402588,
+    "mean_gap": 453889.12673187256,
+    "turn": 320795.27684020996,
+    "prev_gap": 310447.2769241333,
+    "depth": 78193.51345825195,
+    "a_over_gap": 39121.86372375488,
+    "rel_depth": 18259.576011657715,
+    "is_output": 7094.852012634277,
+    "fanout": 0.0,
+    "rtype": 0.0
+  },
+  "dropped": []
+}
+{
+  "train_rows": 1384396,
+  "early_stop_rows": 184890,
+  "valid_rows": 112940,
+  "valid_from": 2700.0,
+  "early_stop_until": 3144.2159423828125,
+  "valid_max_window_s": 455.42279052734375,
+  "valid_positive_rate": 0.14781299805206305,
+  "best_iteration": 19,
+  "gbdt": {
+    "auc": 0.984527235255632,
+    "logloss": 0.11610853378068099
+  },
+  "workload_exp": {
+    "auc": 0.7831576808137267,
+    "logloss": 0.3545145104255744
+  },
+  "constant": {
+    "logloss": 0.4257336902928939
+  },
+  "auc_by_horizon": {
+    "h in [0, 60)": {
+      "rows": 69047,
+      "gbdt_auc": 0.9868574749515409,
+      "workload_exp_auc": 0.7821737539422856
+    },
+    "h in [60, 300)": {
+      "rows": 41630,
+      "gbdt_auc": 0.9805834748211585,
+      "workload_exp_auc": 0.7993868718259883
+    },
+    "h in [300, 1e+09)": {
+      "rows": 2263,
+      "gbdt_auc": 0.9802520181138019,
+      "workload_exp_auc": 0.7885524502336764
+    }
+  },
+  "importance_gain": {
+    "n_access": 554726.6008453369,
+    "output_len": 228683.61291503906,
+    "a": 204995.98387145996,
+    "arrivals_60s": 84988.25679016113,
+    "input_len": 67197.03399658203,
+    "session_age": 43387.42184448242,
+    "mean_gap": 27882.10691833496,
+    "prev_gap": 25973.151824951172,
+    "h": 24081.576049804688,
+    "a_over_gap": 13127.774200439453,
+    "turn": 10274.550994873047,
+    "is_output": 9164.36215209961,
+    "depth": 3470.520965576172,
+    "rel_depth": 2233.010986328125,
+    "fanout": 0.0,
+    "rtype": 0.0
+  },
+  "dropped": []
+}
+{
+  "train_rows": 1384396,
+  "early_stop_rows": 184890,
+  "valid_rows": 112940,
+  "valid_from": 2700.0,
+  "early_stop_until": 3144.2159423828125,
+  "valid_max_window_s": 455.42279052734375,
+  "valid_positive_rate": 0.14781299805206305,
+  "best_iteration": 86,
+  "gbdt": {
+    "auc": 0.9859035172093964,
+    "logloss": 0.11110615871617538
+  },
+  "workload_exp": {
+    "auc": 0.7831576808137267,
+    "logloss": 0.3545145104255744
+  },
+  "constant": {
+    "logloss": 0.4257336902928939
+  },
+  "auc_by_horizon": {
+    "h in [0, 60)": {
+      "rows": 69047,
+      "gbdt_auc": 0.9875314090285537,
+      "workload_exp_auc": 0.7821737539422856
+    },
+    "h in [60, 300)": {
+      "rows": 41630,
+      "gbdt_auc": 0.9831522088362933,
+      "workload_exp_auc": 0.7993868718259883
+    },
+    "h in [300, 1e+09)": {
+      "rows": 2263,
+      "gbdt_auc": 0.9840706313924208,
+      "workload_exp_auc": 0.7885524502336764
+    }
+  },
+  "importance_gain": {
+    "n_access": 2403363.08303833,
+    "output_len": 1003277.3577804565,
+    "a": 969232.5315551758,
+    "arrivals_60s": 440989.4578475952,
+    "input_len": 422275.5259628296,
+    "session_age": 272004.9761505127,
+    "prev_gap": 139859.693069458,
+    "h": 124893.53073883057,
+    "mean_gap": 114558.22568511963,
+    "turn": 70203.16728210449,
+    "is_output": 55271.85926055908,
+    "a_over_gap": 52387.94770812988,
+    "depth": 36802.64140319824,
+    "rel_depth": 8299.441261291504,
+    "fanout": 0.0,
+    "rtype": 0.0
+  },
+  "dropped": []
+}
+cargo build --release -p pacer
+    Finished `release` profile [optimized] target(s) in 0.02s
+target/release/pacer sweep --spec configs/validation_heuristics.json \
+		--out results/validation_heuristics.jsonl --threads 15
+704 runs
+[1/704] traceA sampled-belady cap=0.05 hit=0.5721 (0.3s)
+[2/704] traceA sampled-belady cap=0.1 hit=0.5726 (0.2s)
+[3/704] traceA lruqd-s0.5 cap=0.01 hit=0.1783 (0.8s)
+[4/704] traceA lfu cap=0.1 hit=0.2536 (0.8s)
+[5/704] traceA s3fifo-s0.05-t1 cap=0.1 hit=0.3336 (0.9s)
+[6/704] traceA s3fifo-s0.1-t1 cap=0.05 hit=0.2950 (1.0s)
+[7/704] traceA s3fifo-s0.75-t3 cap=0.05 hit=0.4196 (1.0s)
+[8/704] traceA arc-r0 cap=0.05 hit=0.4560 (1.3s)
+[9/704] traceA s3fifo-s0.5-t1 cap=0.01 hit=0.1943 (1.5s)
+[10/704] traceA gdsf-c0.0000 cap=0.05 hit=0.4593 (1.5s)
+[11/704] traceA s3fifo-s0.1-t1 cap=0.1 hit=0.3626 (0.6s)
+[12/704] traceA lru cap=0.01 hit=0.2103 (1.6s)
+[13/704] traceA sieve cap=0.01 hit=0.1811 (0.8s)
+[14/704] traceA lruqd-s0.5 cap=0.02 hit=0.2591 (1.0s)
+[15/704] traceA s3fifo-s0.75-t3 cap=0.1 hit=0.4920 (0.9s)
+[16/704] traceA belady cap=0.01 hit=0.4398 (1.5s)
+[17/704] traceA gdsf-c0.0625 cap=0.02 hit=0.2803 (2.0s)
+[18/704] traceA sieve cap=0.02 hit=0.2794 (0.7s)
+[19/704] traceA arc-r0 cap=0.1 hit=0.5133 (1.0s)
+[20/704] traceA s3fifo-s0.5-t1 cap=0.02 hit=0.2506 (0.9s)
+[21/704] traceA gdsf-c0.0000 cap=0.1 hit=0.5192 (1.1s)
+[22/704] traceA lruqd-s0.5 cap=0.05 hit=0.4501 (1.2s)
+[23/704] traceA sieve cap=0.05 hit=0.4237 (0.8s)
+[24/704] traceA s3fifo-s0.5-t1 cap=0.05 hit=0.4182 (0.9s)
+[25/704] traceA belady cap=0.02 hit=0.5133 (1.6s)
+[26/704] traceA lru cap=0.02 hit=0.3244 (2.2s)
+[27/704] traceA sieve cap=0.1 hit=0.4904 (0.7s)
+[28/704] traceA lruqd-s0.5 cap=0.1 hit=0.5241 (0.9s)
+[29/704] traceA arc-r1 cap=0.01 hit=0.2108 (1.5s)
+[30/704] traceA gdsf-c0.0625 cap=0.05 hit=0.4023 (2.1s)
+[31/704] traceA gdsf-c0.0039 cap=0.01 hit=0.2071 (1.7s)
+[32/704] traceA lruqd-s0.7 cap=0.01 hit=0.2068 (0.8s)
+[33/704] traceA s3fifo-s0.5-t1 cap=0.1 hit=0.5013 (1.5s)
+[34/704] traceB lru cap=0.01 hit=0.4790 (5.0s)
+[35/704] coder lru cap=0.01 hit=0.3984 (5.0s)
+[36/704] traceA belady cap=0.05 hit=0.5763 (1.6s)
+[37/704] traceA lruqd-s0.7 cap=0.02 hit=0.3131 (1.0s)
+[38/704] traceA wa cap=0.01 hit=0.2221 (1.9s)
+[39/704] traceA lru cap=0.05 hit=0.4625 (2.0s)
+[40/704] traceA arc-r1 cap=0.02 hit=0.3243 (1.9s)
+[41/704] traceA gdsf-c0.0039 cap=0.02 hit=0.3013 (1.9s)
+[42/704] traceA belady cap=0.1 hit=0.5763 (1.3s)
+[43/704] traceA lruqd-s0.7 cap=0.05 hit=0.4629 (0.7s)
+[44/704] traceA lru cap=0.1 hit=0.5250 (0.7s)
+[45/704] traceA s3fifo-s0.5-t2 cap=0.01 hit=0.1967 (1.6s)
+[46/704] traceA gdsf-c0.0625 cap=0.1 hit=0.4822 (2.5s)
+[47/704] traceA sampled-belady cap=0.01 hit=0.4359 (0.2s)
+[48/704] traceA sampled-belady cap=0.02 hit=0.5110 (0.1s)
+[49/704] traceA lruqd-s0.7 cap=0.1 hit=0.5250 (0.7s)
+[50/704] traceA fifo cap=0.01 hit=0.2103 (0.7s)
+[51/704] traceA s3fifo-s0.5-t3 cap=0.1 hit=0.4673 (0.9s)
+[52/704] traceA s3fifo-s0.5-t2 cap=0.02 hit=0.2609 (1.0s)
+[53/704] traceA lruqd-s0.9 cap=0.01 hit=0.2147 (0.8s)
+[54/704] traceA fifo cap=0.02 hit=0.3244 (0.8s)
+[55/704] traceA wa cap=0.02 hit=0.3197 (2.1s)
+[56/704] traceA arc-r1 cap=0.05 hit=0.4578 (2.3s)
+[57/704] traceA s3fifo-s0.75-t1 cap=0.01 hit=0.1893 (1.0s)
+[58/704] thinking lru cap=0.01 hit=0.5314 (1.4s)
+[59/704] traceA s3fifo-s0.5-t2 cap=0.05 hit=0.3923 (0.9s)
+[60/704] traceA fifo cap=0.05 hit=0.4625 (0.7s)
+[61/704] traceA gdsf-c0.0039 cap=0.05 hit=0.4374 (2.4s)
+[62/704] traceA lruqd-s0.9 cap=0.02 hit=0.3244 (0.8s)
+[63/704] traceA fifo cap=0.1 hit=0.5250 (0.5s)
+[64/704] traceA s3fifo-s0.5-t2 cap=0.1 hit=0.4818 (0.8s)
+[65/704] traceA lruqd-s0.9 cap=0.05 hit=0.4625 (0.8s)
+[66/704] traceA arc-r1 cap=0.1 hit=0.5133 (1.4s)
+[67/704] traceA lfu cap=0.01 hit=0.1736 (0.8s)
+[68/704] traceA lruqd-s0.9 cap=0.1 hit=0.5250 (0.6s)
+[69/704] thinking lru cap=0.02 hit=0.5420 (1.8s)
+[70/704] traceB lru cap=0.02 hit=0.5050 (5.3s)
+[71/704] traceA wa cap=0.05 hit=0.4600 (2.5s)
+[72/704] traceA lruqd-s0.95 cap=0.01 hit=0.2113 (0.7s)
+[73/704] traceA lfu cap=0.02 hit=0.1781 (0.9s)
+[74/704] traceA s3fifo-s0.5-t3 cap=0.01 hit=0.1947 (1.7s)
+[75/704] traceA gdsf-c0.0039 cap=0.1 hit=0.5090 (2.5s)
+[76/704] traceA s3fifo-s0.02-t2 cap=0.01 hit=0.2077 (11.3s)
+[77/704] traceA lfu cap=0.05 hit=0.2008 (0.8s)
+[78/704] traceA lruqd-s0.95 cap=0.02 hit=0.3243 (0.8s)
+[79/704] thinking lru cap=0.05 hit=0.5678 (1.6s)
+[80/704] traceA s3fifo-s0.5-t3 cap=0.02 hit=0.2624 (1.0s)
+[81/704] traceA s3fifo-s0.1-t2 cap=0.01 hit=0.2077 (10.6s)
+[82/704] traceB lru cap=0.05 hit=0.5241 (2.0s)
+[83/704] thinking lru cap=0.1 hit=0.5826 (0.5s)
+[84/704] traceA lruqd-s0.95 cap=0.05 hit=0.4625 (0.7s)
+[85/704] thinking fifo cap=0.01 hit=0.5314 (0.5s)
+[86/704] traceA gdsf-c0.0156 cap=0.01 hit=0.2029 (1.7s)
+[87/704] traceA s3fifo-s0.5-t3 cap=0.05 hit=0.3882 (1.0s)
+[88/704] coder lru cap=0.02 hit=0.4891 (7.9s)
+[89/704] traceA lruqd-s0.95 cap=0.1 hit=0.5250 (0.6s)
+[90/704] traceA s3fifo-s0.05-t2 cap=0.01 hit=0.2072 (12.2s)
+[91/704] traceB lru cap=0.1 hit=0.5337 (0.8s)
+[92/704] traceA wa cap=0.1 hit=0.5238 (2.2s)
+[93/704] thinking fifo cap=0.02 hit=0.5420 (0.8s)
+[94/704] traceA lruqd-s0.99 cap=0.01 hit=0.2103 (0.7s)
+[95/704] thinking fifo cap=0.05 hit=0.5678 (0.6s)
+[96/704] traceB fifo cap=0.01 hit=0.4789 (1.0s)
+[97/704] traceA arc-r0 cap=0.01 hit=0.2108 (1.0s)
+[98/704] traceA lruqd-s0.99 cap=0.02 hit=0.3243 (0.8s)
+[99/704] coder lru cap=0.05 hit=0.6022 (1.6s)
+[100/704] traceA gdsf-c0.0156 cap=0.02 hit=0.2839 (1.9s)
+[101/704] thinking fifo cap=0.1 hit=0.5826 (0.6s)
+[102/704] traceA lruqd-s0.99 cap=0.05 hit=0.4625 (0.8s)
+[103/704] traceA arc-r0 cap=0.02 hit=0.3243 (1.0s)
+[104/704] traceA gdsf-c0.0156 cap=0.05 hit=0.4160 (2.4s)
+[105/704] traceB fifo cap=0.02 hit=0.5049 (1.2s)
+[106/704] thinking lfu cap=0.01 hit=0.4827 (0.7s)
+[107/704] coder lru cap=0.1 hit=0.6606 (1.3s)
+[108/704] traceA lruqd-s0.99 cap=0.1 hit=0.5250 (0.6s)
+[109/704] traceB s3fifo-s0.5-t1 cap=0.01 hit=0.5227 (0.7s)
+[110/704] thinking lfu cap=0.02 hit=0.4975 (0.7s)
+[111/704] traceB fifo cap=0.05 hit=0.5241 (1.1s)
+[112/704] traceB s3fifo-s0.5-t1 cap=0.02 hit=0.5289 (0.8s)
+[113/704] thinking lfu cap=0.05 hit=0.5653 (0.8s)
+[114/704] traceA gdsf-c0.0000 cap=0.01 hit=0.2152 (1.3s)
+[115/704] traceB fifo cap=0.1 hit=0.5336 (0.8s)
+[116/704] coder fifo cap=0.01 hit=0.3984 (1.5s)
+[117/704] thinking lfu cap=0.1 hit=0.5840 (0.6s)
+[118/704] traceB s3fifo-s0.5-t1 cap=0.05 hit=0.5345 (0.8s)
+[119/704] traceA gdsf-c0.0156 cap=0.1 hit=0.4937 (2.7s)
+[120/704] traceB s3fifo-s0.5-t1 cap=0.1 hit=0.5382 (0.7s)
+[121/704] traceB lfu cap=0.01 hit=0.5220 (1.2s)
+[122/704] traceA gdsf-c0.0000 cap=0.02 hit=0.3239 (1.3s)
+[123/704] traceB s3fifo-s0.5-t2 cap=0.01 hit=0.5219 (0.7s)
+[124/704] coder fifo cap=0.02 hit=0.4891 (1.9s)
+[125/704] traceA gdsf-c0.0625 cap=0.01 hit=0.2019 (1.5s)
+[126/704] traceB lfu cap=0.02 hit=0.5293 (1.2s)
+[127/704] traceA s3fifo-s0.9-t3 cap=0.02 hit=0.2808 (19.8s)
+[128/704] traceB s3fifo-s0.5-t2 cap=0.02 hit=0.5265 (0.9s)
+[129/704] traceA s3fifo-s0.01-t1 cap=0.01 hit=0.2052 (11.0s)
+[130/704] traceB lfu cap=0.05 hit=0.5351 (1.0s)
+[131/704] coder fifo cap=0.05 hit=0.6022 (1.5s)
+[132/704] traceB s3fifo-s0.5-t2 cap=0.05 hit=0.5330 (0.8s)
+[133/704] traceB lfu cap=0.1 hit=0.5388 (0.9s)
+[134/704] traceB s3fifo-s0.5-t2 cap=0.1 hit=0.5370 (0.8s)
+[135/704] coder fifo cap=0.1 hit=0.6607 (1.2s)
+[136/704] traceB sieve cap=0.01 hit=0.4123 (0.5s)
+[137/704] traceB s3fifo-s0.5-t3 cap=0.01 hit=0.5207 (0.8s)
+[138/704] traceB sieve cap=0.02 hit=0.4586 (0.4s)
+[139/704] thinking sieve cap=0.01 hit=0.4578 (4.9s)
+[140/704] traceB sieve cap=0.05 hit=0.4983 (0.4s)
+[141/704] traceB s3fifo-s0.5-t3 cap=0.02 hit=0.5259 (0.8s)
+[142/704] traceB sieve cap=0.1 hit=0.5197 (0.4s)
+[143/704] coder lfu cap=0.01 hit=0.3736 (2.1s)
+[144/704] traceB s3fifo-s0.5-t3 cap=0.05 hit=0.5319 (0.8s)
+[145/704] traceA s3fifo-s0.1-t2 cap=0.02 hit=0.2573 (12.4s)
+[146/704] traceB s3fifo-s0.5-t3 cap=0.1 hit=0.5360 (0.7s)
+[147/704] traceB s3fifo-s0.75-t1 cap=0.01 hit=0.5042 (0.7s)
+[148/704] coder lfu cap=0.02 hit=0.3841 (2.0s)
+[149/704] traceB s3fifo-s0.75-t1 cap=0.02 hit=0.5248 (0.7s)
+[150/704] thinking sieve cap=0.02 hit=0.4891 (3.9s)
+[151/704] thinking s3fifo-s0.5-t1 cap=0.01 hit=0.4945 (7.9s)
+[152/704] traceA s3fifo-s0.02-t2 cap=0.02 hit=0.2587 (15.5s)
+[153/704] traceB s3fifo-s0.75-t1 cap=0.05 hit=0.5335 (0.8s)
+[154/704] traceB wa cap=0.01 hit=0.4748 (3.5s)
+[155/704] traceB s3fifo-s0.75-t1 cap=0.1 hit=0.5373 (0.8s)
+[156/704] coder lfu cap=0.05 hit=0.4042 (1.8s)
+[157/704] traceB s3fifo-s0.75-t2 cap=0.01 hit=0.5082 (0.8s)
+[158/704] traceB s3fifo-s0.75-t2 cap=0.02 hit=0.5241 (0.7s)
+[159/704] coder lfu cap=0.1 hit=0.4488 (1.4s)
+[160/704] thinking sieve cap=0.05 hit=0.5270 (3.4s)
+[161/704] traceB s3fifo-s0.75-t2 cap=0.05 hit=0.5315 (0.8s)
+[162/704] traceA s3fifo-s0.1-t2 cap=0.05 hit=0.3167 (5.6s)
+[163/704] traceA s3fifo-s0.05-t2 cap=0.02 hit=0.2585 (17.5s)
+[164/704] traceB s3fifo-s0.75-t2 cap=0.1 hit=0.5357 (0.8s)
+[165/704] thinking s3fifo-s0.5-t1 cap=0.02 hit=0.5094 (5.0s)
+[166/704] traceB s3fifo-s0.75-t3 cap=0.01 hit=0.5081 (0.6s)
+[167/704] traceB s3fifo-s0.75-t3 cap=0.02 hit=0.5232 (0.8s)
+[168/704] traceA s3fifo-s0.05-t3 cap=0.01 hit=0.2069 (12.8s)
+[169/704] traceB wa cap=0.02 hit=0.5025 (5.0s)
+[170/704] thinking sieve cap=0.1 hit=0.5574 (2.6s)
+[171/704] traceB s3fifo-s0.75-t3 cap=0.05 hit=0.5302 (0.9s)
+[172/704] traceB s3fifo-s0.75-t3 cap=0.1 hit=0.5344 (0.8s)
+[173/704] thinking wa cap=0.01 hit=0.5348 (1.6s)
+[174/704] coder sieve cap=0.01 hit=0.2841 (4.9s)
+[175/704] traceA s3fifo-s0.9-t1 cap=0.01 hit=0.1844 (32.5s)
+[176/704] thinking s3fifo-s0.5-t1 cap=0.05 hit=0.5430 (4.1s)
+[177/704] traceA s3fifo-s0.01-t1 cap=0.02 hit=0.2468 (15.8s)
+[178/704] thinking wa cap=0.02 hit=0.5471 (2.2s)
+[179/704] coder sieve cap=0.02 hit=0.4095 (3.7s)
+[180/704] traceA s3fifo-s0.05-t2 cap=0.05 hit=0.3116 (7.4s)
+[181/704] traceB wa cap=0.05 hit=0.5252 (5.6s)
+[182/704] thinking s3fifo-s0.5-t1 cap=0.1 hit=0.5696 (3.0s)
+[183/704] thinking wa cap=0.05 hit=0.5677 (2.1s)
+[184/704] traceB wa cap=0.1 hit=0.5332 (1.6s)
+[185/704] thinking wa cap=0.1 hit=0.5839 (1.1s)
+[186/704] coder sieve cap=0.05 hit=0.5354 (3.2s)
+[187/704] thinking arc-r0 cap=0.01 hit=0.5364 (1.0s)
+[188/704] traceB arc-r0 cap=0.01 hit=0.5259 (1.5s)
+[189/704] traceA s3fifo-s0.02-t2 cap=0.05 hit=0.3112 (15.2s)
+[190/704] thinking arc-r0 cap=0.02 hit=0.5532 (0.9s)
+[191/704] thinking arc-r0 cap=0.05 hit=0.5665 (1.0s)
+[192/704] traceB arc-r0 cap=0.02 hit=0.5306 (1.8s)
+[193/704] coder sieve cap=0.1 hit=0.6022 (2.8s)
+[194/704] thinking arc-r0 cap=0.1 hit=0.5841 (0.8s)
+[195/704] traceB arc-r0 cap=0.05 hit=0.5353 (1.9s)
+[196/704] thinking arc-r1 cap=0.01 hit=0.5369 (1.5s)
+[197/704] traceA s3fifo-s0.1-t2 cap=0.1 hit=0.3697 (16.1s)
+[198/704] traceB arc-r0 cap=0.1 hit=0.5390 (1.3s)
+[199/704] thinking arc-r1 cap=0.02 hit=0.5533 (1.5s)
+[200/704] thinking s3fifo-s0.5-t2 cap=0.01 hit=0.4932 (9.0s)
+[201/704] coder wa cap=0.01 hit=0.3759 (4.5s)
+[202/704] thinking arc-r1 cap=0.05 hit=0.5665 (1.8s)
+[203/704] traceB arc-r1 cap=0.01 hit=0.5259 (2.4s)
+[204/704] thinking arc-r1 cap=0.1 hit=0.5841 (1.4s)
+[205/704] traceA s3fifo-s0.05-t3 cap=0.02 hit=0.2624 (19.7s)
+[206/704] thinking s3fifo-s0.5-t2 cap=0.02 hit=0.5068 (4.7s)
+[207/704] traceB arc-r1 cap=0.02 hit=0.5306 (3.2s)
+[208/704] traceA s3fifo-s0.01-t1 cap=0.05 hit=0.2974 (18.7s)
+[209/704] coder wa cap=0.02 hit=0.4895 (6.5s)
+[210/704] traceB arc-r1 cap=0.05 hit=0.5353 (3.4s)
+[211/704] thinking s3fifo-s0.5-t2 cap=0.05 hit=0.5503 (4.2s)
+[212/704] traceB arc-r1 cap=0.1 hit=0.5390 (2.0s)
+[213/704] traceA s3fifo-s0.05-t2 cap=0.1 hit=0.3542 (20.2s)
+[214/704] traceA s3fifo-s0.1-t3 cap=0.01 hit=0.2071 (12.1s)
+[215/704] traceB s3fifo-s0.01-t1 cap=0.01 hit=0.5258 (0.7s)
+[216/704] traceB s3fifo-s0.01-t1 cap=0.02 hit=0.5307 (0.8s)
+[217/704] thinking s3fifo-s0.5-t2 cap=0.1 hit=0.5654 (3.1s)
+[218/704] traceB s3fifo-s0.01-t1 cap=0.05 hit=0.5355 (0.8s)
+[219/704] traceB s3fifo-s0.01-t1 cap=0.1 hit=0.5387 (0.7s)
+[220/704] traceA s3fifo-s0.02-t2 cap=0.1 hit=0.3488 (18.9s)
+[221/704] traceB s3fifo-s0.01-t2 cap=0.01 hit=0.5248 (0.7s)
+[222/704] traceB s3fifo-s0.01-t2 cap=0.02 hit=0.5290 (0.7s)
+[223/704] traceB s3fifo-s0.01-t2 cap=0.05 hit=0.5344 (0.7s)
+[224/704] traceB s3fifo-s0.01-t2 cap=0.1 hit=0.5376 (0.7s)
+[225/704] coder wa cap=0.05 hit=0.6011 (8.2s)
+[226/704] traceB s3fifo-s0.01-t3 cap=0.01 hit=0.5245 (0.6s)
+[227/704] traceB s3fifo-s0.01-t3 cap=0.02 hit=0.5286 (0.7s)
+[228/704] traceB s3fifo-s0.01-t3 cap=0.05 hit=0.5336 (0.8s)
+[229/704] traceB s3fifo-s0.01-t3 cap=0.1 hit=0.5369 (0.8s)
+[230/704] traceB s3fifo-s0.02-t1 cap=0.01 hit=0.5258 (0.7s)
+[231/704] traceB s3fifo-s0.02-t1 cap=0.02 hit=0.5306 (0.8s)
+[232/704] thinking s3fifo-s0.5-t3 cap=0.01 hit=0.4934 (8.7s)
+[233/704] coder wa cap=0.1 hit=0.6646 (3.7s)
+[234/704] traceA s3fifo-s0.01-t1 cap=0.1 hit=0.3332 (13.1s)
+[235/704] traceB s3fifo-s0.02-t1 cap=0.05 hit=0.5355 (0.8s)
+[236/704] traceB s3fifo-s0.02-t1 cap=0.1 hit=0.5387 (0.7s)
+[237/704] traceB s3fifo-s0.02-t2 cap=0.01 hit=0.5248 (0.7s)
+[238/704] traceB s3fifo-s0.02-t2 cap=0.02 hit=0.5289 (0.6s)
+[239/704] coder arc-r0 cap=0.01 hit=0.3984 (2.7s)
+[240/704] traceA s3fifo-s0.02-t3 cap=0.01 hit=0.2080 (10.9s)
+[241/704] traceB s3fifo-s0.02-t2 cap=0.05 hit=0.5344 (0.9s)
+[242/704] traceB s3fifo-s0.02-t2 cap=0.1 hit=0.5376 (0.6s)
+[243/704] traceA s3fifo-s0.1-t3 cap=0.02 hit=0.2615 (14.3s)
+[244/704] traceB s3fifo-s0.02-t3 cap=0.01 hit=0.5245 (0.7s)
+[245/704] thinking s3fifo-s0.5-t3 cap=0.02 hit=0.5102 (5.0s)
+[246/704] traceB s3fifo-s0.02-t3 cap=0.02 hit=0.5285 (0.8s)
+[247/704] coder arc-r0 cap=0.02 hit=0.4890 (3.1s)
+[248/704] traceB s3fifo-s0.02-t3 cap=0.05 hit=0.5336 (0.9s)
+[249/704] traceB s3fifo-s0.02-t3 cap=0.1 hit=0.5369 (0.7s)
+[250/704] traceA s3fifo-s0.05-t3 cap=0.05 hit=0.3167 (23.6s)
+[251/704] traceB s3fifo-s0.05-t1 cap=0.01 hit=0.5256 (0.9s)
+[252/704] traceB s3fifo-s0.05-t1 cap=0.02 hit=0.5306 (0.8s)
+[253/704] coder arc-r0 cap=0.05 hit=0.6069 (3.1s)
+[254/704] thinking s3fifo-s0.5-t3 cap=0.05 hit=0.5540 (4.3s)
+[255/704] traceB s3fifo-s0.05-t1 cap=0.05 hit=0.5355 (0.9s)
+[256/704] traceB s3fifo-s0.05-t1 cap=0.1 hit=0.5387 (0.7s)
+[257/704] coder arc-r0 cap=0.1 hit=0.6526 (2.2s)
+[258/704] traceB s3fifo-s0.05-t2 cap=0.01 hit=0.5247 (0.8s)
+[259/704] traceA s3fifo-s0.01-t2 cap=0.01 hit=0.2080 (11.4s)
+[260/704] traceB s3fifo-s0.05-t2 cap=0.02 hit=0.5289 (0.9s)
+[261/704] thinking s3fifo-s0.5-t3 cap=0.1 hit=0.5658 (3.1s)
+[262/704] traceB s3fifo-s0.05-t2 cap=0.05 hit=0.5343 (0.9s)
+[263/704] traceB s3fifo-s0.05-t2 cap=0.1 hit=0.5375 (0.6s)
+[264/704] traceB s3fifo-s0.05-t3 cap=0.01 hit=0.5244 (0.8s)
+[265/704] traceB s3fifo-s0.05-t3 cap=0.02 hit=0.5284 (0.8s)
+[266/704] coder arc-r1 cap=0.01 hit=0.3984 (4.5s)
+[267/704] traceB s3fifo-s0.05-t3 cap=0.05 hit=0.5336 (0.8s)
+[268/704] traceB s3fifo-s0.05-t3 cap=0.1 hit=0.5368 (0.7s)
+[269/704] traceB s3fifo-s0.1-t1 cap=0.01 hit=0.5256 (0.7s)
+[270/704] traceB s3fifo-s0.1-t1 cap=0.02 hit=0.5305 (0.7s)
+[271/704] traceB s3fifo-s0.1-t1 cap=0.05 hit=0.5355 (0.8s)
+[272/704] traceB s3fifo-s0.1-t1 cap=0.1 hit=0.5386 (0.6s)
+[273/704] traceA s3fifo-s0.02-t3 cap=0.02 hit=0.2628 (16.3s)
+[274/704] traceB s3fifo-s0.1-t2 cap=0.01 hit=0.5245 (0.6s)
+[275/704] traceB s3fifo-s0.1-t2 cap=0.02 hit=0.5286 (0.7s)
+[276/704] traceB s3fifo-s0.1-t2 cap=0.05 hit=0.5342 (0.7s)
+[277/704] thinking s3fifo-s0.01-t1 cap=0.01 hit=0.4912 (39.4s)
+[278/704] coder arc-r1 cap=0.02 hit=0.4894 (6.2s)
+[279/704] traceB s3fifo-s0.1-t2 cap=0.1 hit=0.5375 (0.7s)
+[280/704] traceB s3fifo-s0.1-t3 cap=0.01 hit=0.5241 (0.7s)
+[281/704] traceB s3fifo-s0.1-t3 cap=0.02 hit=0.5282 (0.8s)
+[282/704] traceB s3fifo-s0.1-t3 cap=0.05 hit=0.5335 (0.8s)
+[283/704] traceB s3fifo-s0.1-t3 cap=0.1 hit=0.5367 (0.7s)
+[284/704] traceA s3fifo-s0.1-t3 cap=0.05 hit=0.3200 (20.8s)
+[285/704] traceB s3fifo-s0.25-t1 cap=0.01 hit=0.5250 (0.9s)
+[286/704] coder arc-r1 cap=0.05 hit=0.6072 (4.7s)
+[287/704] traceA s3fifo-s0.01-t2 cap=0.02 hit=0.2587 (15.5s)
+[288/704] traceB s3fifo-s0.25-t1 cap=0.02 hit=0.5299 (0.9s)
+[289/704] traceB s3fifo-s0.25-t1 cap=0.05 hit=0.5353 (1.0s)
+[290/704] traceB s3fifo-s0.25-t1 cap=0.1 hit=0.5384 (0.9s)
+[291/704] traceB s3fifo-s0.25-t2 cap=0.01 hit=0.5239 (0.8s)
+[292/704] coder arc-r1 cap=0.1 hit=0.6526 (3.5s)
+[293/704] traceB s3fifo-s0.25-t2 cap=0.02 hit=0.5279 (0.8s)
+[294/704] traceB s3fifo-s0.25-t2 cap=0.05 hit=0.5340 (0.9s)
+[295/704] traceB s3fifo-s0.25-t2 cap=0.1 hit=0.5372 (0.9s)
+[296/704] traceB s3fifo-s0.25-t3 cap=0.01 hit=0.5231 (0.8s)
+[297/704] traceB s3fifo-s0.25-t3 cap=0.02 hit=0.5275 (0.9s)
+[298/704] traceB s3fifo-s0.25-t3 cap=0.05 hit=0.5332 (0.9s)
+[299/704] traceB s3fifo-s0.25-t3 cap=0.1 hit=0.5364 (0.8s)
+[300/704] thinking s3fifo-s0.75-t1 cap=0.01 hit=0.4911 (29.4s)
+[301/704] traceB s3fifo-s0.9-t1 cap=0.01 hit=0.4203 (77.4s)
+[302/704] traceA s3fifo-s0.01-t2 cap=0.05 hit=0.3112 (16.7s)
+[303/704] traceA s3fifo-s0.02-t3 cap=0.05 hit=0.3166 (26.0s)
+[304/704] traceB s3fifo-s0.9-t1 cap=0.02 hit=0.4931 (3.5s)
+[305/704] traceB s3fifo-s0.9-t1 cap=0.05 hit=0.5274 (0.9s)
+[306/704] traceB s3fifo-s0.9-t1 cap=0.1 hit=0.5365 (0.7s)
+[307/704] traceB s3fifo-s0.9-t2 cap=0.01 hit=0.4653 (1.9s)
+[308/704] thinking s3fifo-s0.01-t1 cap=0.02 hit=0.4999 (28.9s)
+[309/704] traceB s3fifo-s0.9-t2 cap=0.02 hit=0.5045 (0.9s)
+[310/704] traceB s3fifo-s0.9-t2 cap=0.05 hit=0.5288 (0.7s)
+[311/704] traceB s3fifo-s0.9-t2 cap=0.1 hit=0.5347 (0.7s)
+[312/704] traceB s3fifo-s0.9-t3 cap=0.01 hit=0.4702 (1.1s)
+[313/704] traceB s3fifo-s0.9-t3 cap=0.02 hit=0.5063 (0.7s)
+[314/704] traceB s3fifo-s0.9-t3 cap=0.05 hit=0.5274 (0.9s)
+[315/704] traceB s3fifo-s0.9-t3 cap=0.1 hit=0.5332 (0.7s)
+[316/704] thinking s3fifo-s0.01-t1 cap=0.05 hit=0.5405 (5.1s)
+[317/704] traceB lruqd-s0.1 cap=0.01 hit=0.5220 (0.9s)
+[318/704] traceB lruqd-s0.1 cap=0.02 hit=0.5293 (1.5s)
+[319/704] traceB lruqd-s0.1 cap=0.05 hit=0.5351 (1.3s)
+[320/704] thinking s3fifo-s0.01-t1 cap=0.1 hit=0.5705 (3.8s)
+[321/704] traceB lruqd-s0.1 cap=0.1 hit=0.5388 (0.9s)
+[322/704] traceB lruqd-s0.3 cap=0.01 hit=0.5220 (1.1s)
+[323/704] traceB lruqd-s0.3 cap=0.02 hit=0.5293 (1.3s)
+[324/704] traceB lruqd-s0.3 cap=0.05 hit=0.5351 (1.4s)
+[325/704] traceA s3fifo-s0.01-t2 cap=0.1 hit=0.3489 (20.9s)
+[326/704] traceB lruqd-s0.3 cap=0.1 hit=0.5388 (1.0s)
+[327/704] traceB lruqd-s0.5 cap=0.01 hit=0.5230 (1.0s)
+[328/704] traceA s3fifo-s0.01-t3 cap=0.05 hit=0.3167 (31.5s)
+[329/704] traceB lruqd-s0.5 cap=0.02 hit=0.5293 (1.3s)
+[330/704] traceB lruqd-s0.5 cap=0.05 hit=0.5351 (1.5s)
+[331/704] traceB lruqd-s0.5 cap=0.1 hit=0.5388 (1.0s)
+[332/704] traceB lruqd-s0.7 cap=0.01 hit=0.5152 (2.5s)
+[333/704] traceB lruqd-s0.7 cap=0.02 hit=0.5289 (1.4s)
+[334/704] thinking s3fifo-s0.75-t1 cap=0.02 hit=0.5247 (33.2s)
+[335/704] traceB lruqd-s0.7 cap=0.05 hit=0.5351 (1.3s)
+[336/704] traceA s3fifo-s0.01-t3 cap=0.01 hit=0.2078 (11.6s)
+[337/704] traceB lruqd-s0.7 cap=0.1 hit=0.5388 (1.0s)
+[338/704] traceA s3fifo-s0.05-t3 cap=0.1 hit=0.3489 (69.6s)
+[339/704] traceB lruqd-s0.9 cap=0.01 hit=0.4796 (1.5s)
+[340/704] traceB lruqd-s0.9 cap=0.02 hit=0.5075 (1.9s)
+[341/704] traceB lruqd-s0.9 cap=0.05 hit=0.5313 (1.6s)
+[342/704] traceB lruqd-s0.9 cap=0.1 hit=0.5387 (1.2s)
+[343/704] traceB lruqd-s0.95 cap=0.01 hit=0.4788 (1.2s)
+[344/704] traceA s3fifo-s0.1-t3 cap=0.1 hit=0.3487 (59.7s)
+[345/704] traceB lruqd-s0.95 cap=0.02 hit=0.5048 (1.4s)
+[346/704] traceB lruqd-s0.95 cap=0.05 hit=0.5240 (1.3s)
+[347/704] traceB lruqd-s0.95 cap=0.1 hit=0.5336 (1.3s)
+[348/704] traceB lruqd-s0.99 cap=0.01 hit=0.4788 (1.3s)
+[349/704] traceA s3fifo-s0.1-t1 cap=0.01 hit=0.2042 (12.1s)
+[350/704] traceB lruqd-s0.99 cap=0.02 hit=0.5048 (1.4s)
+[351/704] traceA s3fifo-s0.25-t1 cap=0.01 hit=0.2022 (6.6s)
+[352/704] traceB lruqd-s0.99 cap=0.05 hit=0.5240 (1.4s)
+[353/704] traceA s3fifo-s0.01-t3 cap=0.02 hit=0.2630 (16.0s)
+[354/704] traceA s3fifo-s0.25-t1 cap=0.02 hit=0.2473 (1.0s)
+[355/704] traceB lruqd-s0.99 cap=0.1 hit=0.5335 (1.2s)
+[356/704] traceA s3fifo-s0.25-t1 cap=0.05 hit=0.3470 (0.7s)
+[357/704] thinking s3fifo-s0.75-t1 cap=0.05 hit=0.5454 (18.6s)
+[358/704] traceA s3fifo-s0.25-t1 cap=0.1 hit=0.4559 (0.6s)
+[359/704] traceB gdsf-c0.0000 cap=0.01 hit=0.5061 (1.6s)
+[360/704] traceB gdsf-c0.0000 cap=0.02 hit=0.5201 (1.5s)
+[361/704] thinking s3fifo-s0.75-t1 cap=0.1 hit=0.5581 (3.3s)
+[362/704] traceB gdsf-c0.0000 cap=0.05 hit=0.5318 (1.3s)
+[363/704] traceB gdsf-c0.0000 cap=0.1 hit=0.5369 (1.0s)
+[364/704] traceA s3fifo-s0.25-t2 cap=0.01 hit=0.2055 (6.1s)
+[365/704] traceA s3fifo-s0.25-t2 cap=0.02 hit=0.2542 (0.9s)
+[366/704] traceB gdsf-c0.0039 cap=0.01 hit=0.5023 (2.7s)
+[367/704] thinking s3fifo-s0.01-t2 cap=0.01 hit=0.4918 (41.5s)
+[368/704] traceA s3fifo-s0.1-t1 cap=0.02 hit=0.2479 (12.4s)
+[369/704] traceA s3fifo-s0.25-t2 cap=0.05 hit=0.3430 (1.0s)
+[370/704] traceA lruqd-s0.1 cap=0.05 hit=0.2039 (0.6s)
+[371/704] traceA lruqd-s0.1 cap=0.1 hit=0.3137 (0.7s)
+[372/704] thinking s3fifo-s0.75-t2 cap=0.01 hit=0.4914 (6.1s)
+[373/704] traceA s3fifo-s0.05-t1 cap=0.01 hit=0.2045 (11.1s)
+[374/704] traceA lruqd-s0.3 cap=0.01 hit=0.1736 (0.6s)
+[375/704] traceA s3fifo-s0.25-t2 cap=0.1 hit=0.4331 (1.9s)
+[376/704] traceB gdsf-c0.0039 cap=0.02 hit=0.5173 (2.9s)
+[377/704] traceA lruqd-s0.3 cap=0.02 hit=0.2007 (0.7s)
+[378/704] traceA lruqd-s0.3 cap=0.05 hit=0.3698 (0.9s)
+[379/704] traceA lruqd-s0.3 cap=0.1 hit=0.5012 (0.7s)
+[380/704] traceA s3fifo-s0.02-t3 cap=0.1 hit=0.3491 (59.8s)
+[381/704] traceB gdsf-c0.0039 cap=0.05 hit=0.5302 (2.7s)
+[382/704] thinking s3fifo-s0.75-t2 cap=0.02 hit=0.5150 (4.5s)
+[383/704] traceB gdsf-c0.0039 cap=0.1 hit=0.5355 (1.8s)
+[384/704] traceA s3fifo-s0.25-t3 cap=0.01 hit=0.2050 (6.3s)
+[385/704] traceB gdsf-c0.0156 cap=0.01 hit=0.4948 (2.8s)
+[386/704] thinking s3fifo-s0.75-t2 cap=0.05 hit=0.5362 (3.9s)
+[387/704] traceA s3fifo-s0.25-t3 cap=0.02 hit=0.2586 (1.6s)
+[388/704] traceB gdsf-c0.0156 cap=0.02 hit=0.5115 (3.1s)
+[389/704] thinking s3fifo-s0.75-t2 cap=0.1 hit=0.5610 (3.1s)
+[390/704] traceB gdsf-c0.0156 cap=0.05 hit=0.5262 (2.8s)
+[391/704] traceA s3fifo-s0.05-t1 cap=0.02 hit=0.2471 (15.0s)
+[392/704] traceB gdsf-c0.0156 cap=0.1 hit=0.5330 (2.3s)
+[393/704] thinking s3fifo-s0.75-t3 cap=0.01 hit=0.4925 (5.7s)
+[394/704] traceA s3fifo-s0.25-t3 cap=0.05 hit=0.3414 (8.8s)
+[395/704] traceB gdsf-c0.0625 cap=0.01 hit=0.4829 (3.2s)
+[396/704] thinking s3fifo-s0.75-t3 cap=0.02 hit=0.5128 (4.6s)
+[397/704] traceA s3fifo-s0.05-t1 cap=0.05 hit=0.2965 (7.6s)
+[398/704] traceB gdsf-c0.0625 cap=0.02 hit=0.5043 (3.3s)
+[399/704] traceA s3fifo-s0.75-t1 cap=0.02 hit=0.2859 (186.6s)
+[400/704] traceA s3fifo-s0.75-t2 cap=0.01 hit=0.1925 (1.1s)
+[401/704] traceA s3fifo-s0.75-t2 cap=0.02 hit=0.2733 (0.9s)
+[402/704] thinking s3fifo-s0.01-t2 cap=0.02 hit=0.5083 (26.8s)
+[403/704] thinking s3fifo-s0.75-t3 cap=0.05 hit=0.5502 (4.1s)
+[404/704] traceB gdsf-c0.0625 cap=0.05 hit=0.5215 (3.5s)
+[405/704] thinking s3fifo-s0.75-t3 cap=0.1 hit=0.5602 (3.3s)
+[406/704] traceB gdsf-c0.0625 cap=0.1 hit=0.5304 (2.7s)
+[407/704] traceB sampled-belady cap=0.01 hit=0.5375 (0.7s)
+[408/704] thinking s3fifo-s0.01-t2 cap=0.05 hit=0.5508 (5.4s)
+[409/704] traceB sampled-belady cap=0.02 hit=0.5380 (0.6s)
+[410/704] traceB sampled-belady cap=0.05 hit=0.5391 (0.6s)
+[411/704] traceB sampled-belady cap=0.1 hit=0.5402 (0.6s)
+[412/704] thinking s3fifo-s0.01-t2 cap=0.1 hit=0.5659 (3.5s)
+[413/704] traceA s3fifo-s0.01-t3 cap=0.1 hit=0.3491 (70.2s)
+[414/704] traceB belady cap=0.01 hit=0.5434 (3.4s)
+[415/704] traceB belady cap=0.02 hit=0.5434 (3.5s)
+[416/704] traceB belady cap=0.05 hit=0.5434 (3.2s)
+[417/704] traceA s3fifo-s0.25-t3 cap=0.1 hit=0.3777 (27.2s)
+[418/704] traceB belady cap=0.1 hit=0.5434 (3.0s)
+[419/704] traceA s3fifo-s0.02-t1 cap=0.01 hit=0.2052 (13.5s)
+[420/704] coder s3fifo-s0.5-t1 cap=0.01 hit=0.3689 (57.3s)
+[421/704] coder s3fifo-s0.5-t1 cap=0.02 hit=0.4104 (4.7s)
+[422/704] coder s3fifo-s0.01-t1 cap=0.01 hit=0.3849 (139.3s)
+[423/704] traceA s3fifo-s0.02-t1 cap=0.02 hit=0.2471 (18.8s)
+[424/704] coder s3fifo-s0.5-t1 cap=0.05 hit=0.5230 (3.4s)
+[425/704] coder s3fifo-s0.5-t1 cap=0.1 hit=0.6019 (2.9s)
+[426/704] thinking s3fifo-s0.01-t3 cap=0.01 hit=0.4947 (41.1s)
+[427/704] thinking s3fifo-s0.02-t2 cap=0.01 hit=0.4918 (34.0s)
+[428/704] thinking s3fifo-s0.9-t1 cap=0.01 hit=0.4763 (55.4s)
+[429/704] traceA s3fifo-s0.02-t1 cap=0.05 hit=0.2973 (21.7s)
+[430/704] traceA s3fifo-s0.02-t1 cap=0.1 hit=0.3332 (11.1s)
+[431/704] traceA s3fifo-s0.9-t3 cap=0.01 hit=0.1878 (1.1s)
+[432/704] thinking s3fifo-s0.02-t2 cap=0.02 hit=0.5083 (22.1s)
+[433/704] thinking s3fifo-s0.01-t3 cap=0.02 hit=0.5093 (29.6s)
+[434/704] thinking s3fifo-s0.02-t2 cap=0.05 hit=0.5508 (4.3s)
+[435/704] thinking s3fifo-s0.1-t1 cap=0.05 hit=0.5408 (4.9s)
+[436/704] thinking s3fifo-s0.02-t2 cap=0.1 hit=0.5659 (3.1s)
+[437/704] thinking s3fifo-s0.1-t1 cap=0.1 hit=0.5704 (3.7s)
+[438/704] thinking s3fifo-s0.01-t3 cap=0.05 hit=0.5492 (5.3s)
+[439/704] thinking s3fifo-s0.01-t3 cap=0.1 hit=0.5669 (3.7s)
+[440/704] coder s3fifo-s0.5-t2 cap=0.01 hit=0.3811 (57.1s)
+[441/704] coder s3fifo-s0.5-t2 cap=0.02 hit=0.4206 (5.0s)
+[442/704] coder s3fifo-s0.5-t2 cap=0.05 hit=0.5212 (3.7s)
+[443/704] coder s3fifo-s0.5-t2 cap=0.1 hit=0.5995 (3.5s)
+[444/704] thinking s3fifo-s0.02-t3 cap=0.01 hit=0.4947 (34.2s)
+[445/704] thinking s3fifo-s0.1-t2 cap=0.01 hit=0.4917 (41.6s)
+[446/704] thinking s3fifo-s0.02-t1 cap=0.01 hit=0.4912 (43.0s)
+[447/704] thinking s3fifo-s0.02-t3 cap=0.02 hit=0.5094 (24.4s)
+[448/704] thinking s3fifo-s0.02-t3 cap=0.05 hit=0.5492 (4.3s)
+[449/704] thinking s3fifo-s0.02-t3 cap=0.1 hit=0.5668 (3.2s)
+[450/704] thinking s3fifo-s0.1-t2 cap=0.02 hit=0.5069 (28.0s)
+[451/704] thinking s3fifo-s0.1-t2 cap=0.05 hit=0.5491 (5.3s)
+[452/704] thinking s3fifo-s0.02-t1 cap=0.02 hit=0.4999 (29.6s)
+[453/704] thinking s3fifo-s0.1-t2 cap=0.1 hit=0.5658 (3.6s)
+[454/704] thinking s3fifo-s0.02-t1 cap=0.05 hit=0.5405 (4.7s)
+[455/704] thinking s3fifo-s0.02-t1 cap=0.1 hit=0.5705 (3.8s)
+[456/704] coder s3fifo-s0.5-t3 cap=0.01 hit=0.3866 (57.8s)
+[457/704] coder s3fifo-s0.5-t3 cap=0.02 hit=0.4306 (5.3s)
+[458/704] coder s3fifo-s0.5-t3 cap=0.05 hit=0.5340 (4.1s)
+[459/704] coder s3fifo-s0.01-t1 cap=0.02 hit=0.4345 (143.1s)
+[460/704] thinking s3fifo-s0.05-t1 cap=0.01 hit=0.4899 (36.0s)
+[461/704] coder s3fifo-s0.5-t3 cap=0.1 hit=0.6144 (4.1s)
+[462/704] thinking s3fifo-s0.9-t1 cap=0.02 hit=0.5103 (128.9s)
+[463/704] coder s3fifo-s0.75-t1 cap=0.01 hit=0.3596 (7.1s)
+[464/704] thinking s3fifo-s0.1-t3 cap=0.01 hit=0.4948 (41.6s)
+[465/704] thinking s3fifo-s0.05-t1 cap=0.02 hit=0.5002 (24.5s)
+[466/704] thinking s3fifo-s0.05-t1 cap=0.05 hit=0.5408 (4.1s)
+[467/704] thinking s3fifo-s0.05-t1 cap=0.1 hit=0.5704 (3.2s)
+[468/704] coder s3fifo-s0.75-t1 cap=0.02 hit=0.4218 (24.5s)
+[469/704] traceA s3fifo-s0.9-t1 cap=0.02 hit=0.2843 (385.2s)
+[470/704] thinking lruqd-s0.5 cap=0.01 hit=0.5260 (0.6s)
+[471/704] thinking lruqd-s0.5 cap=0.02 hit=0.5577 (0.8s)
+[472/704] thinking lruqd-s0.5 cap=0.05 hit=0.5697 (0.7s)
+[473/704] thinking lruqd-s0.5 cap=0.1 hit=0.5840 (0.6s)
+[474/704] thinking lruqd-s0.7 cap=0.01 hit=0.5324 (0.8s)
+[475/704] thinking lruqd-s0.7 cap=0.02 hit=0.5545 (0.9s)
+[476/704] thinking lruqd-s0.7 cap=0.05 hit=0.5761 (0.8s)
+[477/704] thinking lruqd-s0.7 cap=0.1 hit=0.5844 (0.7s)
+[478/704] thinking lruqd-s0.9 cap=0.01 hit=0.5320 (0.6s)
+[479/704] thinking lruqd-s0.9 cap=0.02 hit=0.5466 (0.9s)
+[480/704] thinking lruqd-s0.9 cap=0.05 hit=0.5672 (0.9s)
+[481/704] thinking lruqd-s0.9 cap=0.1 hit=0.5880 (0.6s)
+[482/704] thinking lruqd-s0.95 cap=0.01 hit=0.5316 (0.7s)
+[483/704] thinking lruqd-s0.95 cap=0.02 hit=0.5419 (0.9s)
+[484/704] thinking s3fifo-s0.1-t3 cap=0.02 hit=0.5079 (29.7s)
+[485/704] thinking lruqd-s0.95 cap=0.05 hit=0.5678 (0.7s)
+[486/704] thinking lruqd-s0.95 cap=0.1 hit=0.5826 (0.7s)
+[487/704] thinking lruqd-s0.99 cap=0.01 hit=0.5314 (0.7s)
+[488/704] thinking lruqd-s0.99 cap=0.02 hit=0.5420 (0.8s)
+[489/704] thinking lruqd-s0.99 cap=0.05 hit=0.5678 (0.6s)
+[490/704] thinking lruqd-s0.99 cap=0.1 hit=0.5826 (0.6s)
+[491/704] thinking gdsf-c0.0000 cap=0.01 hit=0.5379 (0.9s)
+[492/704] thinking s3fifo-s0.1-t3 cap=0.05 hit=0.5484 (5.3s)
+[493/704] thinking gdsf-c0.0000 cap=0.02 hit=0.5526 (1.0s)
+[494/704] thinking gdsf-c0.0000 cap=0.05 hit=0.5704 (1.0s)
+[495/704] thinking gdsf-c0.0000 cap=0.1 hit=0.5829 (0.9s)
+[496/704] thinking s3fifo-s0.1-t3 cap=0.1 hit=0.5668 (3.5s)
+[497/704] thinking gdsf-c0.0039 cap=0.01 hit=0.5266 (1.4s)
+[498/704] traceA s3fifo-s0.9-t3 cap=0.05 hit=0.4293 (419.7s)
+[499/704] thinking gdsf-c0.0039 cap=0.02 hit=0.5446 (1.7s)
+[500/704] thinking gdsf-c0.0625 cap=0.02 hit=0.5413 (1.6s)
+[501/704] thinking gdsf-c0.0039 cap=0.05 hit=0.5631 (2.1s)
+[502/704] thinking gdsf-c0.0625 cap=0.05 hit=0.5616 (1.8s)
+[503/704] thinking gdsf-c0.0039 cap=0.1 hit=0.5829 (2.4s)
+[504/704] thinking gdsf-c0.0625 cap=0.1 hit=0.5774 (2.3s)
+[505/704] thinking sampled-belady cap=0.01 hit=0.5921 (0.1s)
+[506/704] thinking sampled-belady cap=0.02 hit=0.5934 (0.1s)
+[507/704] thinking sampled-belady cap=0.05 hit=0.5947 (0.1s)
+[508/704] thinking sampled-belady cap=0.1 hit=0.5952 (0.2s)
+[509/704] thinking gdsf-c0.0156 cap=0.01 hit=0.5217 (1.2s)
+[510/704] thinking belady cap=0.01 hit=0.5963 (1.5s)
+[511/704] thinking s3fifo-s0.05-t2 cap=0.01 hit=0.4917 (34.6s)
+[512/704] thinking gdsf-c0.0156 cap=0.02 hit=0.5426 (1.7s)
+[513/704] thinking belady cap=0.02 hit=0.5963 (1.7s)
+[514/704] thinking gdsf-c0.0156 cap=0.05 hit=0.5596 (2.0s)
+[515/704] thinking belady cap=0.05 hit=0.5963 (2.0s)
+[516/704] thinking belady cap=0.1 hit=0.5963 (1.4s)
+[517/704] thinking gdsf-c0.0156 cap=0.1 hit=0.5780 (2.4s)
+[518/704] thinking gdsf-c0.0625 cap=0.01 hit=0.5237 (1.1s)
+[519/704] coder lruqd-s0.5 cap=0.01 hit=0.3840 (3.2s)
+[520/704] coder s3fifo-s0.75-t3 cap=0.05 hit=0.5335 (3.5s)
+[521/704] coder lruqd-s0.5 cap=0.02 hit=0.4706 (3.9s)
+[522/704] coder s3fifo-s0.75-t3 cap=0.1 hit=0.6026 (3.1s)
+[523/704] coder lruqd-s0.5 cap=0.05 hit=0.6003 (2.8s)
+[524/704] coder lruqd-s0.5 cap=0.1 hit=0.6650 (1.9s)
+[525/704] coder lruqd-s0.7 cap=0.01 hit=0.4103 (3.6s)
+[526/704] thinking s3fifo-s0.05-t2 cap=0.02 hit=0.5073 (22.5s)
+[527/704] coder lruqd-s0.7 cap=0.02 hit=0.4930 (5.2s)
+[528/704] thinking s3fifo-s0.05-t2 cap=0.05 hit=0.5508 (4.5s)
+[529/704] coder lruqd-s0.7 cap=0.05 hit=0.6023 (2.9s)
+[530/704] thinking s3fifo-s0.25-t1 cap=0.01 hit=0.4898 (37.6s)
+[531/704] thinking s3fifo-s0.05-t2 cap=0.1 hit=0.5659 (3.2s)
+[532/704] coder lruqd-s0.7 cap=0.1 hit=0.6606 (1.8s)
+[533/704] coder lruqd-s0.9 cap=0.01 hit=0.4010 (2.2s)
+[534/704] coder lruqd-s0.9 cap=0.02 hit=0.4891 (2.6s)
+[535/704] thinking s3fifo-s0.25-t1 cap=0.02 hit=0.5066 (7.9s)
+[536/704] coder lruqd-s0.9 cap=0.05 hit=0.6022 (2.3s)
+[537/704] coder lruqd-s0.9 cap=0.1 hit=0.6606 (1.8s)
+[538/704] coder lruqd-s0.95 cap=0.01 hit=0.3986 (2.1s)
+[539/704] thinking s3fifo-s0.25-t1 cap=0.05 hit=0.5408 (4.7s)
+[540/704] coder lruqd-s0.95 cap=0.02 hit=0.4891 (2.7s)
+[541/704] thinking s3fifo-s0.25-t1 cap=0.1 hit=0.5699 (3.9s)
+[542/704] coder lruqd-s0.95 cap=0.05 hit=0.6022 (2.4s)
+[543/704] coder lruqd-s0.95 cap=0.1 hit=0.6606 (1.6s)
+[544/704] coder lruqd-s0.99 cap=0.01 hit=0.3984 (1.8s)
+[545/704] coder lruqd-s0.99 cap=0.02 hit=0.4891 (2.6s)
+[546/704] coder lruqd-s0.99 cap=0.05 hit=0.6022 (2.3s)
+[547/704] coder lruqd-s0.99 cap=0.1 hit=0.6606 (1.7s)
+[548/704] coder gdsf-c0.0000 cap=0.01 hit=0.4143 (3.5s)
+[549/704] coder gdsf-c0.0000 cap=0.02 hit=0.4870 (3.3s)
+[550/704] thinking s3fifo-s0.05-t3 cap=0.01 hit=0.4945 (34.5s)
+[551/704] coder gdsf-c0.0000 cap=0.05 hit=0.5973 (2.3s)
+[552/704] coder s3fifo-s0.01-t1 cap=0.05 hit=0.4885 (132.3s)
+[553/704] coder gdsf-c0.0000 cap=0.1 hit=0.6600 (1.2s)
+[554/704] coder gdsf-c0.0039 cap=0.01 hit=0.4152 (5.4s)
+[555/704] coder gdsf-c0.0039 cap=0.02 hit=0.4755 (6.7s)
+[556/704] coder gdsf-c0.0039 cap=0.05 hit=0.5770 (5.5s)
+[557/704] thinking s3fifo-s0.25-t2 cap=0.01 hit=0.4906 (39.1s)
+[558/704] coder gdsf-c0.0039 cap=0.1 hit=0.6466 (2.8s)
+[559/704] thinking s3fifo-s0.05-t3 cap=0.02 hit=0.5081 (24.3s)
+[560/704] coder gdsf-c0.0156 cap=0.01 hit=0.4145 (5.9s)
+[561/704] thinking s3fifo-s0.05-t3 cap=0.05 hit=0.5492 (4.5s)
+[562/704] thinking s3fifo-s0.9-t1 cap=0.05 hit=0.5412 (157.3s)
+[563/704] thinking s3fifo-s0.25-t2 cap=0.02 hit=0.5100 (10.1s)
+[564/704] thinking s3fifo-s0.05-t3 cap=0.1 hit=0.5668 (3.2s)
+[565/704] coder gdsf-c0.0156 cap=0.02 hit=0.4719 (7.0s)
+[566/704] thinking s3fifo-s0.25-t2 cap=0.05 hit=0.5506 (5.3s)
+[567/704] thinking s3fifo-s0.25-t2 cap=0.1 hit=0.5660 (3.8s)
+[568/704] coder gdsf-c0.0156 cap=0.05 hit=0.5681 (6.5s)
+[569/704] coder gdsf-c0.0156 cap=0.1 hit=0.6373 (3.5s)
+[570/704] coder gdsf-c0.0625 cap=0.01 hit=0.4136 (5.9s)
+[571/704] coder gdsf-c0.0625 cap=0.02 hit=0.4698 (7.0s)
+[572/704] coder gdsf-c0.0625 cap=0.05 hit=0.5647 (6.7s)
+[573/704] thinking s3fifo-s0.1-t1 cap=0.01 hit=0.4897 (35.0s)
+[574/704] coder gdsf-c0.0625 cap=0.1 hit=0.6327 (3.8s)
+[575/704] coder sampled-belady cap=0.01 hit=0.5646 (0.5s)
+[576/704] coder sampled-belady cap=0.02 hit=0.6615 (0.3s)
+[577/704] coder sampled-belady cap=0.05 hit=0.7216 (0.4s)
+[578/704] coder sampled-belady cap=0.1 hit=0.7296 (0.4s)
+[579/704] coder belady cap=0.01 hit=0.5694 (4.4s)
+[580/704] thinking s3fifo-s0.25-t3 cap=0.01 hit=0.4948 (39.4s)
+[581/704] coder belady cap=0.02 hit=0.6700 (4.5s)
+[582/704] coder s3fifo-s0.01-t1 cap=0.1 hit=0.5393 (78.7s)
+[583/704] coder belady cap=0.05 hit=0.7373 (4.2s)
+[584/704] coder belady cap=0.1 hit=0.7373 (4.0s)
+[585/704] traceA lruqd-s0.1 cap=0.01 hit=0.1736 (0.7s)
+[586/704] traceA lruqd-s0.1 cap=0.02 hit=0.1781 (0.8s)
+[587/704] traceA s3fifo-s0.75-t2 cap=0.05 hit=0.4227 (405.3s)
+[588/704] thinking s3fifo-s0.1-t1 cap=0.02 hit=0.4997 (23.8s)
+[589/704] thinking s3fifo-s0.25-t3 cap=0.02 hit=0.5107 (14.0s)
+[590/704] coder s3fifo-s0.9-t3 cap=0.02 hit=0.4281 (4.3s)
+[591/704] thinking s3fifo-s0.25-t3 cap=0.05 hit=0.5490 (5.7s)
+[592/704] thinking s3fifo-s0.25-t3 cap=0.1 hit=0.5666 (3.9s)
+[593/704] thinking lruqd-s0.1 cap=0.05 hit=0.5653 (0.9s)
+[594/704] thinking lruqd-s0.1 cap=0.1 hit=0.5840 (0.7s)
+[595/704] thinking lruqd-s0.3 cap=0.01 hit=0.5002 (0.6s)
+[596/704] thinking s3fifo-s0.9-t3 cap=0.02 hit=0.5123 (13.6s)
+[597/704] thinking lruqd-s0.3 cap=0.02 hit=0.5380 (0.7s)
+[598/704] thinking lruqd-s0.3 cap=0.05 hit=0.5653 (0.7s)
+[599/704] thinking lruqd-s0.3 cap=0.1 hit=0.5840 (0.7s)
+[600/704] thinking s3fifo-s0.9-t3 cap=0.05 hit=0.5398 (4.2s)
+[601/704] thinking s3fifo-s0.9-t3 cap=0.1 hit=0.5536 (3.2s)
+[602/704] thinking lruqd-s0.1 cap=0.01 hit=0.4988 (0.5s)
+[603/704] thinking lruqd-s0.1 cap=0.02 hit=0.4982 (0.6s)
+[604/704] traceA s3fifo-s0.9-t2 cap=0.01 hit=0.1852 (6.0s)
+[605/704] thinking s3fifo-s0.9-t1 cap=0.1 hit=0.5601 (108.7s)
+[606/704] thinking s3fifo-s0.9-t2 cap=0.05 hit=0.5372 (38.2s)
+[607/704] thinking s3fifo-s0.9-t2 cap=0.1 hit=0.5539 (8.7s)
+[608/704] thinking s3fifo-s0.9-t2 cap=0.01 hit=0.4754 (24.4s)
+[609/704] thinking s3fifo-s0.9-t3 cap=0.01 hit=0.4713 (15.1s)
+[610/704] coder s3fifo-s0.75-t2 cap=0.01 hit=0.3634 (7.9s)
+[611/704] coder s3fifo-s0.75-t2 cap=0.02 hit=0.4253 (5.0s)
+[612/704] coder s3fifo-s0.75-t2 cap=0.05 hit=0.5379 (3.9s)
+[613/704] coder s3fifo-s0.75-t2 cap=0.1 hit=0.6069 (3.9s)
+[614/704] coder s3fifo-s0.75-t3 cap=0.01 hit=0.3662 (7.5s)
+[615/704] coder s3fifo-s0.75-t3 cap=0.02 hit=0.4266 (4.7s)
+[616/704] thinking s3fifo-s0.9-t2 cap=0.02 hit=0.5124 (50.1s)
+[617/704] coder s3fifo-s0.01-t2 cap=0.01 hit=0.3949 (134.3s)
+[618/704] coder s3fifo-s0.1-t1 cap=0.05 hit=0.4834 (6.1s)
+[619/704] traceA s3fifo-s0.9-t2 cap=0.02 hit=0.2825 (101.9s)
+[620/704] coder s3fifo-s0.1-t1 cap=0.1 hit=0.5519 (3.3s)
+[621/704] coder lruqd-s0.1 cap=0.05 hit=0.4103 (1.7s)
+[622/704] coder lruqd-s0.1 cap=0.1 hit=0.5265 (1.9s)
+[623/704] coder lruqd-s0.3 cap=0.01 hit=0.3792 (3.1s)
+[624/704] coder lruqd-s0.3 cap=0.02 hit=0.4153 (1.7s)
+[625/704] coder lruqd-s0.3 cap=0.05 hit=0.5530 (2.3s)
+[626/704] coder lruqd-s0.3 cap=0.1 hit=0.6419 (2.6s)
+[627/704] coder s3fifo-s0.9-t1 cap=0.01 hit=0.3195 (292.6s)
+[628/704] traceA s3fifo-s0.9-t2 cap=0.05 hit=0.4298 (789.8s)
+[629/704] coder lruqd-s0.1 cap=0.01 hit=0.3792 (3.4s)
+[630/704] coder lruqd-s0.1 cap=0.02 hit=0.3892 (1.5s)
+[631/704] coder s3fifo-s0.05-t1 cap=0.1 hit=0.5397 (4.7s)
+[632/704] coder s3fifo-s0.1-t2 cap=0.01 hit=0.3931 (130.9s)
+[633/704] coder s3fifo-s0.01-t2 cap=0.02 hit=0.4433 (140.2s)
+[634/704] coder s3fifo-s0.02-t2 cap=0.01 hit=0.3942 (161.8s)
+[635/704] coder s3fifo-s0.9-t3 cap=0.05 hit=0.5355 (334.4s)
+[636/704] coder s3fifo-s0.05-t2 cap=0.01 hit=0.3948 (160.5s)
+[637/704] coder s3fifo-s0.01-t2 cap=0.05 hit=0.5005 (118.7s)
+[638/704] coder s3fifo-s0.1-t2 cap=0.02 hit=0.4429 (136.7s)
+[639/704] coder s3fifo-s0.1-t2 cap=0.05 hit=0.4992 (20.6s)
+[640/704] coder s3fifo-s0.02-t2 cap=0.02 hit=0.4430 (167.4s)
+[641/704] coder s3fifo-s0.1-t2 cap=0.1 hit=0.5655 (38.2s)
+[642/704] coder s3fifo-s0.01-t2 cap=0.1 hit=0.5503 (91.4s)
+[643/704] coder s3fifo-s0.05-t2 cap=0.02 hit=0.4430 (168.8s)
+[644/704] coder s3fifo-s0.02-t2 cap=0.05 hit=0.4998 (142.8s)
+[645/704] coder s3fifo-s0.1-t3 cap=0.01 hit=0.3971 (130.6s)
+[646/704] coder s3fifo-s0.01-t3 cap=0.01 hit=0.3968 (133.6s)
+[647/704] coder s3fifo-s0.05-t2 cap=0.05 hit=0.4996 (133.5s)
+[648/704] coder s3fifo-s0.02-t2 cap=0.1 hit=0.5502 (105.6s)
+[649/704] coder s3fifo-s0.1-t3 cap=0.02 hit=0.4441 (138.8s)
+[650/704] coder s3fifo-s0.05-t2 cap=0.1 hit=0.5526 (66.6s)
+[651/704] coder s3fifo-s0.01-t3 cap=0.02 hit=0.4451 (142.5s)
+[652/704] traceA s3fifo-s0.9-t3 cap=0.1 hit=0.4949 (987.8s)
+[653/704] traceA s3fifo-s0.75-t3 cap=0.01 hit=0.1934 (1.4s)
+[654/704] traceA s3fifo-s0.75-t3 cap=0.02 hit=0.2746 (1.2s)
+[655/704] coder s3fifo-s0.1-t3 cap=0.05 hit=0.5065 (63.2s)
+[656/704] coder s3fifo-s0.02-t3 cap=0.01 hit=0.3973 (159.7s)
+[657/704] coder s3fifo-s0.01-t3 cap=0.05 hit=0.5061 (144.0s)
+[658/704] coder s3fifo-s0.05-t3 cap=0.01 hit=0.3972 (158.6s)
+[659/704] coder s3fifo-s0.02-t3 cap=0.02 hit=0.4449 (170.5s)
+[660/704] traceA s3fifo-s0.9-t1 cap=0.05 hit=0.4289 (1476.2s)
+[661/704] coder s3fifo-s0.25-t1 cap=0.02 hit=0.4196 (20.9s)
+[662/704] coder s3fifo-s0.25-t1 cap=0.05 hit=0.4804 (4.0s)
+[663/704] coder s3fifo-s0.25-t1 cap=0.1 hit=0.5749 (3.6s)
+[664/704] coder s3fifo-s0.1-t3 cap=0.1 hit=0.5527 (224.4s)
+[665/704] coder s3fifo-s0.05-t3 cap=0.02 hit=0.4446 (169.3s)
+[666/704] coder s3fifo-s0.02-t3 cap=0.05 hit=0.5059 (168.1s)
+[667/704] coder s3fifo-s0.25-t2 cap=0.01 hit=0.3919 (145.2s)
+[668/704] traceA s3fifo-s0.75-t1 cap=0.05 hit=0.4286 (1516.2s)
+[669/704] coder s3fifo-s0.25-t2 cap=0.05 hit=0.5125 (4.8s)
+[670/704] coder s3fifo-s0.25-t2 cap=0.1 hit=0.5976 (4.3s)
+[671/704] coder s3fifo-s0.01-t3 cap=0.1 hit=0.5543 (230.6s)
+[672/704] coder s3fifo-s0.25-t2 cap=0.02 hit=0.4350 (21.4s)
+[673/704] coder s3fifo-s0.9-t2 cap=0.01 hit=0.3448 (13.1s)
+[674/704] coder s3fifo-s0.25-t1 cap=0.01 hit=0.3807 (129.8s)
+[675/704] coder s3fifo-s0.05-t3 cap=0.05 hit=0.5055 (161.8s)
+[676/704] coder s3fifo-s0.25-t3 cap=0.01 hit=0.3936 (146.1s)
+[677/704] coder s3fifo-s0.02-t1 cap=0.01 hit=0.3845 (142.7s)
+[678/704] coder s3fifo-s0.05-t1 cap=0.01 hit=0.3839 (138.7s)
+[679/704] coder s3fifo-s0.25-t3 cap=0.02 hit=0.4398 (29.6s)
+[680/704] coder s3fifo-s0.25-t3 cap=0.05 hit=0.5199 (13.8s)
+[681/704] coder s3fifo-s0.9-t2 cap=0.02 hit=0.4225 (177.2s)
+[682/704] traceA s3fifo-s0.9-t2 cap=0.1 hit=0.4941 (1784.5s)
+[683/704] coder s3fifo-s0.02-t3 cap=0.1 hit=0.5538 (273.2s)
+[684/704] coder s3fifo-s0.25-t3 cap=0.1 hit=0.5807 (64.0s)
+[685/704] coder s3fifo-s0.02-t1 cap=0.02 hit=0.4348 (149.2s)
+[686/704] coder s3fifo-s0.05-t1 cap=0.02 hit=0.4344 (148.1s)
+[687/704] coder s3fifo-s0.9-t3 cap=0.01 hit=0.3469 (6.9s)
+[688/704] coder s3fifo-s0.05-t1 cap=0.05 hit=0.4880 (153.0s)
+[689/704] traceA s3fifo-s0.75-t2 cap=0.1 hit=0.4938 (1489.6s)
+[690/704] coder s3fifo-s0.05-t3 cap=0.1 hit=0.5535 (267.1s)
+[691/704] coder s3fifo-s0.1-t1 cap=0.01 hit=0.3834 (156.5s)
+[692/704] coder s3fifo-s0.02-t1 cap=0.05 hit=0.4880 (122.0s)
+[693/704] coder s3fifo-s0.1-t1 cap=0.02 hit=0.4337 (124.9s)
+[694/704] coder s3fifo-s0.02-t1 cap=0.1 hit=0.5392 (63.1s)
+[695/704] coder s3fifo-s0.9-t1 cap=0.02 hit=0.3971 (1969.2s)
+[696/704] traceA s3fifo-s0.9-t1 cap=0.1 hit=0.5014 (2847.5s)
+[697/704] traceA s3fifo-s0.75-t1 cap=0.1 hit=0.5014 (2735.1s)
+[698/704] coder s3fifo-s0.9-t3 cap=0.1 hit=0.6041 (2753.7s)
+[699/704] coder s3fifo-s0.9-t2 cap=0.05 hit=0.5315 (2143.2s)
+[700/704] coder s3fifo-s0.75-t1 cap=0.05 hit=0.5286 (4007.9s)
+[701/704] coder s3fifo-s0.9-t2 cap=0.1 hit=0.6045 (3319.4s)
+[702/704] coder s3fifo-s0.9-t1 cap=0.05 hit=0.5282 (3412.2s)
+[703/704] coder s3fifo-s0.9-t1 cap=0.1 hit=0.6052 (6361.5s)
+[704/704] coder s3fifo-s0.75-t1 cap=0.1 hit=0.6046 (5024.6s)
+target/release/pacer sweep --spec configs/validation_pacer.json --out results/validation_pacer.jsonl \
+		--threads 15
+96 runs
+[1/96] traceA fast-m0.5-k32-r4 cap=0.02 hit=0.3323 (0.3s)
+[2/96] traceA fast-m0.5-k32-r4 cap=0.05 hit=0.4643 (0.4s)
+[3/96] traceA fast-m0.5-k32-r4 cap=0.1 hit=0.5238 (0.4s)
+[4/96] traceA fast-m0.5-k32-r4 cap=0.01 hit=0.2469 (0.4s)
+[5/96] traceA fast-m2-k32-r4 cap=0.02 hit=0.3396 (0.5s)
+[6/96] traceA fast-m2-k32-r4 cap=0.05 hit=0.4580 (0.5s)
+[7/96] traceA fast-m2-k32-r4 cap=0.01 hit=0.2492 (0.5s)
+[8/96] traceA fast-m1-k32-r4 cap=0.02 hit=0.3386 (0.3s)
+[9/96] thinking fast-m2-k32-r4 cap=0.05 hit=0.5874 (0.1s)
+[10/96] thinking fast-m0.5-k32-r4 cap=0.01 hit=0.5529 (0.3s)
+[11/96] traceA fast-m2-k32-r4 cap=0.1 hit=0.5270 (0.3s)
+[12/96] thinking fast-m2-k32-r4 cap=0.1 hit=0.5927 (0.1s)
+[13/96] traceA fast-m1-k32-r4 cap=0.05 hit=0.4641 (0.2s)
+[14/96] thinking fast-m0.5-k32-r4 cap=0.02 hit=0.5725 (0.3s)
+[15/96] coder fast-m0.5-k32-r4 cap=0.01 hit=0.4431 (1.0s)
+[16/96] thinking fast-m0.5-k32-r4 cap=0.05 hit=0.5855 (0.2s)
+[17/96] traceA fast-m1-k32-r4 cap=0.1 hit=0.5260 (0.3s)
+[18/96] thinking fast-m0.5-k32-r4 cap=0.1 hit=0.5921 (0.1s)
+[19/96] traceB fast-m0.5-k32-r4 cap=0.01 hit=0.5326 (1.3s)
+[20/96] coder fast-m0.5-k32-r4 cap=0.02 hit=0.5145 (0.9s)
+[21/96] traceB fast-m0.5-k32-r4 cap=0.02 hit=0.5372 (1.2s)
+[22/96] thinking full-m1-k64-r1 cap=0.01 hit=0.5529 (2.1s)
+[23/96] thinking full-m0.5-k64-r1 cap=0.05 hit=0.5897 (1.5s)
+[24/96] coder fast-m0.5-k32-r4 cap=0.05 hit=0.6180 (1.0s)
+[25/96] thinking full-m2-k64-r1 cap=0.01 hit=0.5524 (2.2s)
+[26/96] thinking full-m0.5-k64-r1 cap=0.01 hit=0.5522 (1.8s)
+[27/96] traceB fast-m0.5-k32-r4 cap=0.05 hit=0.5387 (0.9s)
+[28/96] coder fast-m0.5-k32-r4 cap=0.1 hit=0.6734 (0.5s)
+[29/96] thinking full-m0.5-k64-r1 cap=0.1 hit=0.5953 (0.9s)
+[30/96] thinking fast-m1-k32-r4 cap=0.01 hit=0.5530 (0.2s)
+[31/96] thinking fast-m1-k32-r4 cap=0.02 hit=0.5726 (0.1s)
+[32/96] thinking fast-m1-k32-r4 cap=0.05 hit=0.5842 (0.2s)
+[33/96] thinking full-m1-k64-r1 cap=0.02 hit=0.5640 (1.6s)
+[34/96] traceB fast-m0.5-k32-r4 cap=0.1 hit=0.5406 (0.8s)
+[35/96] thinking fast-m1-k32-r4 cap=0.1 hit=0.5922 (0.2s)
+[36/96] traceA full-m1-k64-r1 cap=0.1 hit=0.5217 (4.8s)
+[37/96] thinking full-m0.5-k64-r1 cap=0.02 hit=0.5613 (1.8s)
+[38/96] thinking full-m2-k64-r1 cap=0.02 hit=0.5644 (2.2s)
+[39/96] thinking full-m2-k64-r1 cap=0.05 hit=0.5801 (1.2s)
+[40/96] coder fast-m2-k32-r4 cap=0.05 hit=0.6184 (0.6s)
+[41/96] thinking full-m1-k64-r1 cap=0.05 hit=0.5844 (1.5s)
+[42/96] traceA full-m0.5-k64-r1 cap=0.05 hit=0.4576 (6.1s)
+[43/96] traceA full-m1-k64-r1 cap=0.05 hit=0.4586 (6.2s)
+[44/96] coder fast-m2-k32-r4 cap=0.1 hit=0.6734 (0.7s)
+[45/96] thinking full-m2-k64-r1 cap=0.1 hit=0.5955 (0.8s)
+[46/96] traceA full-m1-k64-r1 cap=0.01 hit=0.2535 (6.3s)
+[47/96] thinking full-m1-k64-r1 cap=0.1 hit=0.5955 (0.8s)
+[48/96] thinking fast-m2-k32-r4 cap=0.01 hit=0.5533 (0.2s)
+[49/96] traceA full-m0.5-k64-r1 cap=0.01 hit=0.2452 (6.2s)
+[50/96] traceA fast-m1-k32-r4 cap=0.01 hit=0.2495 (0.5s)
+[51/96] thinking fast-m2-k32-r4 cap=0.02 hit=0.5723 (0.2s)
+[52/96] traceA full-m1-k64-r1 cap=0.02 hit=0.3336 (7.1s)
+[53/96] traceB fast-m2-k32-r4 cap=0.05 hit=0.5386 (1.0s)
+[54/96] traceA full-m2-k64-r1 cap=0.02 hit=0.3402 (7.7s)
+[55/96] traceA full-m2-k64-r1 cap=0.01 hit=0.2519 (7.1s)
+[56/96] traceB fast-m2-k32-r4 cap=0.1 hit=0.5408 (0.9s)
+[57/96] traceA full-m0.5-k64-r1 cap=0.1 hit=0.5258 (4.6s)
+[58/96] coder fast-m2-k32-r4 cap=0.01 hit=0.4409 (1.3s)
+[59/96] traceA full-m0.5-k64-r1 cap=0.02 hit=0.3299 (6.1s)
+[60/96] coder fast-m2-k32-r4 cap=0.02 hit=0.5166 (1.0s)
+[61/96] coder fast-m1-k32-r4 cap=0.02 hit=0.5147 (1.0s)
+[62/96] coder fast-m1-k32-r4 cap=0.05 hit=0.6194 (0.7s)
+[63/96] coder fast-m1-k32-r4 cap=0.1 hit=0.6731 (0.7s)
+[64/96] traceA full-m2-k64-r1 cap=0.05 hit=0.4461 (6.2s)
+[65/96] traceB fast-m2-k32-r4 cap=0.01 hit=0.5329 (1.3s)
+[66/96] traceB fast-m2-k32-r4 cap=0.02 hit=0.5372 (1.3s)
+[67/96] coder full-m1-k64-r1 cap=0.1 hit=0.6778 (9.9s)
+[68/96] traceA full-m2-k64-r1 cap=0.1 hit=0.5215 (4.3s)
+[69/96] coder full-m0.5-k64-r1 cap=0.05 hit=0.6196 (13.0s)
+[70/96] coder full-m1-k64-r1 cap=0.01 hit=0.4492 (20.0s)
+[71/96] coder full-m0.5-k64-r1 cap=0.01 hit=0.4497 (17.7s)
+[72/96] coder full-m2-k64-r1 cap=0.02 hit=0.5129 (18.3s)
+[73/96] coder full-m2-k64-r1 cap=0.01 hit=0.4466 (21.2s)
+[74/96] coder full-m0.5-k64-r1 cap=0.1 hit=0.6751 (9.9s)
+[75/96] coder full-m1-k64-r1 cap=0.02 hit=0.5174 (17.8s)
+[76/96] coder full-m2-k64-r1 cap=0.1 hit=0.6766 (9.0s)
+[77/96] coder full-m2-k64-r1 cap=0.05 hit=0.6169 (12.9s)
+[78/96] coder fast-m1-k32-r4 cap=0.01 hit=0.4444 (1.2s)
+[79/96] traceB fast-m1-k32-r4 cap=0.05 hit=0.5389 (0.8s)
+[80/96] traceB fast-m1-k32-r4 cap=0.02 hit=0.5373 (1.2s)
+[81/96] traceB fast-m1-k32-r4 cap=0.1 hit=0.5406 (1.0s)
+[82/96] traceB fast-m1-k32-r4 cap=0.01 hit=0.5329 (1.3s)
+[83/96] coder full-m0.5-k64-r1 cap=0.02 hit=0.5183 (16.8s)
+[84/96] coder full-m1-k64-r1 cap=0.05 hit=0.6178 (12.5s)
+[85/96] traceB full-m1-k64-r1 cap=0.1 hit=0.5414 (40.7s)
+[86/96] traceB full-m0.5-k64-r1 cap=0.01 hit=0.5339 (57.6s)
+[87/96] traceB full-m2-k64-r1 cap=0.1 hit=0.5415 (35.5s)
+[88/96] traceB full-m2-k64-r1 cap=0.05 hit=0.5394 (48.7s)
+[89/96] traceB full-m0.5-k64-r1 cap=0.1 hit=0.5415 (35.2s)
+[90/96] traceB full-m1-k64-r1 cap=0.01 hit=0.5338 (61.6s)
+[91/96] traceB full-m0.5-k64-r1 cap=0.05 hit=0.5394 (49.7s)
+[92/96] traceB full-m1-k64-r1 cap=0.02 hit=0.5374 (64.1s)
+[93/96] traceB full-m2-k64-r1 cap=0.02 hit=0.5375 (64.5s)
+[94/96] traceB full-m2-k64-r1 cap=0.01 hit=0.5341 (64.7s)
+[95/96] traceB full-m1-k64-r1 cap=0.05 hit=0.5396 (44.8s)
+[96/96] traceB full-m0.5-k64-r1 cap=0.02 hit=0.5373 (53.8s)
+PYTHONPATH=python .venv-tests/bin/python -m pacer.report select results/validation_heuristics.jsonl results/validation_pacer.jsonl \
+		--out configs/test.json --pacer-out configs/test_pacer.json
+coder     0.01 arc     arc-r0                   valid 39.84
+coder     0.01 gdsf    gdsf-c0.0039             valid 41.52
+coder     0.01 lruqd   lruqd-s0.7               valid 41.03
+coder     0.01 s3fifo  s3fifo-s0.02-t3          valid 39.73
+coder     0.02 arc     arc-r1                   valid 48.94
+coder     0.02 gdsf    gdsf-c0.0000             valid 48.70
+coder     0.02 lruqd   lruqd-s0.7               valid 49.30
+coder     0.02 s3fifo  s3fifo-s0.01-t3          valid 44.51
+coder     0.05 arc     arc-r1                   valid 60.72
+coder     0.05 gdsf    gdsf-c0.0000             valid 59.73
+coder     0.05 lruqd   lruqd-s0.7               valid 60.23
+coder     0.05 s3fifo  s3fifo-s0.75-t2          valid 53.79
+coder     0.10 arc     arc-r0                   valid 65.26
+coder     0.10 gdsf    gdsf-c0.0000             valid 66.00
+coder     0.10 lruqd   lruqd-s0.5               valid 66.50
+coder     0.10 s3fifo  s3fifo-s0.5-t3           valid 61.44
+thinking  0.01 arc     arc-r1                   valid 53.69
+thinking  0.01 gdsf    gdsf-c0.0000             valid 53.79
+thinking  0.01 lruqd   lruqd-s0.7               valid 53.24
+thinking  0.01 s3fifo  s3fifo-s0.25-t3          valid 49.48
+thinking  0.02 arc     arc-r1                   valid 55.33
+thinking  0.02 gdsf    gdsf-c0.0000             valid 55.26
+thinking  0.02 lruqd   lruqd-s0.5               valid 55.77
+thinking  0.02 s3fifo  s3fifo-s0.75-t1          valid 52.47
+thinking  0.05 arc     arc-r0                   valid 56.65
+thinking  0.05 gdsf    gdsf-c0.0000             valid 57.04
+thinking  0.05 lruqd   lruqd-s0.7               valid 57.61
+thinking  0.05 s3fifo  s3fifo-s0.5-t3           valid 55.40
+thinking  0.10 arc     arc-r0                   valid 58.41
+thinking  0.10 gdsf    gdsf-c0.0000             valid 58.29
+thinking  0.10 lruqd   lruqd-s0.9               valid 58.80
+thinking  0.10 s3fifo  s3fifo-s0.01-t1          valid 57.05
+traceA    0.01 arc     arc-r1                   valid 21.08
+traceA    0.01 gdsf    gdsf-c0.0000             valid 21.52
+traceA    0.01 lruqd   lruqd-s0.9               valid 21.47
+traceA    0.01 s3fifo  s3fifo-s0.02-t3          valid 20.80
+traceA    0.02 arc     arc-r1                   valid 32.43
+traceA    0.02 gdsf    gdsf-c0.0000             valid 32.39
+traceA    0.02 lruqd   lruqd-s0.9               valid 32.44
+traceA    0.02 s3fifo  s3fifo-s0.75-t1          valid 28.59
+traceA    0.05 arc     arc-r1                   valid 45.78
+traceA    0.05 gdsf    gdsf-c0.0000             valid 45.93
+traceA    0.05 lruqd   lruqd-s0.7               valid 46.29
+traceA    0.05 s3fifo  s3fifo-s0.9-t2           valid 42.98
+traceA    0.10 arc     arc-r0                   valid 51.33
+traceA    0.10 gdsf    gdsf-c0.0000             valid 51.92
+traceA    0.10 lruqd   lruqd-s0.7               valid 52.50
+traceA    0.10 s3fifo  s3fifo-s0.75-t1          valid 50.14
+traceB    0.01 arc     arc-r0                   valid 52.59
+traceB    0.01 gdsf    gdsf-c0.0000             valid 50.61
+traceB    0.01 lruqd   lruqd-s0.5               valid 52.30
+traceB    0.01 s3fifo  s3fifo-s0.01-t1          valid 52.58
+traceB    0.02 arc     arc-r0                   valid 53.06
+traceB    0.02 gdsf    gdsf-c0.0000             valid 52.01
+traceB    0.02 lruqd   lruqd-s0.1               valid 52.93
+traceB    0.02 s3fifo  s3fifo-s0.01-t1          valid 53.07
+traceB    0.05 arc     arc-r0                   valid 53.53
+traceB    0.05 gdsf    gdsf-c0.0000             valid 53.18
+traceB    0.05 lruqd   lruqd-s0.1               valid 53.51
+traceB    0.05 s3fifo  s3fifo-s0.01-t1          valid 53.55
+traceB    0.10 arc     arc-r0                   valid 53.90
+traceB    0.10 gdsf    gdsf-c0.0000             valid 53.69
+traceB    0.10 lruqd   lruqd-s0.1               valid 53.88
+traceB    0.10 s3fifo  s3fifo-s0.01-t1          valid 53.87
+cargo build --release -p pacer
+    Finished `release` profile [optimized] target(s) in 0.03s
+target/release/pacer sweep --spec configs/test.json --out results/test_baselines.jsonl --threads 15
+240 runs
+[1/240] traceB sampled-lru cap=0.02 hit=0.4901 (1.1s)
+[2/240] traceB oracle-within-60 cap=0.02 hit=0.5006 (1.5s)
+[3/240] traceB sieve cap=0.05 hit=0.4805 (1.8s)
+[4/240] traceB sampled-lru cap=0.05 hit=0.5125 (1.0s)
+[5/240] traceA sieve cap=0.05 hit=0.4208 (2.6s)
+[6/240] traceB oracle-within-60 cap=0.05 hit=0.5151 (1.4s)
+[7/240] traceA fifo cap=0.05 hit=0.4560 (2.9s)
+[8/240] traceB lruqd cap=0.01 hit=0.5128 (3.0s)
+[9/240] traceB sampled-lru cap=0.1 hit=0.5238 (1.0s)
+[10/240] traceB sieve cap=0.1 hit=0.5021 (1.4s)
+[11/240] traceB arc cap=0.01 hit=0.5187 (3.5s)
+[12/240] traceB lruqd cap=0.05 hit=0.5283 (4.1s)
+[13/240] traceB s3fifo cap=0.01 hit=0.5183 (4.2s)
+[14/240] traceB oracle-within-60 cap=0.1 hit=0.5249 (1.3s)
+[15/240] traceB arc cap=0.1 hit=0.5319 (4.6s)
+[16/240] traceB arc cap=0.02 hit=0.5241 (4.6s)
+[17/240] traceA fifo cap=0.1 hit=0.5857 (1.7s)
+[18/240] traceA arc cap=0.1 hit=0.5819 (4.7s)
+[19/240] traceB oracle-dead cap=0.01 hit=0.5321 (1.7s)
+[20/240] traceA sieve cap=0.1 hit=0.5379 (2.4s)
+[21/240] traceB oracle-within-300 cap=0.01 hit=0.5135 (1.4s)
+[22/240] traceB arc cap=0.05 hit=0.5286 (5.8s)
+[23/240] traceB s3fifo cap=0.02 hit=0.5242 (2.3s)
+[24/240] traceB oracle-dead cap=0.02 hit=0.5342 (1.7s)
+[25/240] traceB gdsf cap=0.01 hit=0.4954 (3.7s)
+[26/240] traceB oracle-within-300 cap=0.02 hit=0.5163 (1.2s)
+[27/240] traceB gdsf cap=0.05 hit=0.5233 (3.1s)
+[28/240] traceB s3fifo cap=0.05 hit=0.5294 (2.7s)
+[29/240] traceA lfu cap=0.01 hit=0.1486 (2.8s)
+[30/240] traceB fifo cap=0.05 hit=0.5121 (3.6s)
+[31/240] traceB oracle-dead cap=0.05 hit=0.5349 (1.5s)
+[32/240] traceB oracle-within-300 cap=0.05 hit=0.5224 (1.4s)
+[33/240] traceB s3fifo cap=0.1 hit=0.5323 (2.8s)
+[34/240] traceB lruqd cap=0.02 hit=0.5221 (3.2s)
+[35/240] traceA lru cap=0.01 hit=0.1588 (4.3s)
+[36/240] traceB oracle-dead cap=0.1 hit=0.5354 (1.6s)
+[37/240] traceA lfu cap=0.05 hit=0.1499 (2.8s)
+[38/240] traceB oracle-within-300 cap=0.1 hit=0.5276 (1.5s)
+[39/240] traceA lfu cap=0.02 hit=0.1494 (2.7s)
+[40/240] traceA wa cap=0.01 hit=0.1959 (4.8s)
+[41/240] traceB oracle-within-60 cap=0.01 hit=0.4894 (1.3s)
+[42/240] traceB fifo cap=0.1 hit=0.5235 (3.1s)
+[43/240] traceB sampled-belady cap=0.01 hit=0.5325 (1.7s)
+[44/240] traceA oracle-within-60 cap=0.02 hit=0.3848 (0.7s)
+[45/240] traceB lruqd cap=0.1 hit=0.5316 (3.3s)
+[46/240] traceA lfu cap=0.1 hit=0.1516 (2.4s)
+[47/240] traceB gdsf cap=0.02 hit=0.5094 (3.3s)
+[48/240] traceA oracle-within-60 cap=0.05 hit=0.5047 (0.8s)
+[49/240] traceA sieve cap=0.01 hit=0.1443 (2.7s)
+[50/240] traceA oracle-within-60 cap=0.1 hit=0.6011 (0.7s)
+[51/240] traceA sampled-lru cap=0.02 hit=0.2442 (0.9s)
+[52/240] traceB sampled-belady cap=0.02 hit=0.5342 (1.7s)
+[53/240] traceB wa cap=0.01 hit=0.4541 (10.1s)
+[54/240] traceA sampled-lru cap=0.05 hit=0.4566 (0.6s)
+[55/240] traceB lfu cap=0.01 hit=0.5103 (2.9s)
+[56/240] traceA oracle-within-300 cap=0.01 hit=0.2560 (1.0s)
+[57/240] traceA sampled-lru cap=0.1 hit=0.5854 (0.5s)
+[58/240] traceB gdsf cap=0.1 hit=0.5293 (2.4s)
+[59/240] traceB lru cap=0.01 hit=0.4623 (10.0s)
+[60/240] traceA oracle-within-300 cap=0.02 hit=0.5108 (0.8s)
+[61/240] traceB sampled-belady cap=0.05 hit=0.5347 (1.8s)
+[62/240] traceA sampled-belady cap=0.01 hit=0.3952 (0.9s)
+[63/240] traceA oracle-dead cap=0.01 hit=0.2087 (0.9s)
+[64/240] traceA sieve cap=0.02 hit=0.2049 (2.6s)
+[65/240] traceA oracle-within-300 cap=0.05 hit=0.5975 (0.7s)
+[66/240] traceA lru cap=0.02 hit=0.2436 (6.6s)
+[67/240] traceA sampled-belady cap=0.02 hit=0.5483 (0.7s)
+[68/240] traceA oracle-dead cap=0.02 hit=0.3980 (0.7s)
+[69/240] traceA oracle-within-300 cap=0.1 hit=0.6394 (0.5s)
+[70/240] traceA wa cap=0.02 hit=0.2797 (5.8s)
+[71/240] traceA oracle-dead cap=0.05 hit=0.6396 (0.6s)
+[72/240] traceA sampled-belady cap=0.05 hit=0.6740 (0.7s)
+[73/240] traceB lru cap=0.05 hit=0.5122 (9.2s)
+[74/240] traceB fifo cap=0.01 hit=0.4621 (3.2s)
+[75/240] traceB sampled-belady cap=0.1 hit=0.5355 (1.7s)
+[76/240] traceB lfu cap=0.02 hit=0.5221 (3.0s)
+[77/240] traceA oracle-dead cap=0.1 hit=0.7053 (0.6s)
+[78/240] traceA sampled-belady cap=0.1 hit=0.7051 (0.7s)
+[79/240] traceB lfu cap=0.05 hit=0.5283 (3.1s)
+[80/240] traceA oracle-within-60 cap=0.01 hit=0.3172 (0.9s)
+[81/240] traceA fifo cap=0.01 hit=0.1588 (2.1s)
+[82/240] traceB lru cap=0.1 hit=0.5236 (2.8s)
+[83/240] traceB sieve cap=0.01 hit=0.3933 (1.9s)
+[84/240] traceA lru cap=0.1 hit=0.5857 (3.0s)
+[85/240] traceB lfu cap=0.1 hit=0.5316 (2.2s)
+[86/240] traceB sieve cap=0.02 hit=0.4390 (1.6s)
+[87/240] traceB wa cap=0.02 hit=0.4881 (13.0s)
+[88/240] traceB fifo cap=0.02 hit=0.4896 (3.7s)
+[89/240] traceA fifo cap=0.02 hit=0.2436 (2.7s)
+[90/240] traceA belady cap=0.01 hit=0.3977 (4.2s)
+[91/240] traceA lruqd cap=0.02 hit=0.2461 (2.7s)
+[92/240] traceA arc cap=0.02 hit=0.2436 (5.7s)
+[93/240] traceA arc cap=0.01 hit=0.1645 (4.8s)
+[94/240] traceA gdsf cap=0.02 hit=0.2584 (3.9s)
+[95/240] traceB belady cap=0.01 hit=0.5374 (7.5s)
+[96/240] traceA wa cap=0.05 hit=0.4592 (7.5s)
+[97/240] traceA lru cap=0.05 hit=0.4560 (8.8s)
+[98/240] traceA belady cap=0.02 hit=0.5516 (3.8s)
+[99/240] traceB lru cap=0.02 hit=0.4897 (13.5s)
+[100/240] traceB wa cap=0.1 hit=0.5228 (6.6s)
+[101/240] traceB sampled-lru cap=0.01 hit=0.4630 (1.1s)
+[102/240] traceB belady cap=0.05 hit=0.5396 (7.2s)
+[103/240] traceA belady cap=0.05 hit=0.6777 (3.9s)
+[104/240] traceA belady cap=0.1 hit=0.7068 (4.0s)
+[105/240] traceB belady cap=0.02 hit=0.5396 (7.7s)
+[106/240] thinking arc cap=0.1 hit=0.3693 (2.8s)
+[107/240] traceA s3fifo cap=0.01 hit=0.1958 (30.7s)
+[108/240] coder oracle-within-60 cap=0.02 hit=0.5228 (1.6s)
+[109/240] coder oracle-within-60 cap=0.05 hit=0.5929 (1.3s)
+[110/240] coder arc cap=0.1 hit=0.6389 (6.7s)
+[111/240] thinking sieve cap=0.05 hit=0.2693 (8.3s)
+[112/240] traceA wa cap=0.1 hit=0.5874 (7.9s)
+[113/240] coder sieve cap=0.05 hit=0.5048 (8.5s)
+[114/240] traceA lruqd cap=0.01 hit=0.1679 (2.5s)
+[115/240] coder oracle-within-60 cap=0.1 hit=0.6478 (1.2s)
+[116/240] thinking lru cap=0.01 hit=0.3017 (3.1s)
+[117/240] traceA sampled-lru cap=0.01 hit=0.1590 (1.0s)
+[118/240] coder oracle-within-300 cap=0.01 hit=0.4676 (1.5s)
+[119/240] thinking fifo cap=0.05 hit=0.3540 (2.1s)
+[120/240] coder oracle-within-300 cap=0.02 hit=0.6075 (1.2s)
+[121/240] traceB wa cap=0.05 hit=0.5125 (15.5s)
+[122/240] traceA gdsf cap=0.01 hit=0.1647 (3.5s)
+[123/240] traceB belady cap=0.1 hit=0.5396 (8.9s)
+[124/240] thinking oracle-within-60 cap=0.02 hit=0.3384 (0.5s)
+[125/240] coder oracle-within-300 cap=0.05 hit=0.6387 (1.2s)
+[126/240] thinking fifo cap=0.1 hit=0.3709 (1.7s)
+[127/240] thinking oracle-within-60 cap=0.05 hit=0.3613 (0.5s)
+[128/240] traceA arc cap=0.05 hit=0.4579 (7.7s)
+[129/240] thinking oracle-within-60 cap=0.1 hit=0.3721 (0.5s)
+[130/240] coder oracle-within-300 cap=0.1 hit=0.6674 (1.1s)
+[131/240] thinking oracle-within-300 cap=0.01 hit=0.3581 (0.5s)
+[132/240] thinking lru cap=0.02 hit=0.3261 (5.1s)
+[133/240] thinking oracle-within-300 cap=0.02 hit=0.3635 (0.5s)
+[134/240] thinking lfu cap=0.01 hit=0.2990 (1.9s)
+[135/240] traceA lruqd cap=0.1 hit=0.5856 (2.4s)
+[136/240] thinking oracle-within-300 cap=0.05 hit=0.3683 (0.4s)
+[137/240] coder sampled-belady cap=0.01 hit=0.5309 (1.4s)
+[138/240] thinking oracle-within-300 cap=0.1 hit=0.3762 (0.5s)
+[139/240] thinking sieve cap=0.1 hit=0.3010 (8.0s)
+[140/240] thinking sampled-belady cap=0.01 hit=0.3747 (0.5s)
+[141/240] coder sieve cap=0.1 hit=0.5794 (7.9s)
+[142/240] coder sampled-belady cap=0.02 hit=0.6335 (1.3s)
+[143/240] thinking sampled-belady cap=0.02 hit=0.3821 (0.5s)
+[144/240] thinking lfu cap=0.02 hit=0.3038 (1.9s)
+[145/240] thinking sampled-belady cap=0.05 hit=0.3844 (0.5s)
+[146/240] thinking sampled-belady cap=0.1 hit=0.3872 (0.5s)
+[147/240] coder sampled-belady cap=0.05 hit=0.7069 (1.1s)
+[148/240] coder fifo cap=0.05 hit=0.5731 (5.7s)
+[149/240] traceA gdsf cap=0.1 hit=0.5756 (3.4s)
+[150/240] thinking lfu cap=0.05 hit=0.3354 (2.0s)
+[151/240] coder sampled-belady cap=0.1 hit=0.7227 (1.2s)
+[152/240] coder lru cap=0.01 hit=0.3781 (11.3s)
+[153/240] coder arc cap=0.02 hit=0.4588 (15.3s)
+[154/240] thinking sampled-lru cap=0.02 hit=0.3266 (0.4s)
+[155/240] thinking sampled-lru cap=0.05 hit=0.3543 (0.5s)
+[156/240] thinking wa cap=0.01 hit=0.3115 (4.2s)
+[157/240] thinking sampled-lru cap=0.1 hit=0.3714 (0.4s)
+[158/240] thinking lfu cap=0.1 hit=0.3692 (1.7s)
+[159/240] thinking oracle-dead cap=0.01 hit=0.3742 (0.5s)
+[160/240] thinking lru cap=0.05 hit=0.3546 (6.8s)
+[161/240] thinking oracle-dead cap=0.02 hit=0.3825 (0.4s)
+[162/240] thinking belady cap=0.01 hit=0.3827 (3.8s)
+[163/240] thinking oracle-dead cap=0.05 hit=0.3851 (0.4s)
+[164/240] coder fifo cap=0.1 hit=0.6401 (4.0s)
+[165/240] thinking oracle-dead cap=0.1 hit=0.3870 (0.5s)
+[166/240] thinking oracle-within-60 cap=0.01 hit=0.3238 (0.5s)
+[167/240] thinking lru cap=0.1 hit=0.3714 (1.8s)
+[168/240] thinking fifo cap=0.01 hit=0.2983 (1.4s)
+[169/240] thinking belady cap=0.02 hit=0.3891 (4.2s)
+[170/240] thinking fifo cap=0.02 hit=0.3257 (1.7s)
+[171/240] coder wa cap=0.01 hit=0.3373 (10.0s)
+[172/240] thinking wa cap=0.02 hit=0.3327 (6.3s)
+[173/240] thinking belady cap=0.05 hit=0.3891 (4.3s)
+[174/240] coder lfu cap=0.01 hit=0.3630 (5.3s)
+[175/240] coder sampled-lru cap=0.02 hit=0.4599 (1.5s)
+[176/240] coder s3fifo cap=0.05 hit=0.5066 (9.3s)
+[177/240] coder sampled-lru cap=0.05 hit=0.5733 (1.2s)
+[178/240] coder belady cap=0.01 hit=0.5353 (10.9s)
+[179/240] coder sampled-lru cap=0.1 hit=0.6406 (1.0s)
+[180/240] thinking belady cap=0.1 hit=0.3891 (4.1s)
+[181/240] coder oracle-dead cap=0.01 hit=0.4367 (1.6s)
+[182/240] thinking sieve cap=0.01 hit=0.2072 (12.0s)
+[183/240] coder oracle-dead cap=0.02 hit=0.5766 (1.2s)
+[184/240] coder lfu cap=0.02 hit=0.3746 (5.4s)
+[185/240] coder arc cap=0.01 hit=0.3814 (6.4s)
+[186/240] coder oracle-dead cap=0.05 hit=0.6999 (1.2s)
+[187/240] thinking wa cap=0.05 hit=0.3584 (7.0s)
+[188/240] coder oracle-dead cap=0.1 hit=0.7232 (1.0s)
+[189/240] coder oracle-within-60 cap=0.01 hit=0.4808 (1.6s)
+[190/240] coder lruqd cap=0.05 hit=0.5737 (8.6s)
+[191/240] coder lfu cap=0.05 hit=0.3886 (4.8s)
+[192/240] thinking wa cap=0.1 hit=0.3724 (3.4s)
+[193/240] thinking sampled-lru cap=0.01 hit=0.3021 (0.5s)
+[194/240] coder belady cap=0.02 hit=0.6426 (9.7s)
+[195/240] coder lru cap=0.02 hit=0.4589 (22.0s)
+[196/240] coder lfu cap=0.1 hit=0.4043 (4.0s)
+[197/240] coder lruqd cap=0.02 hit=0.4633 (11.9s)
+[198/240] thinking sieve cap=0.02 hit=0.2328 (9.6s)
+[199/240] coder gdsf cap=0.05 hit=0.5673 (5.4s)
+[200/240] coder wa cap=0.02 hit=0.4641 (15.8s)
+[201/240] thinking arc cap=0.02 hit=0.3376 (3.8s)
+[202/240] coder belady cap=0.05 hit=0.7203 (9.3s)
+[203/240] coder lru cap=0.05 hit=0.5731 (4.6s)
+[204/240] traceA lruqd cap=0.05 hit=0.4578 (3.3s)
+[205/240] coder gdsf cap=0.02 hit=0.4595 (6.8s)
+[206/240] coder lru cap=0.1 hit=0.6401 (3.8s)
+[207/240] traceA gdsf cap=0.05 hit=0.4498 (4.1s)
+[208/240] thinking arc cap=0.05 hit=0.3437 (2.3s)
+[209/240] thinking lruqd cap=0.1 hit=0.3750 (2.4s)
+[210/240] coder fifo cap=0.01 hit=0.3781 (3.8s)
+[211/240] coder sieve cap=0.01 hit=0.2612 (11.8s)
+[212/240] thinking gdsf cap=0.1 hit=0.3741 (2.0s)
+[213/240] coder belady cap=0.1 hit=0.7329 (9.2s)
+[214/240] thinking s3fifo cap=0.05 hit=0.3297 (11.8s)
+[215/240] coder wa cap=0.1 hit=0.6368 (16.0s)
+[216/240] coder sampled-lru cap=0.01 hit=0.3786 (1.5s)
+[217/240] thinking lruqd cap=0.05 hit=0.3593 (2.2s)
+[218/240] thinking gdsf cap=0.05 hit=0.3581 (2.9s)
+[219/240] coder fifo cap=0.02 hit=0.4588 (4.9s)
+[220/240] thinking s3fifo cap=0.01 hit=0.3027 (62.7s)
+[221/240] thinking lruqd cap=0.01 hit=0.3190 (1.9s)
+[222/240] thinking arc cap=0.01 hit=0.3218 (3.6s)
+[223/240] coder lruqd cap=0.1 hit=0.6388 (5.5s)
+[224/240] thinking s3fifo cap=0.1 hit=0.3544 (9.8s)
+[225/240] coder arc cap=0.05 hit=0.5766 (18.9s)
+[226/240] thinking gdsf cap=0.01 hit=0.3122 (2.7s)
+[227/240] thinking lruqd cap=0.02 hit=0.3343 (1.7s)
+[228/240] coder gdsf cap=0.1 hit=0.6336 (3.0s)
+[229/240] coder sieve cap=0.02 hit=0.3808 (8.8s)
+[230/240] thinking gdsf cap=0.02 hit=0.3330 (2.1s)
+[231/240] coder wa cap=0.05 hit=0.5721 (20.6s)
+[232/240] coder s3fifo cap=0.1 hit=0.5704 (7.6s)
+[233/240] thinking s3fifo cap=0.02 hit=0.3082 (23.6s)
+[234/240] traceA s3fifo cap=0.02 hit=0.2210 (133.9s)
+[235/240] coder s3fifo cap=0.01 hit=0.3778 (233.3s)
+[236/240] coder lruqd cap=0.01 hit=0.3886 (3.0s)
+[237/240] coder gdsf cap=0.01 hit=0.3930 (4.2s)
+[238/240] coder s3fifo cap=0.02 hit=0.4254 (240.7s)
+[239/240] traceA s3fifo cap=0.05 hit=0.4270 (1094.2s)
+[240/240] traceA s3fifo cap=0.1 hit=0.5552 (3862.2s)
+target/release/pacer sweep --spec configs/test_pacer.json --out results/test_pacer.jsonl --threads 15
+32 runs
+[1/32] thinking pacer-fixed cap=0.01 hit=0.3313 (0.6s)
+[2/32] traceA pacer-fixed cap=0.02 hit=0.3019 (1.0s)
+[3/32] thinking pacer-fixed cap=0.02 hit=0.3497 (0.5s)
+[4/32] traceA pacer-fixed cap=0.01 hit=0.2185 (1.3s)
+[5/32] traceA pacer-fixed cap=0.05 hit=0.4616 (1.3s)
+[6/32] thinking pacer-fixed cap=0.05 hit=0.3676 (0.7s)
+[7/32] thinking pacer-fixed cap=0.1 hit=0.3755 (0.4s)
+[8/32] traceA pacer-fixed cap=0.1 hit=0.5878 (1.2s)
+[9/32] coder pacer-fixed cap=0.05 hit=0.5847 (2.8s)
+[10/32] traceB pacer-fixed cap=0.05 hit=0.5334 (2.8s)
+[11/32] coder pacer-fixed cap=0.01 hit=0.4126 (2.9s)
+[12/32] traceB pacer-fixed cap=0.01 hit=0.5232 (3.3s)
+[13/32] coder pacer-fixed cap=0.02 hit=0.4817 (2.8s)
+[14/32] coder pacer-fixed cap=0.1 hit=0.6462 (2.1s)
+[15/32] traceB pacer-fixed cap=0.1 hit=0.5346 (2.4s)
+[16/32] traceB pacer-fixed cap=0.02 hit=0.5308 (3.2s)
+[17/32] thinking pacer cap=0.01 hit=0.3363 (4.6s)
+[18/32] thinking pacer cap=0.1 hit=0.3743 (2.8s)
+[19/32] thinking pacer cap=0.05 hit=0.3661 (3.4s)
+[20/32] thinking pacer cap=0.02 hit=0.3508 (4.3s)
+[21/32] traceA pacer cap=0.1 hit=0.5837 (13.2s)
+[22/32] traceA pacer cap=0.01 hit=0.2205 (15.7s)
+[23/32] traceA pacer cap=0.05 hit=0.4561 (16.7s)
+[24/32] traceA pacer cap=0.02 hit=0.2987 (18.3s)
+[25/32] coder pacer cap=0.1 hit=0.6471 (23.3s)
+[26/32] coder pacer cap=0.05 hit=0.5882 (29.7s)
+[27/32] coder pacer cap=0.01 hit=0.4186 (35.7s)
+[28/32] coder pacer cap=0.02 hit=0.4879 (34.3s)
+[29/32] traceB pacer cap=0.1 hit=0.5354 (75.0s)
+[30/32] traceB pacer cap=0.05 hit=0.5335 (98.7s)
+[31/32] traceB pacer cap=0.02 hit=0.5315 (108.6s)
+[32/32] traceB pacer cap=0.01 hit=0.5254 (110.6s)
+cat results/test_baselines.jsonl results/test_pacer.jsonl > results/final_test.jsonl
+PYTHONPATH=python .venv-tests/bin/python -m pacer.report summarize results/final_test.jsonl --out results/final_summary.json
+traceA    0.01  lru  15.88  best wa        19.59  pacer  22.05  belady  39.77
+traceA    0.02  lru  24.36  best wa        27.97  pacer  29.87  belady  55.16
+traceA    0.05  lru  45.60  best wa        45.92  pacer  45.61  belady  67.77
+traceA    0.1   lru  58.57  best wa        58.74  pacer  58.37  belady  70.68
+traceB    0.01  lru  46.23  best arc       51.87  pacer  52.54  belady  53.74
+traceB    0.02  lru  48.97  best s3fifo    52.42  pacer  53.15  belady  53.96
+traceB    0.05  lru  51.22  best s3fifo    52.94  pacer  53.35  belady  53.96
+traceB    0.1   lru  52.36  best s3fifo    53.23  pacer  53.54  belady  53.96
+coder     0.01  lru  37.81  best gdsf      39.30  pacer  41.86  belady  53.53
+coder     0.02  lru  45.89  best wa        46.41  pacer  48.79  belady  64.26
+coder     0.05  lru  57.31  best arc       57.66  pacer  58.82  belady  72.03
+coder     0.1   lru  64.01  best lru       64.01  pacer  64.71  belady  73.29
+thinking  0.01  lru  30.17  best arc       32.18  pacer  33.63  belady  38.27
+thinking  0.02  lru  32.61  best arc       33.76  pacer  35.08  belady  38.91
+thinking  0.05  lru  35.46  best lruqd     35.93  pacer  36.61  belady  38.91
+thinking  0.1   lru  37.14  best lruqd     37.50  pacer  37.43  belady  38.91
+PYTHONPATH=python .venv-tests/bin/python -m pacer.figures

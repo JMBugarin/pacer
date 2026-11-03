@@ -1,0 +1,17 @@
+[workspace]
+members = ["crates/pacer", "crates/pacer-py"]
+default-members = ["crates/pacer"]
+resolver = "2"
+
+[workspace.package]
+edition = "2021"
+license = "MIT"
+authors = ["Joshua Bugarin <jbugarin85424@gmail.com>"]
+
+[profile.release]
+lto = "thin"
+codegen-units = 1
+
+[profile.bench]
+lto = "thin"
+codegen-units = 1

@@ -1,0 +1,489 @@
+{
+ "traces": [
+  {
+   "path": "data/raw/qwen_traceA_blksz_16.jsonl",
+   "window": [
+    2700,
+    3600
+   ]
+  },
+  {
+   "path": "data/raw/qwen_traceB_blksz_16.jsonl",
+   "window": [
+    2700,
+    3600
+   ]
+  },
+  {
+   "path": "data/raw/qwen_coder_blksz_16.jsonl",
+   "window": [
+    2700,
+    3600
+   ]
+  },
+  {
+   "path": "data/raw/qwen_thinking_blksz_16.jsonl",
+   "window": [
+    2700,
+    3600
+   ]
+  }
+ ],
+ "caps": [
+  0.01,
+  0.02,
+  0.05,
+  0.1
+ ],
+ "time": false,
+ "policies": [
+  {
+   "name": "lru"
+  },
+  {
+   "name": "fifo"
+  },
+  {
+   "name": "lfu"
+  },
+  {
+   "name": "sieve"
+  },
+  {
+   "name": "arc"
+  },
+  {
+   "name": "wa",
+   "params": {
+    "fit_end": 2700
+   }
+  },
+  {
+   "name": "s3fifo",
+   "label": "s3fifo-s0.05-t1",
+   "params": {
+    "small": 0.05,
+    "threshold": 1
+   }
+  },
+  {
+   "name": "s3fifo",
+   "label": "s3fifo-s0.05-t2",
+   "params": {
+    "small": 0.05,
+    "threshold": 2
+   }
+  },
+  {
+   "name": "s3fifo",
+   "label": "s3fifo-s0.1-t1",
+   "params": {
+    "small": 0.1,
+    "threshold": 1
+   }
+  },
+  {
+   "name": "s3fifo",
+   "label": "s3fifo-s0.1-t2",
+   "params": {
+    "small": 0.1,
+    "threshold": 2
+   }
+  },
+  {
+   "name": "s3fifo",
+   "label": "s3fifo-s0.25-t1",
+   "params": {
+    "small": 0.25,
+    "threshold": 1
+   }
+  },
+  {
+   "name": "s3fifo",
+   "label": "s3fifo-s0.25-t2",
+   "params": {
+    "small": 0.25,
+    "threshold": 2
+   }
+  },
+  {
+   "name": "s3fifo",
+   "label": "s3fifo-s0.5-t1",
+   "params": {
+    "small": 0.5,
+    "threshold": 1
+   }
+  },
+  {
+   "name": "s3fifo",
+   "label": "s3fifo-s0.5-t2",
+   "params": {
+    "small": 0.5,
+    "threshold": 2
+   }
+  },
+  {
+   "name": "lruqd",
+   "label": "lruqd-s0.1",
+   "params": {
+    "small": 0.1
+   }
+  },
+  {
+   "name": "lruqd",
+   "label": "lruqd-s0.3",
+   "params": {
+    "small": 0.3
+   }
+  },
+  {
+   "name": "lruqd",
+   "label": "lruqd-s0.5",
+   "params": {
+    "small": 0.5
+   }
+  },
+  {
+   "name": "lruqd",
+   "label": "lruqd-s0.7",
+   "params": {
+    "small": 0.7
+   }
+  },
+  {
+   "name": "lruqd",
+   "label": "lruqd-s0.9",
+   "params": {
+    "small": 0.9
+   }
+  },
+  {
+   "name": "gdsf",
+   "label": "gdsf-c0.0000",
+   "params": {
+    "c1": 0
+   }
+  },
+  {
+   "name": "gdsf",
+   "label": "gdsf-c0.0039",
+   "params": {
+    "c1": 0.00390625
+   }
+  },
+  {
+   "name": "gdsf",
+   "label": "gdsf-c0.0156",
+   "params": {
+    "c1": 0.015625
+   }
+  },
+  {
+   "name": "gdsf",
+   "label": "gdsf-c0.0625",
+   "params": {
+    "c1": 0.0625
+   }
+  },
+  {
+   "name": "pacer",
+   "label": "pacer-m0.5-k32",
+   "params": {
+    "model": 0,
+    "mult": 0.5,
+    "k": 32
+   },
+   "traces": [
+    "traceA"
+   ]
+  },
+  {
+   "name": "pacer",
+   "label": "pacer-m0.5-k64",
+   "params": {
+    "model": 0,
+    "mult": 0.5,
+    "k": 64
+   },
+   "traces": [
+    "traceA"
+   ]
+  },
+  {
+   "name": "pacer",
+   "label": "pacer-m1-k32",
+   "params": {
+    "model": 0,
+    "mult": 1,
+    "k": 32
+   },
+   "traces": [
+    "traceA"
+   ]
+  },
+  {
+   "name": "pacer",
+   "label": "pacer-m1-k64",
+   "params": {
+    "model": 0,
+    "mult": 1,
+    "k": 64
+   },
+   "traces": [
+    "traceA"
+   ]
+  },
+  {
+   "name": "pacer",
+   "label": "pacer-m2-k32",
+   "params": {
+    "model": 0,
+    "mult": 2,
+    "k": 32
+   },
+   "traces": [
+    "traceA"
+   ]
+  },
+  {
+   "name": "pacer",
+   "label": "pacer-m2-k64",
+   "params": {
+    "model": 0,
+    "mult": 2,
+    "k": 64
+   },
+   "traces": [
+    "traceA"
+   ]
+  },
+  {
+   "name": "pacer",
+   "label": "pacer-m0.5-k32",
+   "params": {
+    "model": 1,
+    "mult": 0.5,
+    "k": 32
+   },
+   "traces": [
+    "traceB"
+   ]
+  },
+  {
+   "name": "pacer",
+   "label": "pacer-m0.5-k64",
+   "params": {
+    "model": 1,
+    "mult": 0.5,
+    "k": 64
+   },
+   "traces": [
+    "traceB"
+   ]
+  },
+  {
+   "name": "pacer",
+   "label": "pacer-m1-k32",
+   "params": {
+    "model": 1,
+    "mult": 1,
+    "k": 32
+   },
+   "traces": [
+    "traceB"
+   ]
+  },
+  {
+   "name": "pacer",
+   "label": "pacer-m1-k64",
+   "params": {
+    "model": 1,
+    "mult": 1,
+    "k": 64
+   },
+   "traces": [
+    "traceB"
+   ]
+  },
+  {
+   "name": "pacer",
+   "label": "pacer-m2-k32",
+   "params": {
+    "model": 1,
+    "mult": 2,
+    "k": 32
+   },
+   "traces": [
+    "traceB"
+   ]
+  },
+  {
+   "name": "pacer",
+   "label": "pacer-m2-k64",
+   "params": {
+    "model": 1,
+    "mult": 2,
+    "k": 64
+   },
+   "traces": [
+    "traceB"
+   ]
+  },
+  {
+   "name": "pacer",
+   "label": "pacer-m0.5-k32",
+   "params": {
+    "model": 2,
+    "mult": 0.5,
+    "k": 32
+   },
+   "traces": [
+    "coder"
+   ]
+  },
+  {
+   "name": "pacer",
+   "label": "pacer-m0.5-k64",
+   "params": {
+    "model": 2,
+    "mult": 0.5,
+    "k": 64
+   },
+   "traces": [
+    "coder"
+   ]
+  },
+  {
+   "name": "pacer",
+   "label": "pacer-m1-k32",
+   "params": {
+    "model": 2,
+    "mult": 1,
+    "k": 32
+   },
+   "traces": [
+    "coder"
+   ]
+  },
+  {
+   "name": "pacer",
+   "label": "pacer-m1-k64",
+   "params": {
+    "model": 2,
+    "mult": 1,
+    "k": 64
+   },
+   "traces": [
+    "coder"
+   ]
+  },
+  {
+   "name": "pacer",
+   "label": "pacer-m2-k32",
+   "params": {
+    "model": 2,
+    "mult": 2,
+    "k": 32
+   },
+   "traces": [
+    "coder"
+   ]
+  },
+  {
+   "name": "pacer",
+   "label": "pacer-m2-k64",
+   "params": {
+    "model": 2,
+    "mult": 2,
+    "k": 64
+   },
+   "traces": [
+    "coder"
+   ]
+  },
+  {
+   "name": "pacer",
+   "label": "pacer-m0.5-k32",
+   "params": {
+    "model": 3,
+    "mult": 0.5,
+    "k": 32
+   },
+   "traces": [
+    "thinking"
+   ]
+  },
+  {
+   "name": "pacer",
+   "label": "pacer-m0.5-k64",
+   "params": {
+    "model": 3,
+    "mult": 0.5,
+    "k": 64
+   },
+   "traces": [
+    "thinking"
+   ]
+  },
+  {
+   "name": "pacer",
+   "label": "pacer-m1-k32",
+   "params": {
+    "model": 3,
+    "mult": 1,
+    "k": 32
+   },
+   "traces": [
+    "thinking"
+   ]
+  },
+  {
+   "name": "pacer",
+   "label": "pacer-m1-k64",
+   "params": {
+    "model": 3,
+    "mult": 1,
+    "k": 64
+   },
+   "traces": [
+    "thinking"
+   ]
+  },
+  {
+   "name": "pacer",
+   "label": "pacer-m2-k32",
+   "params": {
+    "model": 3,
+    "mult": 2,
+    "k": 32
+   },
+   "traces": [
+    "thinking"
+   ]
+  },
+  {
+   "name": "pacer",
+   "label": "pacer-m2-k64",
+   "params": {
+    "model": 3,
+    "mult": 2,
+    "k": 64
+   },
+   "traces": [
+    "thinking"
+   ]
+  },
+  {
+   "name": "sampled-belady"
+  },
+  {
+   "name": "belady"
+  }
+ ],
+ "models": {
+  "0": "models/hazard_traceA.json",
+  "1": "models/hazard_traceB.json",
+  "2": "models/hazard_coder.json",
+  "3": "models/hazard_thinking.json"
+ }
+}

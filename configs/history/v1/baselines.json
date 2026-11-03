@@ -1,0 +1,18 @@
+{
+  "traces": [
+    {"path": "data/raw/qwen_traceA_blksz_16.jsonl", "window": [3600, 7200]},
+    {"path": "data/raw/qwen_traceB_blksz_16.jsonl", "window": [3600, 7200]},
+    {"path": "data/raw/qwen_coder_blksz_16.jsonl", "window": [3600, 7200]},
+    {"path": "data/raw/qwen_thinking_blksz_16.jsonl", "window": [3600, 7200]}
+  ],
+  "caps": [0.01, 0.02, 0.05, 0.1],
+  "time": true,
+  "policies": [
+    {"name": "lru"}, {"name": "fifo"}, {"name": "lfu"}, {"name": "sieve"},
+    {"name": "s3fifo"}, {"name": "arc"}, {"name": "gdsf"}, {"name": "lruqd"},
+    {"name": "wa"}, {"name": "belady"},
+    {"name": "sampled-lru"}, {"name": "sampled-belady"}, {"name": "oracle-dead"},
+    {"name": "oracle-within", "label": "oracle-within-60", "params": {"horizon": 60}},
+    {"name": "oracle-within", "label": "oracle-within-300", "params": {"horizon": 300}}
+  ]
+}
