@@ -110,7 +110,8 @@ pub fn make(
                     param(params, "follow", 1.0) > 0.5,
                     seed,
                 )
-                .with_reuse(param(params, "reuse", 1.0) as usize),
+                .with_reuse(param(params, "reuse", 1.0) as usize)
+                .with_cost(param(params, "cost_alpha", 0.0)),
             )
         }
         _ => bail!("unknown policy {name}"),
