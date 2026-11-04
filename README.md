@@ -21,7 +21,10 @@ eviction decision, and vLLM makes it in LRU order. On the chat trace used here t
 reference (Belady) gets 2.3-2.5x LRU's hit ratio at 1-2% cache sizes (1.1-1.4x on the other
 traces). A September 2026 study of 14 eviction policies on production prefix-cache traces,
 three of them learned, found they "provide little benefit over LRU" (Liu, Yu, Yang, *When Fancy
-Eviction Fails*). None of those policies uses what an LLM server knows about each request.
+Eviction Fails*, arXiv 2609.28870), and observed that prefix reuse is dominated by the regular
+pacing of active sessions. The closest LLM-specific policy, ATC'25's workload-aware eviction
+(Wang et al., *KVCache Cache in the Wild*), models reuse per request type and turn with a fitted
+exponential. Pacer tests whether a richer per-block model of the same question does better.
 
 Pacer asks one question about every candidate block: *will it be used again before it would
 have been evicted anyway?* A small gradient-boosted model estimates
@@ -73,24 +76,26 @@ What this shows:
   number alone), and on the few held-out rows with horizons of 5 minutes or more the model is no
   better than ATC'25's on chat.
 - **The model does not transfer across workloads.** Each trace needs its own model; a model
-  trained on single-turn API traffic is far worse than LRU on chat at larger sizes.
+  trained on API traffic (all first turns) is far worse than LRU on chat at larger sizes.
 - **Weighted by compute, the chat lead holds only at 1%.** Deep blocks cost more to recompute
   (measured on the M5 Pro). By compute saved, Pacer still leads on API, coder and most thinking
   cells and on chat at 1% (17.8% against 12.6%), but on chat at 2-10% it trails ATC'25 by 0.6-1.1
-  points: it tends to evict long conversations. Scoring by expected saved compute is the next
-  step.
+  points, and at 5% falls below LRU: it tends to evict long conversations. Scoring by expected
+  saved compute is the next step.
 - **Cheap enough for the eviction path.** The fixed configuration costs 49-230 ns per evicted
   block on one core, less than our heap-based LRU (255-453 ns).
-- **Live, the effect is real but small at laptop scale.** On 400 held-out chat requests replayed
+- **Live, the effect is small at laptop scale.** On 400 held-out chat requests replayed
   through a real paged KV pool in MLX, Pacer prefilled 1.9% fewer tokens than LRU and cut mean
-  time to first token by 1.2% (95% CI 0.1-2.4%); perfect knowledge (sampled Belady) gets 2.7%.
-  Cached-prefix prefill matched full prefill's next token in 97.5% of 200 checks, and in all of
-  them where the top-2 margin was clear.
+  time to first token by 1.2% (95% CI over requests 0.1-2.4%, two repeats, run-to-run drift not
+  covered); perfect knowledge (sampled Belady) gets 2.7%. Cached-prefix prefill picked the same
+  next token as full prefill in 97.5% of 200 checks, short of the 99% target.
 
 | Where the headroom is (chat) | Predicting reuse on held-out time |
 |---|---|
 | <img src="docs/images/oracle-ladder-traceA.png" width="430" alt="Oracle ladder on the chat trace"> | <img src="docs/images/hazard-auc.png" width="400" alt="AUC of the reuse model vs the ATC'25 model"> |
 
+The success criteria set before the build, and which were missed and why:
+[docs/criteria.md](docs/criteria.md) (3 met, 3 partial, 4 missed).
 All tables, ablations, transfer, cost and the live replay: [docs/results.md](docs/results.md).
 How it was built, including what did not work: [docs/engineering-log.md](docs/engineering-log.md).
 The design decisions and how to defend them: [docs/decisions.md](docs/decisions.md).
@@ -127,7 +132,8 @@ The design decisions and how to defend them: [docs/decisions.md](docs/decisions.
 - Hour 2 was used more than once while the method was being developed: an exploratory sweep of
   the heuristics, one look at the first learned approach, and full runs of v1 and v2. The v2
   label fix was prompted by a weak v1 test cell. The numbers here are v3, after an adversarial
-  review, run once from committed code. Every earlier look is in the
+  review, run from committed code; after that run a second ATC'25 fit was added and its 10 test
+  cells re-run, which is one more look at the test hour. Every earlier look is in the
   [engineering log](docs/engineering-log.md) and `results/history/`.
 
 ## Run it
@@ -180,8 +186,8 @@ make check     # cargo fmt, clippy, cargo test, ruff, pytest
   server knows more (tool calls, system prompt identity), which could change what is
   predictable.
 - Per-workload models, and no guard yet against a model that stops fitting its traffic.
-- Some selected heuristic settings sit at the edge of their grid (S3-FIFO's small queue at 1%
-  of the cache in 5 of 16 cells).
+- Some selected heuristic settings sit at the edge of their grid (S3-FIFO's small-queue share
+  in 7 of 16 cells, GDSF's depth weight in 15).
 
 ## Data and license
 

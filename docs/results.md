@@ -38,7 +38,10 @@ Pacer vs the best heuristic: better in 13 cells, statistically tied in 3, worse 
 
 ## Both configurations, and the gap to Belady
 
-Gap closed is (policy - LRU) / (Belady - LRU).
+Gap closed is (policy - LRU) / (Belady - LRU). The horizon-tuned configuration uses a larger
+model (63 leaves, 85-213 trees), K = 64 and no burst reuse, with the horizon multiplier chosen
+per cell on validation. Despite that tuning it is below the fixed configuration on chat at 2-10%
+(by 0.3-0.6 points) and above it on coder (by 0.1-0.6).
 
 <!-- results:detail -->
 | Trace | Cache | Pacer (fixed) | Pacer (horizon tuned) | vs LRU | vs ATC'25 | gap closed (Pacer / best heuristic) |
@@ -240,7 +243,8 @@ Fixed configuration, each trace's model applied to the others.
 
 Every transferred model is below the trace's own model, and 16 of 48 fall more than half a
 point below LRU. The chat model is the most portable (at worst 0.54 points below LRU, on
-coder). Models trained on single-turn API or thinking traffic lose up to 19 points on chat at
+coder). Models trained on API traffic (all first turns) or thinking traffic (mostly first
+turns) lose up to 19 points on chat at
 5-10%, likely because on their own traffic a block with no shared-template history is almost
 never reused, which is wrong for conversations.
 
@@ -280,7 +284,7 @@ interleaved, and the requests come from the held-out hour. To fit the pinned wor
 | sampled Belady | 18.15% | 733,440 | 101.4 | 332.4 | -2.7% [-4.2%, -1.4%] |
 | Pacer | 15.91% | 753,440 | 106.0 | 337.5 | -1.2% [-2.4%, -0.1%] |
 
-400 requests of traceA from t = 3600 s, cache 4489 blocks (7.67 GiB of bf16 KV), mlx-community/Qwen3-0.6B-4bit on Apple M5 Pro, 2 interleaved repeats. Cached-prefix prefill vs full prefill on 200 requests: same argmax in 97.5% (100% where the top-2 logit margin is clear), max |logit difference| median 0.128.
+400 requests of traceA from t = 3600 s, cache 4489 blocks (7.67 GiB of bf16 KV), mlx-community/Qwen3-0.6B-4bit on Apple M5 Pro, 2 interleaved repeats. Cached-prefix prefill vs full prefill on 200 requests: same argmax in 97.5%, max |logit difference| median 0.128.
 <!-- /results:live -->
 
 Pacer prefilled 1.9% fewer tokens than LRU and cut mean time to first token by 1.2%; its median
