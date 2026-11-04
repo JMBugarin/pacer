@@ -26,9 +26,12 @@ Each is measured from the result files by `python -m pacer.report fill`.
   `results/trace_stats.json`), and on held-out rows with horizons of 5 minutes or more the
   model is no better than ATC'25's. This is a limit of the features available, not of tuning:
   no tuned heuristic gets closer either.
-- **C6 (compute-weighted, chat at 5%).** Pacer scores reuse, not saved compute, and tends to
-  evict long conversations, whose deep blocks are the most expensive to recompute. The fix is a
-  different objective (reuse probability times block cost); it was not attempted.
+- **C6 (compute-weighted, chat at 5%).** The fixed configuration scores reuse, not saved
+  compute, and tends to evict long conversations, whose deep blocks are the most expensive to
+  recompute. A follow-up variant that scores reuse probability times block cost (alpha from the
+  M5 Pro calibration, not tuned) leads on chat at 1-5% in compute saved, but falls slightly below
+  LRU at 10% and gives up hit ratio, so C6 stays missed for any single configuration
+  (results.md, "Scoring by saved compute").
 - **C7 (sweep time).** Pacer and most baselines take seconds per run; the time goes to the
   S3-FIFO adaptation, which re-queues blocks it cannot evict and dominates the 24-setting grid.
 - **C8 (transfer).** The chat model falls 0.54 points below LRU on coder at 10%, just past the

@@ -134,3 +134,15 @@ change, and the re-run is not in `results/pipeline.log`.
 - Weighting hits by the prefill compute they save, Pacer's lead holds at small sizes but it
   trails ATC'25 on chat at 2-10% and falls below LRU at 5%: it tends to drop long conversations, whose
   deep blocks cost the most to recompute.
+
+## 8. Follow-up experiments
+
+Both use settings fixed in advance; nothing was tuned on the test hour (`scripts/research.py`).
+
+- **Scoring by saved compute.** Ranking candidates by reuse probability times 1 + alpha * depth,
+  with alpha from the M5 Pro calibration, leads on chat at 1-5% in compute saved but costs 0.7-2.1
+  points of hit ratio there and is slightly below LRU in compute saved at 10%.
+- **Decode speed.** The pipeline rebuilt at 10 and 40 ms/token keeps the headline (13 and 11 of
+  16 cells better than the best heuristic, none worse); the 1% margins shrink at 40 ms/token. The
+  review had flagged this constant as the main untested assumption behind the largest gains.
+

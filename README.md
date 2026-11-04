@@ -80,8 +80,12 @@ What this shows:
 - **Weighted by compute, the chat lead holds only at 1%.** Deep blocks cost more to recompute
   (measured on the M5 Pro). By compute saved, Pacer still leads on API, coder and most thinking
   cells and on chat at 1% (17.8% against 12.6%), but on chat at 2-10% it trails ATC'25 by 0.6-1.1
-  points, and at 5% falls below LRU: it tends to evict long conversations. Scoring by expected
-  saved compute is the next step.
+  points, and at 5% falls below LRU: it tends to evict long conversations. A variant scoring
+  expected saved compute (reuse probability times block cost) leads on chat at 1-5% in compute
+  saved, at the price of 0.7-2.1 points of hit ratio there.
+- **Not an artifact of the decode-speed constant.** Rebuilt at 10 and 40 ms/token, Pacer stays
+  never significantly worse than the best heuristic (13, 13 and 11 of 16 cells better at 10, 20
+  and 40 ms/token); margins shrink at 1% capacity when decoding is slow.
 - **Cheap enough for the eviction path.** The fixed configuration costs 49-230 ns per evicted
   block on one core, less than our heap-based LRU (255-453 ns).
 - **Live, the effect is small at laptop scale.** On 400 held-out chat requests replayed
