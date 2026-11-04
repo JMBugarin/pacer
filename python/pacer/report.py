@@ -629,6 +629,71 @@ def criteria_md(
     return head + "\n".join(rows)
 
 
+def csr_ci(a: dict, b: dict, alpha: float) -> tuple[float, float, float]:
+    """Paired t-interval on the difference in compute-savings ratio, over the test buckets."""
+
+    def parts(r: dict) -> tuple[np.ndarray, np.ndarray]:
+        bk = r["buckets"]
+        num = np.array([x["hits"] + alpha * x["hit_depth_sum"] for x in bk], dtype=float)
+        den = np.array([x["accesses"] + alpha * x["access_depth_sum"] for x in bk], dtype=float)
+        return num, den
+
+    na, d = parts(a)
+    nb, _ = parts(b)
+    k = len(d)
+    diff = (na.sum() - nb.sum()) / d.sum()
+    z = (na - nb) - diff * d
+    se = np.sqrt(k / (k - 1) * np.sum(z**2)) / d.sum()
+    t = T975[k - 2] if k - 2 < len(T975) else 1.96
+    return float(diff), float(diff - t * se), float(diff + t * se)
+
+
+def cost_aware_md(test: list[dict], alpha: float) -> str:
+    ix = index(test)
+    head = (
+        "| Trace | Cache | hit: reuse score | hit: cost score | compute saved: best heuristic | "
+        "reuse score | cost score | cost score vs best (95% CI) |\n"
+        "|---|---|---|---|---|---|---|---|\n"
+    )
+    lines = []
+    for t in TRACES:
+        for c in CAPS:
+            f, k = ix[(t, c, "pacer-fixed")], ix[(t, c, "pacer-cost")]
+            hs = [ix[(t, c, h)] for h in HEURISTICS if (t, c, h) in ix]
+            b = max(hs, key=lambda r: csr(r, alpha))
+            lines.append(
+                f"| {TRACE_LABEL[t]} | {100 * c:g}% | {100 * f['hit_ratio']:.2f} | "
+                f"{100 * k['hit_ratio']:.2f} | {100 * csr(b, alpha):.2f} ({NAMES[b['label']]}) | "
+                f"{100 * csr(f, alpha):.2f} | {100 * csr(k, alpha):.2f} | "
+                f"{fmt_ci(csr_ci(k, b, alpha))} |"
+            )
+    return head + "\n".join(lines)
+
+
+def tpot_md(runs: dict[str, list[dict]]) -> str:
+    """Fixed configuration vs the best heuristic at each decode speed."""
+    head = "| Trace | Cache | " + " | ".join(f"{k} ms/token" for k in runs) + " |\n|---|---|"
+    head += "---|" * len(runs) + "\n"
+    summ = {k: summarize(v) for k, v in runs.items()}
+    lines = []
+    for t in TRACES:
+        for c in CAPS:
+            cells = []
+            for k in runs:
+                x = summ[k][t][str(c)]
+                d = x["pacer_fixed_vs_best"]
+                cells.append(f"{100 * d[0]:+.2f} [{100 * d[1]:+.2f}, {100 * d[2]:+.2f}]")
+            lines.append(f"| {TRACE_LABEL[t]} | {100 * c:g}% | " + " | ".join(cells) + " |")
+    tally = []
+    for k in runs:
+        v = [verdict(summ[k][t][str(c)]["pacer_fixed_vs_best"]) for t in TRACES for c in CAPS]
+        tally.append(
+            f"{k} ms/token: better {v.count('better')}, tie {v.count('tie')}, "
+            f"worse {v.count('worse')}"
+        )
+    return head + "\n".join(lines) + "\n\n" + "; ".join(tally) + "."
+
+
 def fill(path: Path, blocks: dict[str, str]) -> None:
     text = path.read_text()
     for name, body in blocks.items():
@@ -671,6 +736,20 @@ def fill_main() -> None:
     if cost.exists():
         alpha = json.loads(cost.read_text())["block_cost"]["alpha"]
         blocks["csr"] = csr_md(read("results/final_test.jsonl"), summary, alpha)
+    if Path("results/research/cost_test.jsonl").exists() and cost.exists():
+        blocks["cost_aware"] = cost_aware_md(
+            read("results/final_test.jsonl") + read("results/research/cost_test.jsonl"),
+            json.loads(cost.read_text())["block_cost"]["alpha"],
+        )
+    speeds = {k: f"results/research/tpot0{k}_test.jsonl" for k in ["10", "40"]}
+    if all(Path(p).exists() for p in speeds.values()):
+        blocks["tpot"] = tpot_md(
+            {
+                "10": read(speeds["10"]),
+                "20": read("results/final_test.jsonl"),
+                "40": read(speeds["40"]),
+            }
+        )
     crit_inputs = ["results/overhead.json", "results/live/replay.json", "results/transfer.jsonl"]
     if cost.exists() and all(Path(f).exists() for f in crit_inputs):
         blocks["criteria"] = criteria_md(
