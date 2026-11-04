@@ -578,7 +578,7 @@ lru              0.143    108.5 [ 102.6,  116.4]   1312.3  +0.0% [+0.0%,+0.0%]
 s3fifo           0.144    109.2 [ 102.6,  119.9]   1291.8  -0.7% [-4.7%,+1.8%]
 sampled-belady   0.181    101.4 [  93.8,  109.6]   1303.2  +6.5% [+2.8%,+11.2%]
 pacer            0.159    106.0 [  98.9,  115.1]   1292.7  +2.3% [-0.6%,+5.4%]
-wrote /Users/josh/Developer/my-workspace/personal/pacer/results/live/replay.json in 1878s
+wrote ./results/live/replay.json in 1878s
 Fetching 9 files:   0%|          | 0/9 [00:00<?, ?it/s]Fetching 9 files: 100%|██████████| 9/9 [00:00<00:00, 4352.44it/s]
 round 1/6 (warm-up) 5.7s
 round 2/6 5.6s
@@ -621,4 +621,4 @@ L_cached  L_new      T ms   pred ms  resid % gather ms
     8192   4096   1128.55   1103.93     +2.2      7.39
 block cost: cost(j)/cost(0) = 1 + 0.0045 j
 replay TTFT prediction: median abs error 35.5%
-wrote /Users/josh/Developer/my-workspace/personal/pacer/results/live/prefill_cost.json in 35s
+wrote ./results/live/prefill_cost.json in 35s

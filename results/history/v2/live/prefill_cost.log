@@ -40,4 +40,4 @@ L_cached  L_new      T ms   pred ms  resid % gather ms
     8192   4096   1274.49   1265.54     +0.7      9.47
 block cost: cost(j)/cost(0) = 1 + 0.0043 j
 replay TTFT prediction: median abs error 34.6%
-wrote /Users/josh/Developer/my-workspace/personal/pacer/results/live/prefill_cost.json in 43s
+wrote ./results/live/prefill_cost.json in 43s
