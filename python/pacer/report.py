@@ -468,7 +468,7 @@ def live_md(r: dict) -> str:
         f"{cfg['cap_blocks']} blocks ({cfg['pool_bytes'] / 2**30:.2f} GiB of bf16 KV), "
         f"{cfg['model']} on {cfg['device']['device_name']}, {cfg['repeats']} interleaved repeats. "
         f"Cached-prefix prefill vs full prefill on {chk['n']} requests: same argmax in "
-        f"{100 * chk['argmax_equal_frac']:.1f}% (100% where the top-2 logit margin is clear), "
+        f"{100 * chk['argmax_equal_frac']:.1f}%, "
         f"max |logit difference| median {chk['max_abs_diff']['p50']:.3f}."
     )
     return head + "\n".join(lines) + note
@@ -500,6 +500,133 @@ def csr_md(test: list[dict], summary: dict, alpha: float) -> str:
                 + " |"
             )
     return head + "\n".join(lines)
+
+
+def criteria_md(
+    summary: dict,
+    test: list[dict],
+    transfer: list[dict],
+    overhead: list[dict],
+    live: dict,
+    alpha: float,
+) -> str:
+    """The success criteria set before the build, each measured from the result files."""
+    ix = index(test)
+    cells = [(t, c) for t in TRACES for c in CAPS]
+    rows = []
+
+    def add(cid: str, target: str, measured: str, status: str) -> None:
+        rows.append(f"| {cid} | {target} | {measured} | {status} |")
+
+    online = [h for h in HEURISTICS if all((t, c, h) in ix for t, c in cells)]
+    bel_ok = all(
+        ix[(t, c, "belady")]["hits"] >= max(ix[(t, c, h)]["hits"] for h in online)
+        and ix[(t, c, "belady")]["hits"] >= ix[(t, c, "pacer-fixed")]["hits"]
+        for t, c in cells
+    )
+    add(
+        "C1",
+        "Rust simulator equals the Python reference; Belady equals brute force on small "
+        "traces and is at least every online policy",
+        f"differential and brute-force tests pass (8 policies); Belady highest in "
+        f"{'all 16' if bel_ok else 'not all'} test cells",
+        "met" if bel_ok else "partial",
+    )
+    add(
+        "C2",
+        "LRU, best heuristic, oracle ladder and Belady on 4 traces x 4 sizes",
+        "all reported (results.md)",
+        "met",
+    )
+
+    small = [(t, c) for t in TRACES for c in CAPS[:3]]
+    wins = [x for x in small if summary[x[0]][str(x[1])]["pacer_fixed_vs_lru"][1] > 0]
+    miss = [f"{TRACE_LABEL[t]} {100 * c:g}%" for t, c in small if (t, c) not in wins]
+    add(
+        "C3",
+        "Better than LRU at 1, 2, 5% on every trace (CI excludes 0)",
+        f"{len(wins)} of {len(small)}; not: {', '.join(miss) or 'none'}",
+        "met" if not miss else "missed",
+    )
+
+    ok = {}
+    for c in [0.02, 0.05]:
+        ok[c] = sum(summary[t][str(c)]["pacer_fixed_vs_best"][2] >= 0 for t in TRACES)
+    chat = [summary["traceA"][str(c)]["pacer_fixed_vs_best"] for c in CAPS]
+    best_chat = max(chat, key=lambda d: d[0])
+    c4 = all(v >= 3 for v in ok.values()) and any(d[0] >= 0.01 and d[1] > 0 for d in chat)
+    add(
+        "C4",
+        "At least the best tuned heuristic on 3 of 4 traces at 2% and 5%; +1 point on "
+        "chat somewhere (CI excludes 0)",
+        f"not worse on {ok[0.02]}/4 at 2%, {ok[0.05]}/4 at 5%; chat best {fmt_ci(best_chat)}",
+        "met" if c4 else "missed",
+    )
+
+    g = {c: summary["traceA"][str(c)]["gap_closed_pacer_fixed"] for c in CAPS}
+    add(
+        "C5",
+        "Close 20% of the LRU-to-Belady gap on chat at 2% and 5%",
+        f"{100 * g[0.01]:.1f}% at 1%, {100 * g[0.02]:.1f}% at 2%, {100 * g[0.05]:.1f}% at 5%",
+        "met" if g[0.02] >= 0.2 and g[0.05] >= 0.2 else "missed",
+    )
+
+    below = [
+        f"{TRACE_LABEL[t]} {100 * c:g}%"
+        for t, c in cells
+        if csr(ix[(t, c, "pacer-fixed")], alpha) < csr(ix[(t, c, "lru")], alpha)
+    ]
+    add(
+        "C6",
+        "Compute-weighted savings at least LRU's everywhere",
+        f"below LRU in {', '.join(below) or 'no cell'}",
+        "met" if not below else "missed",
+    )
+
+    per_trace: dict = defaultdict(list)
+    for r in overhead:
+        if r["label"] == "pacer-fixed":
+            per_trace[r["trace"]].append(r["ns_per_eviction"])
+    fixed = [float(np.median(v)) for v in per_trace.values()]
+    slowest = max(r["wall_s"] for r in test)
+    add(
+        "C7",
+        "At most 2 us per evicted block; a full sweep under 10 min",
+        f"{min(fixed):.0f}-{max(fixed):.0f} ns per eviction; slowest single test run "
+        f"{slowest / 60:.0f} min (S3-FIFO), whole pipeline about 4 h",
+        "partial",
+    )
+
+    lru = {(t, c): summary[t][str(c)]["lru"] for t, c in cells}
+    tr_a = [r for r in transfer if r["label"] == "pacer-from-traceA"]
+    worst = min(r["hit_ratio"] - lru[(r["trace"], r["cap_frac"])] for r in tr_a)
+    add(
+        "C8",
+        "The chat model is never more than 0.5 points below LRU on other traces",
+        f"worst {100 * worst:+.2f} points",
+        "met" if worst >= -0.005 else "missed",
+    )
+
+    chk = live["check"]
+    pac = live["summary"]["pacer"]
+    lo, hi = pac["ttft_mean_reduction_vs_lru_ci95"]
+    add(
+        "C9",
+        "Cached-prefix prefill picks the same next token on 99%; TTFT vs LRU with a CI",
+        f"{100 * chk['argmax_equal_frac']:.1f}% of {chk['n']}; mean TTFT "
+        f"{-100 * pac['ttft_mean_reduction_vs_lru']:+.1f}% [{-100 * hi:+.1f}%, {-100 * lo:+.1f}%] "
+        "over requests (2 repeats, drift not covered)",
+        "partial",
+    )
+    add(
+        "C10",
+        "`make reproduce` regenerates every number; CI green",
+        "CI green; deterministic stages rebuild identically; 10 ATC'25 test cells were re-run "
+        "outside the logged run (see the engineering log)",
+        "partial",
+    )
+    head = "| | Target | Measured | Status |\n|---|---|---|---|\n"
+    return head + "\n".join(rows)
 
 
 def fill(path: Path, blocks: dict[str, str]) -> None:
@@ -544,6 +671,16 @@ def fill_main() -> None:
     if cost.exists():
         alpha = json.loads(cost.read_text())["block_cost"]["alpha"]
         blocks["csr"] = csr_md(read("results/final_test.jsonl"), summary, alpha)
+    crit_inputs = ["results/overhead.json", "results/live/replay.json", "results/transfer.jsonl"]
+    if cost.exists() and all(Path(f).exists() for f in crit_inputs):
+        blocks["criteria"] = criteria_md(
+            summary,
+            read("results/final_test.jsonl"),
+            read("results/transfer.jsonl"),
+            json.loads(Path("results/overhead.json").read_text()),
+            json.loads(Path("results/live/replay.json").read_text()),
+            json.loads(cost.read_text())["block_cost"]["alpha"],
+        )
     if Path("results/overhead.json").exists():
         blocks["cost"] = cost_md(json.loads(Path("results/overhead.json").read_text()))
     if Path("results/live/replay.json").exists():
