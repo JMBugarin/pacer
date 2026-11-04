@@ -46,7 +46,7 @@ use, regress log(time to next use) with LightGBM, evict the largest prediction.
   not saved). After this, choices moved to a validation window.
 - A DAgger round (log states visited by the learned policy itself) did not change the picture
   on validation. That model is kept as an ablation: on the test hour it beats LRU at 1-2% on
-  chat but trails Pacer by 1.3-1.7 points and loses to LRU at 10%.
+  chat but trails Pacer by 0.1-1.3 points and loses to LRU at 10%.
 - Two problems: the regression target does not ask the eviction question (will it be reused
   before it would be gone?), and its labels look up next uses past the end of hour 1. The leak
   favors this baseline, so the comparison against it is conservative.
@@ -108,8 +108,15 @@ leakage and bugs. Found and fixed:
   are t-intervals (about 20% wider than the bootstrap with 12 buckets); several overclaims in
   the docs were corrected.
 
-**Test-hour use 5:** v3, run once from committed code with `make reproduce`: the fixed
-configuration is better than the best heuristic in 13 of 16 cells, tied in 3 and worse in none.
+**Test-hour use 5:** v3, run from committed code with the `make reproduce` steps (logged in
+`results/pipeline.log`): the fixed configuration is better than the best heuristic in 13 of 16
+cells, tied in 3 and worse in none.
+
+**Test-hour use 6:** after that run, the censoring-corrected ATC'25 fit turned out to be a
+weaker policy than the simple one in some cells, so the simple fit was added back as a second
+variant chosen on validation, and the 10 test cells where validation picked it were re-run.
+This made the baseline stronger (coder at 1%: 33.7% to 37.3%), the headline tally did not
+change, and the re-run is not in `results/pipeline.log`.
 
 ## 7. Findings that changed the story
 
@@ -125,5 +132,5 @@ configuration is better than the best heuristic in 13 of 16 cells, tied in 3 and
 - Models do not transfer across workloads. Each trace is trained on its own first 45 minutes,
   which takes about a minute.
 - Weighting hits by the prefill compute they save, Pacer's lead holds at small sizes but it
-  drops slightly below LRU on chat at larger sizes: it tends to drop long conversations, whose
+  trails ATC'25 on chat at 2-10% and falls below LRU at 5%: it tends to drop long conversations, whose
   deep blocks cost the most to recompute.

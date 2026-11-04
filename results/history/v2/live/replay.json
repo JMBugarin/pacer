@@ -30,7 +30,7 @@
      "k": 32,
      "reuse": 4
     },
-    "model": "/Users/josh/Developer/my-workspace/personal/pacer/models/v2/fast_traceA.json"
+    "model": "./models/v2/fast_traceA.json"
    }
   ],
   "repeats": 2,

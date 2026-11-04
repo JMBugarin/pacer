@@ -1,5 +1,5 @@
 cargo build --release -p pacer
-   Compiling pacer v0.1.0 (/Users/josh/Developer/my-workspace/personal/pacer/crates/pacer)
+   Compiling pacer v0.1.0 (./crates/pacer)
     Finished `release` profile [optimized] target(s) in 5.50s
 mkdir -p data/labels/hazard
 for t in traceA traceB coder thinking; do \

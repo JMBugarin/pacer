@@ -88,11 +88,11 @@ survive, so one model serves every capacity.
 
 **Why gradient-boosted trees?** Tabular features, a million rows per trace, training in about a
 minute on a laptop, and evaluation in Rust with no runtime dependency. The compact models
-(13-37 trees) are within 0.004 AUC of 85-213 tree models. A neural model would add latency on the
+(13-37 trees) are within 0.005 AUC of 85-213 tree models. A neural model would add latency on the
 eviction path with no evidence of a gain.
 
 **Why per-trace models?** Every transferred model does worse than the trace's own, and 16 of 48
-transfers fall more than half a point below LRU (a model trained on single-turn API traffic
+transfers fall more than half a point below LRU (a model trained on all-first-turn API traffic
 loses 19 points on chat at 10%). Training on a deployment's own recent traffic takes about a
 minute and needs no labels beyond the log itself.
 
@@ -112,7 +112,7 @@ of Belady, so sampling loses little.
 in one decision is much cheaper, and in the ablations it also scores better: without it chat at
 2% drops from 30.2% to 29.3%, and eviction costs 19-30 times as much.
 
-**Compact model and burst reuse.** The deployed models have 13-37 trees, within 0.004 AUC of the
+**Compact model and burst reuse.** The deployed models have 13-37 trees, within 0.005 AUC of the
 85-213 tree models. Batching trees across candidates, chain following, K = 32 and letting one
 sample serve up to 4 evictions bring the fixed configuration to 49-230 ns per evicted block on
 one core, below our heap-based LRU (255-453 ns); the larger model with K = 64 costs 0.65-17.5
@@ -124,6 +124,6 @@ us. K = 32 and burst reuse give up 0.3-1.0 points on chat at 1-2% for that.
   continuation more predictable and move chat at larger caches.
 - A deployment with CPU or SSD offload tiers changes the miss cost per block; the policy would
   then score expected saved compute rather than reuse probability (the results show this matters
-  already: weighted by compute, Pacer's lead on chat disappears at larger sizes).
+  already: weighted by compute, Pacer trails ATC'25 on chat at 2-10% and falls below LRU at 5%).
 - A guard for distribution shift (for example a sampled shadow LRU that the policy falls back to
   when it is losing) is the next step before trusting one model across workloads.
