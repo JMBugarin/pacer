@@ -1,0 +1,1118 @@
+{
+ "traces": [
+  {
+   "path": "data/raw/qwen_traceA_blksz_16.jsonl",
+   "window": [
+    3600,
+    7200
+   ]
+  },
+  {
+   "path": "data/raw/qwen_traceB_blksz_16.jsonl",
+   "window": [
+    3600,
+    7200
+   ]
+  },
+  {
+   "path": "data/raw/qwen_coder_blksz_16.jsonl",
+   "window": [
+    3600,
+    7200
+   ]
+  },
+  {
+   "path": "data/raw/qwen_thinking_blksz_16.jsonl",
+   "window": [
+    3600,
+    7200
+   ]
+  }
+ ],
+ "caps": [
+  0.01,
+  0.02,
+  0.05,
+  0.1
+ ],
+ "time": false,
+ "policies": [
+  {
+   "name": "s3fifo",
+   "params": {
+    "small": 0.02,
+    "threshold": 3.0
+   },
+   "caps": [
+    0.01
+   ],
+   "traces": [
+    "traceA"
+   ]
+  },
+  {
+   "name": "lruqd",
+   "params": {
+    "small": 0.9
+   },
+   "caps": [
+    0.01
+   ],
+   "traces": [
+    "traceA"
+   ]
+  },
+  {
+   "name": "gdsf",
+   "params": {
+    "c1": 0.0
+   },
+   "caps": [
+    0.01
+   ],
+   "traces": [
+    "traceA"
+   ]
+  },
+  {
+   "name": "arc",
+   "params": {
+    "release": 1.0
+   },
+   "caps": [
+    0.01
+   ],
+   "traces": [
+    "traceA"
+   ]
+  },
+  {
+   "name": "wa",
+   "params": {
+    "fit_end": 2700.0,
+    "naive": 1.0
+   },
+   "caps": [
+    0.01
+   ],
+   "traces": [
+    "traceA"
+   ]
+  },
+  {
+   "name": "s3fifo",
+   "params": {
+    "small": 0.75,
+    "threshold": 1.0
+   },
+   "caps": [
+    0.02
+   ],
+   "traces": [
+    "traceA"
+   ]
+  },
+  {
+   "name": "lruqd",
+   "params": {
+    "small": 0.9
+   },
+   "caps": [
+    0.02
+   ],
+   "traces": [
+    "traceA"
+   ]
+  },
+  {
+   "name": "gdsf",
+   "params": {
+    "c1": 0.0
+   },
+   "caps": [
+    0.02
+   ],
+   "traces": [
+    "traceA"
+   ]
+  },
+  {
+   "name": "arc",
+   "params": {
+    "release": 1.0
+   },
+   "caps": [
+    0.02
+   ],
+   "traces": [
+    "traceA"
+   ]
+  },
+  {
+   "name": "wa",
+   "params": {},
+   "caps": [
+    0.02
+   ],
+   "traces": [
+    "traceA"
+   ]
+  },
+  {
+   "name": "s3fifo",
+   "params": {
+    "small": 0.9,
+    "threshold": 2.0
+   },
+   "caps": [
+    0.05
+   ],
+   "traces": [
+    "traceA"
+   ]
+  },
+  {
+   "name": "lruqd",
+   "params": {
+    "small": 0.7
+   },
+   "caps": [
+    0.05
+   ],
+   "traces": [
+    "traceA"
+   ]
+  },
+  {
+   "name": "gdsf",
+   "params": {
+    "c1": 0.0
+   },
+   "caps": [
+    0.05
+   ],
+   "traces": [
+    "traceA"
+   ]
+  },
+  {
+   "name": "arc",
+   "params": {
+    "release": 1.0
+   },
+   "caps": [
+    0.05
+   ],
+   "traces": [
+    "traceA"
+   ]
+  },
+  {
+   "name": "wa",
+   "params": {
+    "fit_end": 2700.0,
+    "naive": 1.0
+   },
+   "caps": [
+    0.05
+   ],
+   "traces": [
+    "traceA"
+   ]
+  },
+  {
+   "name": "s3fifo",
+   "params": {
+    "small": 0.75,
+    "threshold": 1.0
+   },
+   "caps": [
+    0.1
+   ],
+   "traces": [
+    "traceA"
+   ]
+  },
+  {
+   "name": "lruqd",
+   "params": {
+    "small": 0.7
+   },
+   "caps": [
+    0.1
+   ],
+   "traces": [
+    "traceA"
+   ]
+  },
+  {
+   "name": "gdsf",
+   "params": {
+    "c1": 0.0
+   },
+   "caps": [
+    0.1
+   ],
+   "traces": [
+    "traceA"
+   ]
+  },
+  {
+   "name": "arc",
+   "params": {
+    "release": 0.0
+   },
+   "caps": [
+    0.1
+   ],
+   "traces": [
+    "traceA"
+   ]
+  },
+  {
+   "name": "wa",
+   "params": {},
+   "caps": [
+    0.1
+   ],
+   "traces": [
+    "traceA"
+   ]
+  },
+  {
+   "name": "s3fifo",
+   "params": {
+    "small": 0.01,
+    "threshold": 1.0
+   },
+   "caps": [
+    0.01
+   ],
+   "traces": [
+    "traceB"
+   ]
+  },
+  {
+   "name": "lruqd",
+   "params": {
+    "small": 0.5
+   },
+   "caps": [
+    0.01
+   ],
+   "traces": [
+    "traceB"
+   ]
+  },
+  {
+   "name": "gdsf",
+   "params": {
+    "c1": 0.0
+   },
+   "caps": [
+    0.01
+   ],
+   "traces": [
+    "traceB"
+   ]
+  },
+  {
+   "name": "arc",
+   "params": {
+    "release": 0.0
+   },
+   "caps": [
+    0.01
+   ],
+   "traces": [
+    "traceB"
+   ]
+  },
+  {
+   "name": "wa",
+   "params": {
+    "fit_end": 2700.0,
+    "naive": 1.0
+   },
+   "caps": [
+    0.01
+   ],
+   "traces": [
+    "traceB"
+   ]
+  },
+  {
+   "name": "s3fifo",
+   "params": {
+    "small": 0.01,
+    "threshold": 1.0
+   },
+   "caps": [
+    0.02
+   ],
+   "traces": [
+    "traceB"
+   ]
+  },
+  {
+   "name": "lruqd",
+   "params": {
+    "small": 0.1
+   },
+   "caps": [
+    0.02
+   ],
+   "traces": [
+    "traceB"
+   ]
+  },
+  {
+   "name": "gdsf",
+   "params": {
+    "c1": 0.0
+   },
+   "caps": [
+    0.02
+   ],
+   "traces": [
+    "traceB"
+   ]
+  },
+  {
+   "name": "arc",
+   "params": {
+    "release": 0.0
+   },
+   "caps": [
+    0.02
+   ],
+   "traces": [
+    "traceB"
+   ]
+  },
+  {
+   "name": "wa",
+   "params": {
+    "fit_end": 2700.0,
+    "naive": 1.0
+   },
+   "caps": [
+    0.02
+   ],
+   "traces": [
+    "traceB"
+   ]
+  },
+  {
+   "name": "s3fifo",
+   "params": {
+    "small": 0.01,
+    "threshold": 1.0
+   },
+   "caps": [
+    0.05
+   ],
+   "traces": [
+    "traceB"
+   ]
+  },
+  {
+   "name": "lruqd",
+   "params": {
+    "small": 0.1
+   },
+   "caps": [
+    0.05
+   ],
+   "traces": [
+    "traceB"
+   ]
+  },
+  {
+   "name": "gdsf",
+   "params": {
+    "c1": 0.0
+   },
+   "caps": [
+    0.05
+   ],
+   "traces": [
+    "traceB"
+   ]
+  },
+  {
+   "name": "arc",
+   "params": {
+    "release": 0.0
+   },
+   "caps": [
+    0.05
+   ],
+   "traces": [
+    "traceB"
+   ]
+  },
+  {
+   "name": "wa",
+   "params": {
+    "fit_end": 2700.0,
+    "naive": 1.0
+   },
+   "caps": [
+    0.05
+   ],
+   "traces": [
+    "traceB"
+   ]
+  },
+  {
+   "name": "s3fifo",
+   "params": {
+    "small": 0.01,
+    "threshold": 1.0
+   },
+   "caps": [
+    0.1
+   ],
+   "traces": [
+    "traceB"
+   ]
+  },
+  {
+   "name": "lruqd",
+   "params": {
+    "small": 0.1
+   },
+   "caps": [
+    0.1
+   ],
+   "traces": [
+    "traceB"
+   ]
+  },
+  {
+   "name": "gdsf",
+   "params": {
+    "c1": 0.0
+   },
+   "caps": [
+    0.1
+   ],
+   "traces": [
+    "traceB"
+   ]
+  },
+  {
+   "name": "arc",
+   "params": {
+    "release": 0.0
+   },
+   "caps": [
+    0.1
+   ],
+   "traces": [
+    "traceB"
+   ]
+  },
+  {
+   "name": "wa",
+   "params": {
+    "fit_end": 2700.0,
+    "naive": 1.0
+   },
+   "caps": [
+    0.1
+   ],
+   "traces": [
+    "traceB"
+   ]
+  },
+  {
+   "name": "s3fifo",
+   "params": {
+    "small": 0.02,
+    "threshold": 3.0
+   },
+   "caps": [
+    0.01
+   ],
+   "traces": [
+    "coder"
+   ]
+  },
+  {
+   "name": "lruqd",
+   "params": {
+    "small": 0.7
+   },
+   "caps": [
+    0.01
+   ],
+   "traces": [
+    "coder"
+   ]
+  },
+  {
+   "name": "gdsf",
+   "params": {
+    "c1": 0.00390625
+   },
+   "caps": [
+    0.01
+   ],
+   "traces": [
+    "coder"
+   ]
+  },
+  {
+   "name": "arc",
+   "params": {
+    "release": 0.0
+   },
+   "caps": [
+    0.01
+   ],
+   "traces": [
+    "coder"
+   ]
+  },
+  {
+   "name": "wa",
+   "params": {
+    "fit_end": 2700.0,
+    "naive": 1.0
+   },
+   "caps": [
+    0.01
+   ],
+   "traces": [
+    "coder"
+   ]
+  },
+  {
+   "name": "s3fifo",
+   "params": {
+    "small": 0.01,
+    "threshold": 3.0
+   },
+   "caps": [
+    0.02
+   ],
+   "traces": [
+    "coder"
+   ]
+  },
+  {
+   "name": "lruqd",
+   "params": {
+    "small": 0.7
+   },
+   "caps": [
+    0.02
+   ],
+   "traces": [
+    "coder"
+   ]
+  },
+  {
+   "name": "gdsf",
+   "params": {
+    "c1": 0.0
+   },
+   "caps": [
+    0.02
+   ],
+   "traces": [
+    "coder"
+   ]
+  },
+  {
+   "name": "arc",
+   "params": {
+    "release": 1.0
+   },
+   "caps": [
+    0.02
+   ],
+   "traces": [
+    "coder"
+   ]
+  },
+  {
+   "name": "wa",
+   "params": {
+    "fit_end": 2700.0,
+    "naive": 1.0
+   },
+   "caps": [
+    0.02
+   ],
+   "traces": [
+    "coder"
+   ]
+  },
+  {
+   "name": "s3fifo",
+   "params": {
+    "small": 0.75,
+    "threshold": 2.0
+   },
+   "caps": [
+    0.05
+   ],
+   "traces": [
+    "coder"
+   ]
+  },
+  {
+   "name": "lruqd",
+   "params": {
+    "small": 0.7
+   },
+   "caps": [
+    0.05
+   ],
+   "traces": [
+    "coder"
+   ]
+  },
+  {
+   "name": "gdsf",
+   "params": {
+    "c1": 0.0
+   },
+   "caps": [
+    0.05
+   ],
+   "traces": [
+    "coder"
+   ]
+  },
+  {
+   "name": "arc",
+   "params": {
+    "release": 1.0
+   },
+   "caps": [
+    0.05
+   ],
+   "traces": [
+    "coder"
+   ]
+  },
+  {
+   "name": "wa",
+   "params": {},
+   "caps": [
+    0.05
+   ],
+   "traces": [
+    "coder"
+   ]
+  },
+  {
+   "name": "s3fifo",
+   "params": {
+    "small": 0.5,
+    "threshold": 3.0
+   },
+   "caps": [
+    0.1
+   ],
+   "traces": [
+    "coder"
+   ]
+  },
+  {
+   "name": "lruqd",
+   "params": {
+    "small": 0.5
+   },
+   "caps": [
+    0.1
+   ],
+   "traces": [
+    "coder"
+   ]
+  },
+  {
+   "name": "gdsf",
+   "params": {
+    "c1": 0.0
+   },
+   "caps": [
+    0.1
+   ],
+   "traces": [
+    "coder"
+   ]
+  },
+  {
+   "name": "arc",
+   "params": {
+    "release": 0.0
+   },
+   "caps": [
+    0.1
+   ],
+   "traces": [
+    "coder"
+   ]
+  },
+  {
+   "name": "wa",
+   "params": {},
+   "caps": [
+    0.1
+   ],
+   "traces": [
+    "coder"
+   ]
+  },
+  {
+   "name": "s3fifo",
+   "params": {
+    "small": 0.25,
+    "threshold": 3.0
+   },
+   "caps": [
+    0.01
+   ],
+   "traces": [
+    "thinking"
+   ]
+  },
+  {
+   "name": "lruqd",
+   "params": {
+    "small": 0.7
+   },
+   "caps": [
+    0.01
+   ],
+   "traces": [
+    "thinking"
+   ]
+  },
+  {
+   "name": "gdsf",
+   "params": {
+    "c1": 0.0
+   },
+   "caps": [
+    0.01
+   ],
+   "traces": [
+    "thinking"
+   ]
+  },
+  {
+   "name": "arc",
+   "params": {
+    "release": 1.0
+   },
+   "caps": [
+    0.01
+   ],
+   "traces": [
+    "thinking"
+   ]
+  },
+  {
+   "name": "wa",
+   "params": {},
+   "caps": [
+    0.01
+   ],
+   "traces": [
+    "thinking"
+   ]
+  },
+  {
+   "name": "s3fifo",
+   "params": {
+    "small": 0.75,
+    "threshold": 1.0
+   },
+   "caps": [
+    0.02
+   ],
+   "traces": [
+    "thinking"
+   ]
+  },
+  {
+   "name": "lruqd",
+   "params": {
+    "small": 0.5
+   },
+   "caps": [
+    0.02
+   ],
+   "traces": [
+    "thinking"
+   ]
+  },
+  {
+   "name": "gdsf",
+   "params": {
+    "c1": 0.0
+   },
+   "caps": [
+    0.02
+   ],
+   "traces": [
+    "thinking"
+   ]
+  },
+  {
+   "name": "arc",
+   "params": {
+    "release": 1.0
+   },
+   "caps": [
+    0.02
+   ],
+   "traces": [
+    "thinking"
+   ]
+  },
+  {
+   "name": "wa",
+   "params": {
+    "fit_end": 2700.0,
+    "naive": 1.0
+   },
+   "caps": [
+    0.02
+   ],
+   "traces": [
+    "thinking"
+   ]
+  },
+  {
+   "name": "s3fifo",
+   "params": {
+    "small": 0.5,
+    "threshold": 3.0
+   },
+   "caps": [
+    0.05
+   ],
+   "traces": [
+    "thinking"
+   ]
+  },
+  {
+   "name": "lruqd",
+   "params": {
+    "small": 0.7
+   },
+   "caps": [
+    0.05
+   ],
+   "traces": [
+    "thinking"
+   ]
+  },
+  {
+   "name": "gdsf",
+   "params": {
+    "c1": 0.0
+   },
+   "caps": [
+    0.05
+   ],
+   "traces": [
+    "thinking"
+   ]
+  },
+  {
+   "name": "arc",
+   "params": {
+    "release": 0.0
+   },
+   "caps": [
+    0.05
+   ],
+   "traces": [
+    "thinking"
+   ]
+  },
+  {
+   "name": "wa",
+   "params": {},
+   "caps": [
+    0.05
+   ],
+   "traces": [
+    "thinking"
+   ]
+  },
+  {
+   "name": "s3fifo",
+   "params": {
+    "small": 0.01,
+    "threshold": 1.0
+   },
+   "caps": [
+    0.1
+   ],
+   "traces": [
+    "thinking"
+   ]
+  },
+  {
+   "name": "lruqd",
+   "params": {
+    "small": 0.9
+   },
+   "caps": [
+    0.1
+   ],
+   "traces": [
+    "thinking"
+   ]
+  },
+  {
+   "name": "gdsf",
+   "params": {
+    "c1": 0.0
+   },
+   "caps": [
+    0.1
+   ],
+   "traces": [
+    "thinking"
+   ]
+  },
+  {
+   "name": "arc",
+   "params": {
+    "release": 0.0
+   },
+   "caps": [
+    0.1
+   ],
+   "traces": [
+    "thinking"
+   ]
+  },
+  {
+   "name": "wa",
+   "params": {
+    "fit_end": 2700.0,
+    "naive": 1.0
+   },
+   "caps": [
+    0.1
+   ],
+   "traces": [
+    "thinking"
+   ]
+  },
+  {
+   "name": "lru"
+  },
+  {
+   "name": "fifo"
+  },
+  {
+   "name": "lfu"
+  },
+  {
+   "name": "sieve"
+  },
+  {
+   "name": "sampled-lru"
+  },
+  {
+   "name": "oracle-dead"
+  },
+  {
+   "name": "oracle-within",
+   "label": "oracle-within-60",
+   "params": {
+    "horizon": 60
+   }
+  },
+  {
+   "name": "oracle-within",
+   "label": "oracle-within-300",
+   "params": {
+    "horizon": 300
+   }
+  },
+  {
+   "name": "sampled-belady"
+  },
+  {
+   "name": "belady"
+  },
+  {
+   "name": "pacer",
+   "label": "pacer-fixed",
+   "params": {
+    "mult": 1.0,
+    "k": 32,
+    "reuse": 4,
+    "model": 0
+   },
+   "traces": [
+    "traceA"
+   ]
+  },
+  {
+   "name": "pacer",
+   "label": "pacer-fixed",
+   "params": {
+    "mult": 1.0,
+    "k": 32,
+    "reuse": 4,
+    "model": 1
+   },
+   "traces": [
+    "traceB"
+   ]
+  },
+  {
+   "name": "pacer",
+   "label": "pacer-fixed",
+   "params": {
+    "mult": 1.0,
+    "k": 32,
+    "reuse": 4,
+    "model": 2
+   },
+   "traces": [
+    "coder"
+   ]
+  },
+  {
+   "name": "pacer",
+   "label": "pacer-fixed",
+   "params": {
+    "mult": 1.0,
+    "k": 32,
+    "reuse": 4,
+    "model": 3
+   },
+   "traces": [
+    "thinking"
+   ]
+  }
+ ],
+ "wa_fits": {
+  "traceA": "models/history/tpot040/wa_traceA.json",
+  "traceB": "models/history/tpot040/wa_traceB.json",
+  "coder": "models/history/tpot040/wa_coder.json",
+  "thinking": "models/history/tpot040/wa_thinking.json"
+ },
+ "tpot": 0.04,
+ "models": {
+  "0": "models/history/tpot040/fast_traceA.json",
+  "1": "models/history/tpot040/fast_traceB.json",
+  "2": "models/history/tpot040/fast_coder.json",
+  "3": "models/history/tpot040/fast_thinking.json"
+ }
+}

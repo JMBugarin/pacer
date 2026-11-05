@@ -133,6 +133,76 @@ recompute. Scoring candidates by expected saved compute (reuse probability times
 instead of reuse probability is the obvious next step. Belady here is the hit-optimal schedule,
 not the compute-optimal one.
 
+### Scoring by saved compute
+
+The same fixed configuration, but candidates are ranked by expected saved prefill: reuse
+probability times the block's relative cost 1 + alpha * depth, with alpha = 0.0045 taken from the
+M5 Pro calibration (not tuned). Test hour; the best heuristic is the one with the most compute
+saved in that cell (`results/research/cost_test.jsonl`, `scripts/research.py cost`).
+
+<!-- results:cost_aware -->
+| Trace | Cache | hit: reuse score | hit: cost score | compute saved: best heuristic | reuse score | cost score | cost score vs best (95% CI) |
+|---|---|---|---|---|---|---|---|
+| To-C chat | 1% | 21.85 | 21.13 | 12.56 (S3-FIFO) | 17.83 | 22.39 | +9.82 [+3.77, +15.88] |
+| To-C chat | 2% | 30.19 | 28.10 | 27.44 (ATC'25) | 26.77 | 30.08 | +2.64 [+1.39, +3.90] |
+| To-C chat | 5% | 46.16 | 44.15 | 44.42 (ATC'25) | 43.36 | 46.08 | +1.66 [+0.37, +2.95] |
+| To-C chat | 10% | 58.78 | 55.92 | 58.33 (ATC'25) | 57.73 | 57.22 | -1.12 [-2.00, -0.23] |
+| To-B API | 1% | 52.32 | 52.11 | 45.67 (ARC) | 45.99 | 45.95 | +0.28 [+0.16, +0.40] |
+| To-B API | 2% | 53.08 | 52.88 | 46.17 (S3-FIFO) | 46.76 | 46.62 | +0.44 [+0.28, +0.60] |
+| To-B API | 5% | 53.34 | 53.26 | 46.65 (S3-FIFO) | 46.99 | 46.97 | +0.32 [+0.21, +0.43] |
+| To-B API | 10% | 53.46 | 53.38 | 46.94 (S3-FIFO) | 47.09 | 47.11 | +0.17 [+0.07, +0.27] |
+| Coder | 1% | 41.26 | 40.77 | 42.00 (GDSF) | 43.63 | 43.60 | +1.60 [+1.20, +2.01] |
+| Coder | 2% | 48.17 | 47.13 | 48.40 (ATC'25) | 49.85 | 49.90 | +1.49 [+1.06, +1.93] |
+| Coder | 5% | 58.47 | 57.18 | 58.59 (ARC) | 58.93 | 58.74 | +0.15 [-0.27, +0.56] |
+| Coder | 10% | 64.62 | 63.95 | 64.45 (LRU) | 64.62 | 64.63 | +0.18 [-0.20, +0.56] |
+| Thinking | 1% | 33.13 | 32.74 | 24.73 (ARC) | 25.68 | 25.94 | +1.21 [-0.12, +2.55] |
+| Thinking | 2% | 34.97 | 34.32 | 26.92 (ATC'25) | 27.73 | 27.45 | +0.53 [-0.46, +1.52] |
+| Thinking | 5% | 36.76 | 36.50 | 29.00 (ATC'25) | 29.60 | 29.98 | +0.99 [+0.11, +1.87] |
+| Thinking | 10% | 37.55 | 37.29 | 30.81 (LRU+QD) | 30.69 | 30.66 | -0.15 [-0.51, +0.20] |
+<!-- /results:cost_aware -->
+
+On chat at 1-5% the cost score turns the compute-weighted deficit into a lead, at the price of
+0.7-2.1 points of plain hit ratio there (2.9 at 10%, where it also falls slightly below LRU in compute saved).
+Elsewhere it changes little. Which score to deploy depends on what a miss costs: on hardware
+where attention over long contexts dominates prefill, the cost score; where hits matter
+uniformly, the reuse score.
+
+## Sensitivity to decode speed
+
+The simulator holds a request's blocks for 0.02 s per output token. Here the whole Pacer
+pipeline was rebuilt at 10 and 40 ms/token (rows and compact models retrained at that speed)
+and every baseline replayed, with all settings kept as chosen at 20 ms/token. Cells are the
+fixed configuration minus the best heuristic, in points, with the paired 95% t-interval
+(`results/research/tpot*_test.jsonl`, `scripts/research.py tpot`).
+
+<!-- results:tpot -->
+| Trace | Cache | 10 ms/token | 20 ms/token | 40 ms/token |
+|---|---|---|---|---|
+| To-C chat | 1% | +1.97 [+0.72, +3.23] | +2.27 [+1.80, +2.75] | +0.58 [+0.22, +0.94] |
+| To-C chat | 2% | +2.20 [+1.63, +2.78] | +2.23 [+1.47, +2.98] | +1.18 [+0.28, +2.08] |
+| To-C chat | 5% | +0.01 [-0.76, +0.77] | +0.10 [-0.60, +0.80] | -0.42 [-0.89, +0.05] |
+| To-C chat | 10% | -0.16 [-0.69, +0.37] | +0.04 [-0.27, +0.35] | -0.29 [-0.59, +0.00] |
+| To-B API | 1% | +0.47 [+0.38, +0.56] | +0.46 [+0.34, +0.57] | +0.36 [+0.26, +0.46] |
+| To-B API | 2% | +0.66 [+0.55, +0.77] | +0.66 [+0.57, +0.76] | +0.67 [+0.57, +0.76] |
+| To-B API | 5% | +0.43 [+0.33, +0.52] | +0.40 [+0.30, +0.50] | +0.39 [+0.29, +0.49] |
+| To-B API | 10% | +0.29 [+0.21, +0.37] | +0.23 [+0.16, +0.30] | +0.23 [+0.17, +0.28] |
+| Coder | 1% | +2.87 [+2.53, +3.20] | +1.96 [+1.63, +2.29] | +0.28 [+0.11, +0.45] |
+| Coder | 2% | +2.55 [+2.15, +2.95] | +1.75 [+1.27, +2.22] | +1.57 [+1.13, +2.02] |
+| Coder | 5% | +1.28 [+0.90, +1.65] | +0.82 [+0.33, +1.30] | +0.73 [+0.48, +0.98] |
+| Coder | 10% | +0.75 [+0.46, +1.03] | +0.62 [+0.22, +1.01] | +0.50 [+0.20, +0.80] |
+| Thinking | 1% | +0.66 [+0.04, +1.29] | +0.95 [+0.27, +1.63] | +0.55 [-0.02, +1.12] |
+| Thinking | 2% | +0.81 [+0.18, +1.44] | +1.21 [+0.66, +1.75] | +0.74 [+0.24, +1.23] |
+| Thinking | 5% | +0.96 [+0.52, +1.40] | +0.83 [+0.59, +1.07] | +0.14 [-0.37, +0.65] |
+| Thinking | 10% | +0.09 [-0.20, +0.37] | +0.05 [-0.23, +0.33] | -0.07 [-0.45, +0.31] |
+
+10 ms/token: better 13, tie 3, worse 0; 20 ms/token: better 13, tie 3, worse 0; 40 ms/token: better 11, tie 5, worse 0.
+<!-- /results:tpot -->
+
+The headline does not depend on the decode constant: Pacer is never significantly worse at any
+speed. The margins shrink at 40 ms/token, most at 1% capacity (chat +2.27 to +0.58, coder +1.96
+to +0.28), where slower decoding pins more of the cache and leaves less room for any policy to
+differ.
+
 ## Prediction quality
 
 Held-out AUC and log loss on rows starting in minutes 52.5-60 of hour 1, same rows for both

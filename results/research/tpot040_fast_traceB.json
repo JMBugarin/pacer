@@ -1,0 +1,57 @@
+{
+  "train_rows": 2185295,
+  "early_stop_rows": 294978,
+  "valid_rows": 191074,
+  "valid_from": 2700.0,
+  "early_stop_until": 3144.81396484375,
+  "valid_max_window_s": 454.4252052307129,
+  "valid_positive_rate": 0.23620691459853252,
+  "best_iteration": 16,
+  "gbdt": {
+    "auc": 0.986144669130682,
+    "logloss": 0.12787177712306724
+  },
+  "workload_exp": {
+    "auc": 0.7659932152938796,
+    "logloss": 0.4637061481406104
+  },
+  "constant": {
+    "logloss": 0.5482566151571999
+  },
+  "auc_by_horizon": {
+    "h in [0, 60)": {
+      "rows": 115526,
+      "gbdt_auc": 0.9822950452871352,
+      "workload_exp_auc": 0.7682806949930776
+    },
+    "h in [60, 300)": {
+      "rows": 71079,
+      "gbdt_auc": 0.989459471666439,
+      "workload_exp_auc": 0.7578308676656691
+    },
+    "h in [300, 1e+09)": {
+      "rows": 4469,
+      "gbdt_auc": 0.9972353257044325,
+      "workload_exp_auc": 0.7274674659255979
+    }
+  },
+  "importance_gain": {
+    "n_access": 3082147.4641418457,
+    "h": 150584.64433288574,
+    "a": 49110.65643310547,
+    "input_len": 26942.878189086914,
+    "arrivals_60s": 23745.184051513672,
+    "output_len": 19361.72396850586,
+    "rel_depth": 10333.636993408203,
+    "rtype": 9754.13508605957,
+    "depth": 7979.297027587891,
+    "is_output": 3121.320068359375,
+    "session_age": 883.7360076904297,
+    "fanout": 0.0,
+    "turn": 0.0,
+    "prev_gap": 0.0,
+    "mean_gap": 0.0,
+    "a_over_gap": 0.0
+  },
+  "dropped": []
+}

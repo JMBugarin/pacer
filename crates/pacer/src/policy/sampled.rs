@@ -57,6 +57,7 @@ pub struct Sampled {
     cand: Vec<u32>,
     hbuf: Vec<f32>,
     hout: Vec<f64>,
+    cost_alpha: f64,
     reuse: usize,
     spare: Vec<u32>,
     spare_at: (f64, u8, u32),
@@ -81,6 +82,7 @@ impl Sampled {
             cand: Vec::with_capacity(k.max(1)),
             hbuf: vec![0.0; k.max(1) * N_HAZ],
             hout: vec![0.0; k.max(1)],
+            cost_alpha: 0.0,
             reuse: 1,
             spare: Vec::new(),
             spare_at: (f64::NAN, 0, 0),
@@ -92,6 +94,13 @@ impl Sampled {
 
     /// Lets one scored sample supply up to `reuse` victims within the same eviction burst
     /// (the evictions triggered by one arrival or completion), best score first.
+    /// Scores candidates by expected saved prefill instead of reuse probability: P(reuse) times
+    /// the block's relative recompute cost 1 + alpha * depth. alpha = 0 keeps plain reuse.
+    pub fn with_cost(mut self, alpha: f64) -> Self {
+        self.cost_alpha = alpha.max(0.0);
+        self
+    }
+
     pub fn with_reuse(mut self, reuse: usize) -> Self {
         self.reuse = reuse.max(1);
         self
@@ -198,6 +207,13 @@ impl Policy for Sampled {
                 self.hbuf[j * N_HAZ..(j + 1) * N_HAZ].copy_from_slice(&f);
             }
             m.predict_batch(&self.hbuf, self.cand.len(), &mut self.hout);
+            if self.cost_alpha > 0.0 {
+                for (j, &k) in self.cand.iter().enumerate() {
+                    let p = 1.0 / (1.0 + (-self.hout[j]).exp());
+                    let cost = 1.0 + self.cost_alpha * tr.key_depth[k as usize] as f64;
+                    self.hout[j] = (p * cost).ln();
+                }
+            }
             self.model_calls += self.cand.len() as u64;
         }
         let mut best = 0usize;
