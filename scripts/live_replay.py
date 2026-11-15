@@ -66,6 +66,11 @@ def main() -> None:
     ap.add_argument("--check", type=int, default=200, help="arrivals in the logits check")
     ap.add_argument("--check-policy", default="lru")
     ap.add_argument("--check-limit", type=int, help="trace prefix for the check (default --limit)")
+    ap.add_argument(
+        "--verified-output",
+        action="store_true",
+        help="Recompute full logits for every cache hit; includes verification cost in TTFT",
+    )
     ap.add_argument("--model", default=DEFAULT_MODEL)
     ap.add_argument("--chunk", type=int, default=DEFAULT_CHUNK)
     ap.add_argument("--tpot", type=float, default=0.02)
@@ -95,7 +100,7 @@ def main() -> None:
         else:
             ctr, creqs, ccap = tr, reqs, cap
 
-    engine = Engine(a.model, a.chunk, a.seed)
+    engine = Engine(a.model, a.chunk, a.seed, verify_output=a.verified_output)
     engine.reserve(max(len(r["input_keys"]) + len(r["output_keys"]) for r in reqs + (creqs or [])))
     mx.set_cache_limit(max(int(a.cache_limit_gb * 2**30), engine.workspace_bytes + 2**30))
     pool = engine.new_pool(max(cap, ccap))
@@ -162,6 +167,7 @@ def main() -> None:
             "tpot": a.tpot,
             "seed": a.seed,
             "kv_dtype": str(engine.dtype),
+            "verified_output": a.verified_output,
             "block_bytes": engine.block_bytes,
             "pool_bytes": pool.nbytes,
             "workspace_bytes": engine.workspace_bytes,
