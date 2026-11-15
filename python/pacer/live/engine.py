@@ -65,7 +65,14 @@ class Prefill:
 
 
 class Engine:
-    def __init__(self, model: str = DEFAULT_MODEL, chunk: int = DEFAULT_CHUNK, seed: int = 0):
+    def __init__(
+        self,
+        model: str = DEFAULT_MODEL,
+        chunk: int = DEFAULT_CHUNK,
+        seed: int = 0,
+        verify_output: bool = False,
+    ):
+        self.verify_output = verify_output
         self.model, tok = load(model)
         args = self.model.args
         self.name = model
@@ -146,6 +153,10 @@ class Engine:
         out = self._forward(x, cache, logits)
         y = mx.argmax(out) if logits else None
         mx.eval(y, [c.keys for c in cache], [c.values for c in cache])
+        if self.verify_output and logits and ctx:
+            out = self.full_logits([*ctx, *new])
+            y = mx.argmax(out)
+            mx.eval(y)
         t2 = perf_counter()
         end, shape = base + BLOCK * n_new, (self.n_kv_heads, n_new, BLOCK, self.head_dim)
         k_new = [c.keys[0, :, base:end].reshape(shape).transpose(1, 0, 2, 3) for c in cache]

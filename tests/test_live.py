@@ -154,3 +154,18 @@ def test_pool_path_is_bitwise_stock_mlx_lm(engine):
     stock_k = cache[3].keys[0, :, BLOCK * split : BLOCK * len(keys), :]
     mine_k = got.k_new[3].transpose(1, 0, 2, 3).reshape(stock_k.shape)
     assert mx.array_equal(mine_k, stock_k).item()
+
+
+def test_verified_output_uses_full_prefill(engine):
+    keys = list(range(90000, 90032))
+    pool = engine.new_pool(16)
+    pre = engine.run(None, [], keys[:16], logits=False)
+    pool.write(keys[:16], pre.k_new, pre.v_new)
+    engine.verify_output = True
+    try:
+        got = engine.run(pool, keys[:16], keys[16:])
+        ref = engine.full_logits(keys)
+        assert mx.array_equal(got.logits, ref).item()
+        assert got.token == mx.argmax(ref).item()
+    finally:
+        engine.verify_output = False

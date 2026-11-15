@@ -1,0 +1,19 @@
+dry lru             hit 0.4280 prefill 22256 output 1920 tokens
+dry pacer           hit 0.5514 prefill 17456 output 1920 tokens
+Fetching 9 files:   0%|          | 0/9 [00:00<?, ?it/s]Fetching 9 files: 100%|██████████| 9/9 [00:00<00:00, 3803.78it/s]
+120 requests, n_keys 824, cap 165 blocks (min 24), pool 0.28 GiB, workspace 0.04 GiB
+check: 66 of 66 arrivals with a cached prefix (lru)
+check: argmax equal 0.9697, max|dlogit| p50 0.140 max 0.339
+rep 0 lru             wall    4.9s hit 0.4280 ttft p50    25.0 ms  (1/8, eta 34s)
+rep 0 pacer           wall    4.8s hit 0.5514 ttft p50    24.8 ms  (2/8, eta 29s)
+rep 1 pacer           wall    4.7s hit 0.5514 ttft p50    24.6 ms  (3/8, eta 24s)
+rep 1 lru             wall    4.9s hit 0.4280 ttft p50    25.2 ms  (4/8, eta 19s)
+rep 2 lru             wall    4.9s hit 0.4280 ttft p50    25.2 ms  (5/8, eta 15s)
+rep 2 pacer           wall    4.7s hit 0.5514 ttft p50    24.4 ms  (6/8, eta 10s)
+rep 3 pacer           wall    4.7s hit 0.5514 ttft p50    24.1 ms  (7/8, eta 5s)
+rep 3 lru             wall    4.9s hit 0.4280 ttft p50    25.2 ms  (8/8, eta 0s)
+
+policy             hit   p50 ms            95% CI   p95 ms         vs lru p50
+lru              0.428     25.1 [  24.2,   25.7]     30.6  +0.0% [+0.0%,+0.0%]
+pacer            0.551     24.2 [  23.7,   25.1]     30.4  +3.6% [+0.3%,+5.3%]
+wrote docs/evidence/serving-v3/supplementary-unverified.json in 48s

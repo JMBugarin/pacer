@@ -1,0 +1,18 @@
+============================= test session starts ==============================
+platform darwin -- Python 3.12.15, pytest-9.2.0, pluggy-1.7.0 -- /Users/josh/Developer/my-workspace/personal/pacer/.venv/bin/python
+cachedir: .pytest_cache
+rootdir: /Users/josh/Developer/my-workspace/personal/pacer
+configfile: pyproject.toml
+plugins: anyio-4.16.0
+collecting ... collected 8 items
+
+tests/test_live.py::test_block_tokens_deterministic PASSED               [ 12%]
+tests/test_live.py::test_pool_write_gather_free PASSED                   [ 25%]
+tests/test_live.py::test_replay_mirrors_controller[lru] PASSED           [ 37%]
+tests/test_live.py::test_replay_mirrors_controller[s3fifo] PASSED        [ 50%]
+tests/test_live.py::test_pool_refuses_to_exceed_capacity PASSED          [ 62%]
+tests/test_live.py::test_cached_prefill_matches_full PASSED              [ 75%]
+tests/test_live.py::test_full_hit_recomputes_last_token PASSED           [ 87%]
+tests/test_live.py::test_pool_path_is_bitwise_stock_mlx_lm PASSED        [100%]
+
+============================== 8 passed in 11.79s ==============================

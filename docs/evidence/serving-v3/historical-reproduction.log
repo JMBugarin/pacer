@@ -1,0 +1,10 @@
+dry lru             hit 0.1427 prefill 768160 output 165728 tokens
+Fetching 9 files:   0%|          | 0/9 [00:00<?, ?it/s]Fetching 9 files: 100%|██████████| 9/9 [00:00<00:00, 3361.72it/s]
+400 requests, n_keys 56111, cap 4489 blocks (min 3277), pool 7.67 GiB, workspace 2.29 GiB
+check: 200 of 380 arrivals with a cached prefix (lru)
+check: argmax equal 0.9750, max|dlogit| p50 0.128 max 0.377
+rep 0 lru             wall  234.0s hit 0.1427 ttft p50   134.1 ms  (1/1, eta 0s)
+
+policy             hit   p50 ms            95% CI   p95 ms         vs lru p50
+lru              0.143    133.5 [ 121.3,  150.8]   1413.7  +0.0% [+0.0%,+0.0%]
+wrote docs/evidence/serving-v3/historical-reproduction.json in 557s
