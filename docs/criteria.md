@@ -42,3 +42,5 @@ Each is measured from the result files by `python -m pacer.report fill`.
   drift.
 - **C10 (reproduce).** The second ATC'25 fit was added after the logged pipeline run, and its
   10 test cells were re-run outside it (engineering log, test-hour use 6).
+
+C9 follow-up (Nov 2026, outside the generated table): root cause and frozen v3 results are in [serving v3](evidence/serving-v3/REPORT.md). Verified-output mode meets token agreement by construction and loses the latency gain. Cached mode measured 96.97% on the new workload, so C9 stays partial.
