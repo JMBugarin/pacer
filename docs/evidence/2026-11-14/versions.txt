@@ -1,0 +1,4 @@
+Python 3.12.15
+cargo 1.99.1 (5f94df478 2026-08-27)
+rustc 1.99.1 (58cf8f9c3 2026-10-13)
+/Users/josh/Developer/my-workspace/personal/pacer/.venv/bin/python: No module named pip

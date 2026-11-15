@@ -1,0 +1,22 @@
+============================= test session starts ==============================
+platform darwin -- Python 3.12.15, pytest-9.2.0, pluggy-1.7.0
+rootdir: /Users/josh/Developer/my-workspace/personal/pacer
+configfile: pyproject.toml
+testpaths: tests
+collected 557 items / 96 deselected / 1 skipped / 461 selected
+
+tests/test_belady.py ..................                                  [  3%]
+tests/test_differential.py ............................................. [ 13%]
+..........................                                               [ 19%]
+tests/test_hazard.py .............................................       [ 29%]
+tests/test_hazard_rows.py .                                              [ 29%]
+tests/test_prefill_checks.py .....                                       [ 30%]
+tests/test_trace.py .................................................... [ 41%]
+........................................................................ [ 57%]
+........................................................................ [ 72%]
+........................................................................ [ 88%]
+.....................................................                    [100%]
+
+=========================== short test summary info ============================
+SKIPPED [1] tests/test_live.py:11: could not import 'mlx.core': No module named 'mlx'
+================ 461 passed, 1 skipped, 96 deselected in 10.31s ================
