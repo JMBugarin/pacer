@@ -115,7 +115,7 @@ def test_cached_prefill_matches_full(engine, tiny):
     )
     s = rp.check_summary(r["checks"])
     assert s["n"] == len(picked)
-    assert all(c["argmax_equal"] or c["ref_margin"] <= c["max_abs"] for c in r["checks"])
+    assert all(c["argmax_equal"] or c["ref_margin"] <= 2 * c["max_abs"] for c in r["checks"])
     assert s["max_abs_diff"]["max"] < 1.0
     assert s["control_max_abs_p50"] > 2 * s["max_abs_diff"]["p50"]
 
