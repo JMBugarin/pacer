@@ -1,0 +1,57 @@
+============================= test session starts ==============================
+platform darwin -- Python 3.12.15, pytest-9.2.0, pluggy-1.7.0
+rootdir: /Users/josh/Developer/my-workspace/personal/pacer
+configfile: pyproject.toml
+testpaths: tests
+collected 0 items / 4 errors / 2 skipped
+
+==================================== ERRORS ====================================
+____________________ ERROR collecting tests/test_belady.py _____________________
+ImportError while importing test module '/Users/josh/Developer/my-workspace/personal/pacer/tests/test_belady.py'.
+Hint: make sure your test modules/packages have valid Python names.
+Traceback:
+/Users/josh/.local/share/uv/python/cpython-3.12.15-macos-aarch64-none/lib/python3.12/importlib/__init__.py:90: in import_module
+    return _bootstrap._gcd_import(name[level:], package, level)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+tests/test_belady.py:18: in <module>
+    from pacer import refsim
+E   ModuleNotFoundError: No module named 'pacer'
+_________________ ERROR collecting tests/test_differential.py __________________
+ImportError while importing test module '/Users/josh/Developer/my-workspace/personal/pacer/tests/test_differential.py'.
+Hint: make sure your test modules/packages have valid Python names.
+Traceback:
+/Users/josh/.local/share/uv/python/cpython-3.12.15-macos-aarch64-none/lib/python3.12/importlib/__init__.py:90: in import_module
+    return _bootstrap._gcd_import(name[level:], package, level)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+tests/test_differential.py:17: in <module>
+    from pacer import refsim
+E   ModuleNotFoundError: No module named 'pacer'
+__________________ ERROR collecting tests/test_hazard_rows.py __________________
+ImportError while importing test module '/Users/josh/Developer/my-workspace/personal/pacer/tests/test_hazard_rows.py'.
+Hint: make sure your test modules/packages have valid Python names.
+Traceback:
+/Users/josh/.local/share/uv/python/cpython-3.12.15-macos-aarch64-none/lib/python3.12/importlib/__init__.py:90: in import_module
+    return _bootstrap._gcd_import(name[level:], package, level)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+tests/test_hazard_rows.py:9: in <module>
+    from pacer.hazard import FEATURES, N_COLS
+E   ModuleNotFoundError: No module named 'pacer'
+_____________________ ERROR collecting tests/test_trace.py _____________________
+ImportError while importing test module '/Users/josh/Developer/my-workspace/personal/pacer/tests/test_trace.py'.
+Hint: make sure your test modules/packages have valid Python names.
+Traceback:
+/Users/josh/.local/share/uv/python/cpython-3.12.15-macos-aarch64-none/lib/python3.12/importlib/__init__.py:90: in import_module
+    return _bootstrap._gcd_import(name[level:], package, level)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+tests/test_trace.py:10: in <module>
+    from pacer import trace as ptrace
+E   ModuleNotFoundError: No module named 'pacer'
+=========================== short test summary info ============================
+SKIPPED [1] tests/test_hazard.py:10: could not import 'pacer.hazard': No module named 'pacer'
+SKIPPED [1] tests/test_live.py:11: could not import 'mlx.core': No module named 'mlx'
+ERROR tests/test_belady.py
+ERROR tests/test_differential.py
+ERROR tests/test_hazard_rows.py
+ERROR tests/test_trace.py
+!!!!!!!!!!!!!!!!!!! Interrupted: 4 errors during collection !!!!!!!!!!!!!!!!!!!!
+========================= 2 skipped, 4 errors in 0.13s =========================

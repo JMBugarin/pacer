@@ -1,0 +1,94 @@
+{
+  "code_sha": "f0349ed4a302d1fb8c4ed5d97a6aec78a28b1924",
+  "tracked_dirty": false,
+  "untracked": "evidence files only; see git status",
+  "start": "2026-11-15T02:41:58.340489+00:00",
+  "platform": "macOS-26.6-arm64-arm-64bit-Mach-O",
+  "hardware": "Apple M5 Pro",
+  "commands": [
+    {
+      "command": "PYTHONPATH=python .venv/bin/pytest -m \"not slow and not live\"",
+      "exit_code": 0,
+      "start": "2026-11-15T02:41:58.361255+00:00",
+      "end": "2026-11-15T02:42:08.814370+00:00",
+      "raw": "pytest.txt"
+    },
+    {
+      "command": "cargo test -p pacer",
+      "exit_code": 0,
+      "start": "2026-11-15T02:42:08.814406+00:00",
+      "end": "2026-11-15T02:42:18.065537+00:00",
+      "raw": "cargo-test.txt"
+    },
+    {
+      "command": ".venv/bin/ruff check . && .venv/bin/ruff format --check . && cargo fmt --all --check",
+      "exit_code": 0,
+      "start": "2026-11-15T02:42:18.065564+00:00",
+      "end": "2026-11-15T02:42:18.177256+00:00",
+      "raw": "lint.txt"
+    },
+    {
+      "command": "cargo clippy --workspace --all-targets -- -D warnings",
+      "exit_code": 0,
+      "start": "2026-11-15T02:42:18.177281+00:00",
+      "end": "2026-11-15T02:42:18.330999+00:00",
+      "raw": "clippy.txt"
+    },
+    {
+      "command": "cargo build --release -p pacer",
+      "exit_code": 0,
+      "start": "2026-11-15T02:42:18.331027+00:00",
+      "end": "2026-11-15T02:42:18.465932+00:00",
+      "raw": "build.txt"
+    },
+    {
+      "command": ".venv/bin/python --version && cargo --version && rustc --version && .venv/bin/python -m pip freeze",
+      "exit_code": 1,
+      "start": "2026-11-15T02:42:18.465964+00:00",
+      "end": "2026-11-15T02:42:18.538277+00:00",
+      "raw": "versions.txt"
+    }
+  ],
+  "inputs": {
+    "uv.lock": "c87f0b547c8dc96bc1cb76ce75f1c31a808d879c0d11fff6750fe25de8a00ec3",
+    "Cargo.lock": "f27a769b38917d8a03d0938ec614b8f389f41f643f9a7bebb1b7a68bf2f55474",
+    "results/live/replay.json": "1ba975384bfc2fff8e9841ec90f155090ff8706383d5b3db24a4a3864631eb99"
+  },
+  "purpose": "correctness tests and historical reanalysis; no fresh performance measurement",
+  "end": "2026-11-15T02:42:18.538306+00:00",
+  "dependencies": {
+    "kiwisolver": "1.5.1",
+    "packaging": "26.3",
+    "narwhals": "2.28.0",
+    "Pygments": "2.21.0",
+    "ruff": "0.17.3",
+    "iniconfig": "2.3.1",
+    "numpy": "2.5.4",
+    "pillow": "13.0.0",
+    "contourpy": "1.4.0",
+    "pluggy": "1.7.0",
+    "matplotlib": "3.11.2",
+    "pytest": "9.2.0",
+    "cycler": "0.12.1",
+    "fonttools": "4.68.0",
+    "tzdata": "2026.6",
+    "lightgbm": "4.7.0",
+    "python-dateutil": "4.0.0",
+    "pyparsing": "3.3.3",
+    "scipy": "1.18.1"
+  },
+  "limitations": [
+    "versions.txt pip freeze failed because pip absent; distribution metadata above records installed versions",
+    "Live MLX unavailable; 96 slow tests deselected",
+    "No performance benchmark or new inference"
+  ],
+  "raw_sha256": {
+    "versions.txt": "6b43f2f27d49f7c30bb1b783db713909f2bb2638a63e4fb9ccb241e38c26edd2",
+    "build.txt": "0b5fe2277fd2b29cc111b76604c482f8ec516047dbc0954657203c5614f4e4db",
+    "historical-reanalysis.json": "4f946995fa391cdda4d3e551f0d04e2c112d2e5483a2810ebb333beea8fca12e",
+    "cargo-test.txt": "2595e8d7792522873142bef17f28dd9c982d41f26bb681a00ab408455949f1f7",
+    "pytest.txt": "9c273be6fa0e0163200420fd10dc314c81a501bb7f61a82232a73f05e2009b19",
+    "lint.txt": "1087c3f9eba0d49b86ba6bd4572bae1ec1c59407a55d92d6c5cbbbae5d313733",
+    "clippy.txt": "a5f4c585ee974ca44916ac30a98bbc189e067a7e0a6bc6d2e8d6bc525be724af"
+  }
+}

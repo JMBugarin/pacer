@@ -17,6 +17,7 @@ import mlx.core as mx
 import numpy as np
 
 from pacer._core import Stepper, Trace
+from pacer.prefill_checks import check_summary as check_summary
 
 from .engine import Engine
 from .pool import BLOCK, BlockPool
@@ -225,31 +226,6 @@ def replay(
         "write_s": write_s,
         "pool_peak": pool.peak,
         "checks": checks,
-    }
-
-
-def check_summary(checks: Sequence[dict]) -> dict:
-    if not checks:
-        return {"n": 0}
-    d = np.array([c["max_abs"] for c in checks])
-    eq = np.array([c["argmax_equal"] for c in checks])
-    margin = np.array([c["ref_margin"] for c in checks])
-    ctl = [c["control_max_abs"] for c in checks if "control_max_abs" in c]
-    q = np.percentile(d, [50, 90, 99, 100]).tolist()
-    return {
-        "n": len(checks),
-        "max_abs_diff": dict(
-            zip(["p50", "p90", "p99", "max"], q, strict=True), mean=float(d.mean())
-        ),
-        "argmax_equal_frac": float(eq.mean()),
-        "argmax_mismatch_ref_margins": margin[~eq].tolist(),
-        "argmax_equal_frac_clear_margin": float(eq[margin > d].mean())
-        if (margin > d).any()
-        else None,
-        "ref_absmax_p50": float(np.median([c["ref_absmax"] for c in checks])),
-        "control_max_abs_p50": float(np.median(ctl)) if ctl else None,
-        "control_n": len(ctl),
-        "hit_frac_mean": float(np.mean([c["hit_blocks"] / c["n_blocks"] for c in checks])),
     }
 
 
