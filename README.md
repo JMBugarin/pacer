@@ -93,6 +93,11 @@ What this shows:
   time to first token by 1.2% (95% CI over requests 0.1-2.4%, two repeats, run-to-run drift not
   covered); perfect knowledge (sampled Belady) gets 2.7%. Cached-prefix prefill picked the same
   next token as full prefill in 97.5% of 200 checks, short of the 99% target.
+- **The agreement gap comes from MLX, not the cache.** The pooled path is bitwise equal to stock
+  mlx-lm chunked prefill (64/64 fixed cases). Stock chunked and one-shot prefill already disagree
+  on near-ties. `--verified-output` recomputes full prefill on every hit, giving exact reference
+  tokens but no caching gain: on a new frozen workload Pacer hit more (0.551 vs 0.428) and was
+  3.6-5.0 ms slower per repeat. See [serving v3](docs/evidence/serving-v3/REPORT.md).
 
 | Where the headroom is (chat) | Predicting reuse on held-out time |
 |---|---|
