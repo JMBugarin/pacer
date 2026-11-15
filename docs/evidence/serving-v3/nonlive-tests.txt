@@ -1,0 +1,21 @@
+============================= test session starts ==============================
+platform darwin -- Python 3.12.15, pytest-9.2.0, pluggy-1.7.0
+rootdir: /Users/josh/Developer/my-workspace/personal/pacer
+configfile: pyproject.toml
+testpaths: tests
+plugins: anyio-4.16.0
+collected 566 items / 105 deselected / 461 selected
+
+tests/test_belady.py ..................                                  [  3%]
+tests/test_differential.py ............................................. [ 13%]
+..........................                                               [ 19%]
+tests/test_hazard.py .............................................       [ 29%]
+tests/test_hazard_rows.py .                                              [ 29%]
+tests/test_prefill_checks.py .....                                       [ 30%]
+tests/test_trace.py .................................................... [ 41%]
+........................................................................ [ 57%]
+........................................................................ [ 72%]
+........................................................................ [ 88%]
+.....................................................                    [100%]
+
+===================== 461 passed, 105 deselected in 10.77s =====================

@@ -1,0 +1,11 @@
+============================= test session starts ==============================
+platform darwin -- Python 3.12.15, pytest-9.2.0, pluggy-1.7.0
+rootdir: /Users/josh/Developer/my-workspace/personal/pacer
+configfile: pyproject.toml
+plugins: anyio-4.16.0
+collected 14 items
+
+tests/test_live.py .........                                             [ 64%]
+tests/test_prefill_checks.py .....                                       [100%]
+
+============================== 14 passed in 8.50s ==============================

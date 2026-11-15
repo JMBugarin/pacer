@@ -1,0 +1,651 @@
+{
+  "kind": "synthetic development fixtures; 64 fixed cases",
+  "started": "2026-11-15T03:04:12.457164+00:00",
+  "ended": "2026-11-15T03:04:24.598317+00:00",
+  "platform": "macOS-26.6-arm64-arm-64bit",
+  "mlx": "0.32.4",
+  "code_sha": "7aac454f95dcd4020ef7595bbf1fb93d4350ae68",
+  "script_sha256": "07a4094f709a8d52ac69631140dd80eec96b89ce82173452157be487f937e8c9",
+  "records": [
+    {
+      "case": 0,
+      "blocks": 32,
+      "split": 1,
+      "pooled_stock_bitwise": true,
+      "pooled_stock_max": 0.0,
+      "stock_full_max": 0.12621915340423584,
+      "stock_token": 271,
+      "full_token": 271
+    },
+    {
+      "case": 1,
+      "blocks": 32,
+      "split": 2,
+      "pooled_stock_bitwise": true,
+      "pooled_stock_max": 0.0,
+      "stock_full_max": 0.13107597827911377,
+      "stock_token": 17642,
+      "full_token": 17642
+    },
+    {
+      "case": 2,
+      "blocks": 32,
+      "split": 3,
+      "pooled_stock_bitwise": true,
+      "pooled_stock_max": 0.0,
+      "stock_full_max": 0.1199028491973877,
+      "stock_token": 17642,
+      "full_token": 17642
+    },
+    {
+      "case": 3,
+      "blocks": 32,
+      "split": 4,
+      "pooled_stock_bitwise": true,
+      "pooled_stock_max": 0.0,
+      "stock_full_max": 0.19149017333984375,
+      "stock_token": 1,
+      "full_token": 1
+    },
+    {
+      "case": 4,
+      "blocks": 32,
+      "split": 5,
+      "pooled_stock_bitwise": true,
+      "pooled_stock_max": 0.0,
+      "stock_full_max": 0.15881633758544922,
+      "stock_token": 220,
+      "full_token": 220
+    },
+    {
+      "case": 5,
+      "blocks": 32,
+      "split": 6,
+      "pooled_stock_bitwise": true,
+      "pooled_stock_max": 0.0,
+      "stock_full_max": 0.11707961559295654,
+      "stock_token": 220,
+      "full_token": 220
+    },
+    {
+      "case": 6,
+      "blocks": 32,
+      "split": 7,
+      "pooled_stock_bitwise": true,
+      "pooled_stock_max": 0.0,
+      "stock_full_max": 0.18056654930114746,
+      "stock_token": 198,
+      "full_token": 198
+    },
+    {
+      "case": 7,
+      "blocks": 32,
+      "split": 8,
+      "pooled_stock_bitwise": true,
+      "pooled_stock_max": 0.0,
+      "stock_full_max": 0.2306978702545166,
+      "stock_token": 35884,
+      "full_token": 35884
+    },
+    {
+      "case": 8,
+      "blocks": 32,
+      "split": 9,
+      "pooled_stock_bitwise": true,
+      "pooled_stock_max": 0.0,
+      "stock_full_max": 0.1097102165222168,
+      "stock_token": 17642,
+      "full_token": 17642
+    },
+    {
+      "case": 9,
+      "blocks": 32,
+      "split": 10,
+      "pooled_stock_bitwise": true,
+      "pooled_stock_max": 0.0,
+      "stock_full_max": 0.16245079040527344,
+      "stock_token": 11,
+      "full_token": 13
+    },
+    {
+      "case": 10,
+      "blocks": 32,
+      "split": 11,
+      "pooled_stock_bitwise": true,
+      "pooled_stock_max": 0.0,
+      "stock_full_max": 0.3354954719543457,
+      "stock_token": 13778,
+      "full_token": 13778
+    },
+    {
+      "case": 11,
+      "blocks": 32,
+      "split": 12,
+      "pooled_stock_bitwise": true,
+      "pooled_stock_max": 0.0,
+      "stock_full_max": 0.27434635162353516,
+      "stock_token": 1690,
+      "full_token": 1690
+    },
+    {
+      "case": 12,
+      "blocks": 32,
+      "split": 13,
+      "pooled_stock_bitwise": true,
+      "pooled_stock_max": 0.0,
+      "stock_full_max": 0.15053987503051758,
+      "stock_token": 50,
+      "full_token": 50
+    },
+    {
+      "case": 13,
+      "blocks": 32,
+      "split": 14,
+      "pooled_stock_bitwise": true,
+      "pooled_stock_max": 0.0,
+      "stock_full_max": 0.2468811273574829,
+      "stock_token": 17642,
+      "full_token": 17642
+    },
+    {
+      "case": 14,
+      "blocks": 32,
+      "split": 15,
+      "pooled_stock_bitwise": true,
+      "pooled_stock_max": 0.0,
+      "stock_full_max": 0.19573068618774414,
+      "stock_token": 725,
+      "full_token": 725
+    },
+    {
+      "case": 15,
+      "blocks": 32,
+      "split": 16,
+      "pooled_stock_bitwise": true,
+      "pooled_stock_max": 0.0,
+      "stock_full_max": 0.12035131454467773,
+      "stock_token": 220,
+      "full_token": 220
+    },
+    {
+      "case": 16,
+      "blocks": 32,
+      "split": 17,
+      "pooled_stock_bitwise": true,
+      "pooled_stock_max": 0.0,
+      "stock_full_max": 0.13681316375732422,
+      "stock_token": 50,
+      "full_token": 50
+    },
+    {
+      "case": 17,
+      "blocks": 32,
+      "split": 18,
+      "pooled_stock_bitwise": true,
+      "pooled_stock_max": 0.0,
+      "stock_full_max": 0.098602294921875,
+      "stock_token": 279,
+      "full_token": 279
+    },
+    {
+      "case": 18,
+      "blocks": 32,
+      "split": 19,
+      "pooled_stock_bitwise": true,
+      "pooled_stock_max": 0.0,
+      "stock_full_max": 0.12796783447265625,
+      "stock_token": 198,
+      "full_token": 198
+    },
+    {
+      "case": 19,
+      "blocks": 32,
+      "split": 20,
+      "pooled_stock_bitwise": true,
+      "pooled_stock_max": 0.0,
+      "stock_full_max": 0.1605682373046875,
+      "stock_token": 278,
+      "full_token": 278
+    },
+    {
+      "case": 20,
+      "blocks": 32,
+      "split": 21,
+      "pooled_stock_bitwise": true,
+      "pooled_stock_max": 0.0,
+      "stock_full_max": 0.1357896327972412,
+      "stock_token": 13,
+      "full_token": 13
+    },
+    {
+      "case": 21,
+      "blocks": 32,
+      "split": 22,
+      "pooled_stock_bitwise": true,
+      "pooled_stock_max": 0.0,
+      "stock_full_max": 0.13844966888427734,
+      "stock_token": 17642,
+      "full_token": 17642
+    },
+    {
+      "case": 22,
+      "blocks": 32,
+      "split": 23,
+      "pooled_stock_bitwise": true,
+      "pooled_stock_max": 0.0,
+      "stock_full_max": 0.17178940773010254,
+      "stock_token": 198,
+      "full_token": 198
+    },
+    {
+      "case": 23,
+      "blocks": 32,
+      "split": 24,
+      "pooled_stock_bitwise": true,
+      "pooled_stock_max": 0.0,
+      "stock_full_max": 0.10339117050170898,
+      "stock_token": 17642,
+      "full_token": 17642
+    },
+    {
+      "case": 24,
+      "blocks": 32,
+      "split": 25,
+      "pooled_stock_bitwise": true,
+      "pooled_stock_max": 0.0,
+      "stock_full_max": 0.12535619735717773,
+      "stock_token": 20401,
+      "full_token": 20401
+    },
+    {
+      "case": 25,
+      "blocks": 32,
+      "split": 26,
+      "pooled_stock_bitwise": true,
+      "pooled_stock_max": 0.0,
+      "stock_full_max": 0.15482449531555176,
+      "stock_token": 220,
+      "full_token": 220
+    },
+    {
+      "case": 26,
+      "blocks": 32,
+      "split": 27,
+      "pooled_stock_bitwise": true,
+      "pooled_stock_max": 0.0,
+      "stock_full_max": 0.13491535186767578,
+      "stock_token": 17642,
+      "full_token": 17642
+    },
+    {
+      "case": 27,
+      "blocks": 32,
+      "split": 28,
+      "pooled_stock_bitwise": true,
+      "pooled_stock_max": 0.0,
+      "stock_full_max": 0.10468041896820068,
+      "stock_token": 24520,
+      "full_token": 24520
+    },
+    {
+      "case": 28,
+      "blocks": 32,
+      "split": 29,
+      "pooled_stock_bitwise": true,
+      "pooled_stock_max": 0.0,
+      "stock_full_max": 0.19701218605041504,
+      "stock_token": 275,
+      "full_token": 275
+    },
+    {
+      "case": 29,
+      "blocks": 32,
+      "split": 30,
+      "pooled_stock_bitwise": true,
+      "pooled_stock_max": 0.0,
+      "stock_full_max": 0.13424867391586304,
+      "stock_token": 80126,
+      "full_token": 80126
+    },
+    {
+      "case": 30,
+      "blocks": 32,
+      "split": 1,
+      "pooled_stock_bitwise": true,
+      "pooled_stock_max": 0.0,
+      "stock_full_max": 0.21758615970611572,
+      "stock_token": 42572,
+      "full_token": 42572
+    },
+    {
+      "case": 31,
+      "blocks": 32,
+      "split": 2,
+      "pooled_stock_bitwise": true,
+      "pooled_stock_max": 0.0,
+      "stock_full_max": 0.26045870780944824,
+      "stock_token": 919,
+      "full_token": 919
+    },
+    {
+      "case": 32,
+      "blocks": 32,
+      "split": 3,
+      "pooled_stock_bitwise": true,
+      "pooled_stock_max": 0.0,
+      "stock_full_max": 0.16042304039001465,
+      "stock_token": 291,
+      "full_token": 291
+    },
+    {
+      "case": 33,
+      "blocks": 32,
+      "split": 4,
+      "pooled_stock_bitwise": true,
+      "pooled_stock_max": 0.0,
+      "stock_full_max": 0.12985515594482422,
+      "stock_token": 198,
+      "full_token": 198
+    },
+    {
+      "case": 34,
+      "blocks": 32,
+      "split": 5,
+      "pooled_stock_bitwise": true,
+      "pooled_stock_max": 0.0,
+      "stock_full_max": 0.18430554866790771,
+      "stock_token": 198,
+      "full_token": 198
+    },
+    {
+      "case": 35,
+      "blocks": 32,
+      "split": 6,
+      "pooled_stock_bitwise": true,
+      "pooled_stock_max": 0.0,
+      "stock_full_max": 0.10428643226623535,
+      "stock_token": 198,
+      "full_token": 198
+    },
+    {
+      "case": 36,
+      "blocks": 32,
+      "split": 7,
+      "pooled_stock_bitwise": true,
+      "pooled_stock_max": 0.0,
+      "stock_full_max": 0.1135566234588623,
+      "stock_token": 323,
+      "full_token": 323
+    },
+    {
+      "case": 37,
+      "blocks": 32,
+      "split": 8,
+      "pooled_stock_bitwise": true,
+      "pooled_stock_max": 0.0,
+      "stock_full_max": 0.12401258945465088,
+      "stock_token": 13,
+      "full_token": 13
+    },
+    {
+      "case": 38,
+      "blocks": 32,
+      "split": 9,
+      "pooled_stock_bitwise": true,
+      "pooled_stock_max": 0.0,
+      "stock_full_max": 0.12141537666320801,
+      "stock_token": 220,
+      "full_token": 220
+    },
+    {
+      "case": 39,
+      "blocks": 32,
+      "split": 10,
+      "pooled_stock_bitwise": true,
+      "pooled_stock_max": 0.0,
+      "stock_full_max": 0.18397903442382812,
+      "stock_token": 11,
+      "full_token": 11
+    },
+    {
+      "case": 40,
+      "blocks": 32,
+      "split": 11,
+      "pooled_stock_bitwise": true,
+      "pooled_stock_max": 0.0,
+      "stock_full_max": 0.15584969520568848,
+      "stock_token": 67,
+      "full_token": 67
+    },
+    {
+      "case": 41,
+      "blocks": 32,
+      "split": 12,
+      "pooled_stock_bitwise": true,
+      "pooled_stock_max": 0.0,
+      "stock_full_max": 0.3153262138366699,
+      "stock_token": 301,
+      "full_token": 301
+    },
+    {
+      "case": 42,
+      "blocks": 32,
+      "split": 13,
+      "pooled_stock_bitwise": true,
+      "pooled_stock_max": 0.0,
+      "stock_full_max": 0.17217731475830078,
+      "stock_token": 367,
+      "full_token": 367
+    },
+    {
+      "case": 43,
+      "blocks": 32,
+      "split": 14,
+      "pooled_stock_bitwise": true,
+      "pooled_stock_max": 0.0,
+      "stock_full_max": 0.15215492248535156,
+      "stock_token": 198,
+      "full_token": 198
+    },
+    {
+      "case": 44,
+      "blocks": 32,
+      "split": 15,
+      "pooled_stock_bitwise": true,
+      "pooled_stock_max": 0.0,
+      "stock_full_max": 0.13484513759613037,
+      "stock_token": 198,
+      "full_token": 198
+    },
+    {
+      "case": 45,
+      "blocks": 32,
+      "split": 16,
+      "pooled_stock_bitwise": true,
+      "pooled_stock_max": 0.0,
+      "stock_full_max": 0.1252049207687378,
+      "stock_token": 1280,
+      "full_token": 1280
+    },
+    {
+      "case": 46,
+      "blocks": 32,
+      "split": 17,
+      "pooled_stock_bitwise": true,
+      "pooled_stock_max": 0.0,
+      "stock_full_max": 0.1447678804397583,
+      "stock_token": 198,
+      "full_token": 198
+    },
+    {
+      "case": 47,
+      "blocks": 32,
+      "split": 18,
+      "pooled_stock_bitwise": true,
+      "pooled_stock_max": 0.0,
+      "stock_full_max": 0.13413727283477783,
+      "stock_token": 198,
+      "full_token": 198
+    },
+    {
+      "case": 48,
+      "blocks": 32,
+      "split": 19,
+      "pooled_stock_bitwise": true,
+      "pooled_stock_max": 0.0,
+      "stock_full_max": 0.156335711479187,
+      "stock_token": 35,
+      "full_token": 35
+    },
+    {
+      "case": 49,
+      "blocks": 32,
+      "split": 20,
+      "pooled_stock_bitwise": true,
+      "pooled_stock_max": 0.0,
+      "stock_full_max": 0.24998188018798828,
+      "stock_token": 657,
+      "full_token": 657
+    },
+    {
+      "case": 50,
+      "blocks": 32,
+      "split": 21,
+      "pooled_stock_bitwise": true,
+      "pooled_stock_max": 0.0,
+      "stock_full_max": 0.12693077325820923,
+      "stock_token": 24520,
+      "full_token": 24520
+    },
+    {
+      "case": 51,
+      "blocks": 32,
+      "split": 22,
+      "pooled_stock_bitwise": true,
+      "pooled_stock_max": 0.0,
+      "stock_full_max": 0.16399812698364258,
+      "stock_token": 32108,
+      "full_token": 32108
+    },
+    {
+      "case": 52,
+      "blocks": 32,
+      "split": 23,
+      "pooled_stock_bitwise": true,
+      "pooled_stock_max": 0.0,
+      "stock_full_max": 0.11275124549865723,
+      "stock_token": 13,
+      "full_token": 13
+    },
+    {
+      "case": 53,
+      "blocks": 32,
+      "split": 24,
+      "pooled_stock_bitwise": true,
+      "pooled_stock_max": 0.0,
+      "stock_full_max": 0.13506639003753662,
+      "stock_token": 271,
+      "full_token": 271
+    },
+    {
+      "case": 54,
+      "blocks": 32,
+      "split": 25,
+      "pooled_stock_bitwise": true,
+      "pooled_stock_max": 0.0,
+      "stock_full_max": 0.1682438850402832,
+      "stock_token": 287,
+      "full_token": 287
+    },
+    {
+      "case": 55,
+      "blocks": 32,
+      "split": 26,
+      "pooled_stock_bitwise": true,
+      "pooled_stock_max": 0.0,
+      "stock_full_max": 0.19045233726501465,
+      "stock_token": 198,
+      "full_token": 198
+    },
+    {
+      "case": 56,
+      "blocks": 32,
+      "split": 27,
+      "pooled_stock_bitwise": true,
+      "pooled_stock_max": 0.0,
+      "stock_full_max": 0.1316509246826172,
+      "stock_token": 271,
+      "full_token": 271
+    },
+    {
+      "case": 57,
+      "blocks": 32,
+      "split": 28,
+      "pooled_stock_bitwise": true,
+      "pooled_stock_max": 0.0,
+      "stock_full_max": 0.12949645519256592,
+      "stock_token": 198,
+      "full_token": 198
+    },
+    {
+      "case": 58,
+      "blocks": 32,
+      "split": 29,
+      "pooled_stock_bitwise": true,
+      "pooled_stock_max": 0.0,
+      "stock_full_max": 0.11228740215301514,
+      "stock_token": 13,
+      "full_token": 13
+    },
+    {
+      "case": 59,
+      "blocks": 32,
+      "split": 30,
+      "pooled_stock_bitwise": true,
+      "pooled_stock_max": 0.0,
+      "stock_full_max": 0.12847328186035156,
+      "stock_token": 198,
+      "full_token": 198
+    },
+    {
+      "case": 60,
+      "blocks": 32,
+      "split": 1,
+      "pooled_stock_bitwise": true,
+      "pooled_stock_max": 0.0,
+      "stock_full_max": 0.1216268539428711,
+      "stock_token": 271,
+      "full_token": 271
+    },
+    {
+      "case": 61,
+      "blocks": 32,
+      "split": 2,
+      "pooled_stock_bitwise": true,
+      "pooled_stock_max": 0.0,
+      "stock_full_max": 0.11206662654876709,
+      "stock_token": 80126,
+      "full_token": 80126
+    },
+    {
+      "case": 62,
+      "blocks": 32,
+      "split": 3,
+      "pooled_stock_bitwise": true,
+      "pooled_stock_max": 0.0,
+      "stock_full_max": 0.1578993797302246,
+      "stock_token": 11,
+      "full_token": 11
+    },
+    {
+      "case": 63,
+      "blocks": 32,
+      "split": 4,
+      "pooled_stock_bitwise": true,
+      "pooled_stock_max": 0.0,
+      "stock_full_max": 0.1723785400390625,
+      "stock_token": 198,
+      "full_token": 198
+    }
+  ]
+}
