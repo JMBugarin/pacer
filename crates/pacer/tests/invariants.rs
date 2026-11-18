@@ -1,6 +1,7 @@
-//! Simulator invariants checked after every step, for every policy that needs no model, on
+//! Simulator invariants checked after every step, for model-free policies and published Pacer configurations, on
 //! random synthetic traces (proptest) and on a prefix of the traceA fixture.
 
+use pacer::gbdt::Gbdt;
 use pacer::policy::{self, Params, Resources};
 use pacer::run::cap_blocks;
 use pacer::sim::{Sim, SimConfig, StepLog};
@@ -9,7 +10,7 @@ use proptest::prelude::*;
 use proptest::sample::Index;
 use std::collections::BTreeMap;
 use std::path::Path;
-use std::sync::Arc;
+use std::sync::{Arc, LazyLock};
 
 const POLICIES: [&str; 14] = [
     "lru",
@@ -189,12 +190,16 @@ fn check_state(sim: &Sim, tr: &Trace, live: &[bool], name: &str) -> Result<(), T
     Ok(())
 }
 
-fn run(tr: &Arc<Trace>, name: &str, cap: u64) -> Result<Outcome, TestCaseError> {
-    let res = Resources {
-        models: BTreeMap::new(),
+static RESOURCES: LazyLock<Resources> = LazyLock::new(|| {
+    let path = Path::new(env!("CARGO_MANIFEST_DIR")).join("../../models/fast_traceA.json");
+    Resources {
+        models: BTreeMap::from([("0".into(), Arc::new(Gbdt::load(&path).unwrap()))]),
         wa_fits: BTreeMap::new(),
-    };
-    let mut pol = policy::make(name, &Params::new(), tr, cap, &res).unwrap();
+    }
+});
+
+fn run(tr: &Arc<Trace>, name: &str, params: &Params, cap: u64) -> Result<Outcome, TestCaseError> {
+    let mut pol = policy::make(name, params, tr, cap, &RESOURCES).unwrap();
     let cfg = SimConfig {
         cap,
         window: (0.0, f64::INFINITY),
@@ -246,20 +251,31 @@ fn check_all(tr: &Arc<Trace>, cap: u64) -> Result<(), TestCaseError> {
     // belady_zero_duration_* below), so dominance is only asserted without such requests.
     let positive = tr.reqs.iter().all(|r| r.done > r.t);
     let mut hits = BTreeMap::new();
-    for name in POLICIES {
-        let a = run(tr, name, cap)?;
-        let b = run(tr, name, cap)?;
+    let defaults = POLICIES.map(|name| (name, name, Params::new()));
+    let fixed = Params::from([("k".into(), 32.0), ("reuse".into(), 4.0)]);
+    let mut cost = fixed.clone();
+    cost.insert("cost_alpha".into(), 0.05);
+    let mut no_follow = fixed.clone();
+    no_follow.insert("follow".into(), 0.0);
+    let learned = [
+        ("pacer-fixed", "pacer", fixed),
+        ("pacer-cost", "pacer", cost),
+        ("pacer-nofollow", "pacer", no_follow),
+    ];
+    for (label, name, params) in defaults.into_iter().chain(learned) {
+        let a = run(tr, name, &params, cap)?;
+        let b = run(tr, name, &params, cap)?;
         prop_assert_eq!(
             &a.stats,
             &b.stats,
             "{}: stats differ between identical runs",
-            name
+            label
         );
         prop_assert!(
             a.evicted == b.evicted,
-            "{name}: eviction sequence differs between runs"
+            "{label}: eviction sequence differs between runs"
         );
-        hits.insert(name, a.hits);
+        hits.insert(label, a.hits);
     }
     if positive {
         let best = hits["belady"];
@@ -312,7 +328,7 @@ fn raw(chat: i64, parent: i64, t: f64, input: u32, output: u32, hashes: &[u64]) 
 }
 
 fn hits(tr: &Arc<Trace>, name: &str, cap: u64) -> u64 {
-    run(tr, name, cap).unwrap().hits
+    run(tr, name, &Params::new(), cap).unwrap().hits
 }
 
 /// Regression: request 0 completes at t=0, right after its own arrival. Belady once took request

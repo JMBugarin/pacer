@@ -58,9 +58,16 @@ impl Gbdt {
         if n["decision_type"].as_str() != Some("<=") {
             bail!("only numerical <= splits are supported");
         }
+        let f = n["split_feature"].as_u64().context("split_feature")?;
+        if f >= self.n_features as u64 {
+            bail!(
+                "split_feature {f} out of range for {} features",
+                self.n_features
+            );
+        }
         let id = self.feature.len();
         self.feature
-            .push(n["split_feature"].as_u64().context("split_feature")? as u16);
+            .push(u16::try_from(f).context("split_feature exceeds supported index range")?);
         self.threshold
             .push(n["threshold"].as_f64().context("threshold")?);
         self.left.push(0);
@@ -70,6 +77,18 @@ impl Gbdt {
         self.left[id] = l;
         self.right[id] = r;
         Ok(id as i32)
+    }
+
+    /// Fails unless the model was trained on exactly `expected`, in that order.
+    pub fn check_schema(&self, expected: &[&str]) -> Result<()> {
+        if self.feature_names != expected {
+            bail!(
+                "model features {:?} do not match the expected {:?}",
+                self.feature_names,
+                expected
+            );
+        }
+        Ok(())
     }
 
     #[inline]
