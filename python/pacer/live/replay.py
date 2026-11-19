@@ -125,10 +125,12 @@ def replay(
     stop_after: int | None = None,
     n_control: int = 20,
     progress: Callable[[int, int], None] | None = None,
+    audit: bool = False,
 ) -> dict:
     """Replays the trace live. `check` lists arrivals whose cached-prefix logits are compared
     with a full prefill from scratch (the first `n_control` also get the no-prefix control);
-    `stop_after` ends the replay after that arrival."""
+    `stop_after` ends the replay after that arrival. `audit` compares every hit's served logits
+    with a full prefill after its TTFT is taken."""
     if cap > pool.n_blocks:
         raise ValueError(f"capacity {cap} exceeds the pool's {pool.n_blocks} blocks")
     pool.reset()
@@ -143,6 +145,7 @@ def replay(
     out = {"events": 0, "tokens": 0, "seconds": 0.0, "dropped_blocks": 0}
     write_s = 0.0
     checks = []
+    audits = {"n": 0, "bitwise_equal": 0, "argmax_equal": 0, "max_abs": 0.0, "mismatch_reqs": []}
     size = 0
     t_start = perf_counter()
     while (s := st.step()) is not None:
@@ -167,6 +170,17 @@ def replay(
                 pool.write(ins, p.k_new, p.v_new)
                 write_s += perf_counter() - t0
                 p.k_new = p.v_new = []
+                if audit and h:
+                    ref = engine.full_logits(keys)
+                    eq = mx.array_equal(ref, p.logits).item()
+                    audits["n"] += 1
+                    audits["bitwise_equal"] += eq
+                    audits["argmax_equal"] += mx.argmax(ref).item() == p.token
+                    audits["max_abs"] = max(
+                        audits["max_abs"], mx.max(mx.abs(ref - p.logits)).item()
+                    )
+                    if not eq:
+                        audits["mismatch_reqs"].append(i)
                 if i in check and h:
                     served = p.cached_logits is not None
                     cached = (
@@ -232,6 +246,7 @@ def replay(
         "write_s": write_s,
         "pool_peak": pool.peak,
         "checks": checks,
+        "audit": audits if audit else None,
     }
 
 
@@ -289,6 +304,14 @@ def summarize(runs: Sequence[dict], base: str = "lru", n_boot: int = 2000, seed:
                 float(np.mean([t for t in r["ttft_s"] if t is not None])) for r in rs
             ],
         }
+        audits = [r["audit"] for r in rs if r.get("audit")]
+        if audits:
+            out[p]["audit"] = {
+                "n": sum(a["n"] for a in audits),
+                "bitwise_equal": sum(a["bitwise_equal"] for a in audits),
+                "argmax_equal": sum(a["argmax_equal"] for a in audits),
+                "max_abs": max(a["max_abs"] for a in audits),
+            }
     for name, fwd in (("ttft", False), ("ttft_fwd", True)):
         t = {p: per_request(rs, fwd) for p, rs in by.items()}
         boot = {p: _stats(x[idx]) for p, x in t.items()}

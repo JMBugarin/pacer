@@ -12,8 +12,9 @@ mx = pytest.importorskip("mlx.core")
 pytest.importorskip("mlx_lm")
 core = pytest.importorskip("pacer._core")
 
+import mlx.nn as nn  # noqa: E402
 from pacer.live import replay as rp  # noqa: E402
-from pacer.live.engine import DEFAULT_MODEL, Engine, block_tokens  # noqa: E402
+from pacer.live.engine import DEFAULT_MODEL, Engine, RowStableLinear, block_tokens  # noqa: E402
 from pacer.live.pool import BLOCK, BlockPool, PoolFull  # noqa: E402
 
 ROOT = Path(__file__).resolve().parents[1]
@@ -216,6 +217,67 @@ def test_verified_output_uses_full_prefill(engine, output):
     assert mx.array_equal(got.k_new[2], full.k_new[2][16:]).item()
 
 
+def test_stable_rows_cover_every_projection(engine, output):
+    output("exact")
+    mods = [m for _, m in engine.model.model.named_modules() if isinstance(m, nn.QuantizedLinear)]
+    assert mods and all(type(m) is RowStableLinear for m in mods)
+    assert {m.min_rows for m in mods} == set(engine.stable_rows.values())
+    assert 1 < engine.exact_min_rows <= engine.calibrated_rows
+    assert engine.exact_supported(17) == (engine.exact_min_rows <= 17 * BLOCK)
+
+
+@pytest.mark.parametrize("n,m", [(17, 1), (18, 9), (20, 16), (22, 5), (24, 16), (24, 23)])
+def test_exact_output_is_bitwise_full_prefill(engine, output, n, m):
+    output("exact")
+    keys = list(range(3 << 28 | n << 8, (3 << 28 | n << 8) + n))
+    ref = engine.full_logits(keys)
+    for prefix in ("alone", "longer"):
+        pool = engine.new_pool(n)
+        if prefix == "alone":
+            pre = engine.run(None, [], keys[:m], logits=False)
+            pool.write(keys[:m], pre.k_new, pre.v_new)
+        else:
+            other = list(range(5 << 28 | n << 8, (5 << 28 | n << 8) + 6))
+            pre = engine.run(None, [], keys[:m] + other, logits=False)
+            pool.write(keys[:m], [a[:m] for a in pre.k_new], [a[:m] for a in pre.v_new])
+        got = engine.run(pool, keys[:m], keys[m:])
+        assert got.gather_s > 0 and got.forward_tokens == BLOCK * (n - m)
+        assert mx.array_equal(got.logits, ref).item(), (prefix, n, m)
+        pool.write(keys[m:], got.k_new, got.v_new)
+        redo = engine.run(pool, keys, [])
+        assert (redo.new_tokens, redo.forward_tokens) == (0, BLOCK)
+        assert mx.array_equal(redo.logits, ref).item(), (prefix, n, m, "full hit")
+
+
+def test_exact_output_recomputes_short_prompts(engine, output):
+    output("exact")
+    keys = list(range(7 << 28, (7 << 28) + 20))
+    assert not engine.exact_supported(4) and engine.exact_supported(20)
+    pool = engine.new_pool(20)
+    pre = engine.run(None, [], keys[:2], logits=False)
+    pool.write(keys[:2], pre.k_new, pre.v_new)
+    short = engine.run(pool, keys[:2], keys[2:4])
+    assert short.gather_s == 0.0 and short.cached_logits is None
+    assert mx.array_equal(short.logits, engine.full_logits(keys[:4])).item()
+    pool.write(keys[2:4], short.k_new, short.v_new)
+    long = engine.run(pool, keys[:4], keys[4:])
+    assert mx.array_equal(long.logits, engine.full_logits(keys)).item()
+
+
+def test_exact_replay_audits_every_hit_bitwise(engine, output, synth):
+    tr, reqs, cap = synth
+    output("exact")
+    engine.reserve(max(len(r["input_keys"]) + len(r["output_keys"]) for r in reqs))
+    spec = rp.policy_spec("lru")
+    picked = rp.dry_run(tr, spec, cap)["hit_arrivals"]
+    r = rp.replay(tr, reqs, spec, cap, engine, engine.new_pool(cap), check=set(picked), audit=True)
+    assert r["audit"]["n"] == len(picked) > 0
+    assert r["audit"]["bitwise_equal"] == r["audit"]["argmax_equal"] == r["audit"]["n"]
+    s = rp.check_summary(r["checks"])
+    assert s["n"] == len(picked) and s["bitwise_equal_frac"] == 1.0
+    assert all(c["served"] for c in r["checks"])
+
+
 def test_verified_check_compares_the_cached_path(engine, output, synth):
     """Verified mode serves a full prefill, so its check must run the cached forward itself;
     comparing the served logits would compare the reference with itself."""
@@ -224,7 +286,7 @@ def test_verified_check_compares_the_cached_path(engine, output, synth):
     engine.reserve(max(len(r["input_keys"]) + len(r["output_keys"]) for r in reqs))
     spec = rp.policy_spec("lru")
     picked = rp.dry_run(tr, spec, cap)["hit_arrivals"]
-    r = rp.replay(tr, reqs, spec, cap, engine, engine.new_pool(cap), check=set(picked))
-    assert len(r["checks"]) == len(picked) > 0
+    r = rp.replay(tr, reqs, spec, cap, engine, engine.new_pool(cap), check=set(picked), audit=True)
+    assert r["audit"]["bitwise_equal"] == r["audit"]["n"] == len(picked)
     assert not any(c["served"] for c in r["checks"])
     assert max(c["max_abs"] for c in r["checks"]) > 0
