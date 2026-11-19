@@ -21,6 +21,7 @@ def check_summary(checks: Sequence[dict]) -> dict:
             zip(["p50", "p90", "p99", "max"], q, strict=True), mean=float(d.mean())
         ),
         "argmax_equal_frac": float(eq.mean()),
+        "bitwise_equal_frac": float((d == 0).mean()),
         "argmax_mismatch_ref_margins": margin[~eq].tolist(),
         "argmax_equal_frac_clear_margin": float(eq[margin > 2 * d].mean())
         if (margin > 2 * d).any()

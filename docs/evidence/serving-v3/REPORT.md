@@ -42,3 +42,7 @@ This run was added after the frozen run was exposed. It can show the speed/fidel
 ## Not established
 
 Production serving readiness, behavior on real prompts, multi-tenant or networked serving, independent external review.
+
+## Erratum (added with serving v4)
+
+The "66/66 argmax equal, max |dlogit| 0" check above compared verified mode's served logits with a full prefill. In verified mode the served logits are the full prefill's, so the check compared the reference with itself and did not test the cached path. The +3.60 to +5.02 ms came from a redundant cached forward and gather that verified mode ran on every hit before recomputing. Both are fixed, and the follow-up is in [serving v4](../serving-v4/REPORT.md). The measurements in this file are unchanged.

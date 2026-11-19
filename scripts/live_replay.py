@@ -66,10 +66,21 @@ def main() -> None:
     ap.add_argument("--check", type=int, default=200, help="arrivals in the logits check")
     ap.add_argument("--check-policy", default="lru")
     ap.add_argument("--check-limit", type=int, help="trace prefix for the check (default --limit)")
-    ap.add_argument(
+    out_mode = ap.add_mutually_exclusive_group()
+    out_mode.add_argument(
         "--verified-output",
         action="store_true",
-        help="Recompute full logits for every cache hit; includes verification cost in TTFT",
+        help="Serve a full prefill's logits on every cache hit; its cost is in TTFT",
+    )
+    out_mode.add_argument(
+        "--exact-output",
+        action="store_true",
+        help="Serve the row-stable cached forward, bitwise equal to a full prefill",
+    )
+    ap.add_argument(
+        "--audit",
+        action="store_true",
+        help="Compare every hit's served logits with a full prefill after its TTFT is taken",
     )
     ap.add_argument("--model", default=DEFAULT_MODEL)
     ap.add_argument("--chunk", type=int, default=DEFAULT_CHUNK)
@@ -100,8 +111,15 @@ def main() -> None:
         else:
             ctr, creqs, ccap = tr, reqs, cap
 
-    engine = Engine(a.model, a.chunk, a.seed, verify_output=a.verified_output)
+    output = "exact" if a.exact_output else "verified" if a.verified_output else "cached"
+    engine = Engine(a.model, a.chunk, a.seed, output=output)
     engine.reserve(max(len(r["input_keys"]) + len(r["output_keys"]) for r in reqs + (creqs or [])))
+    if output == "exact":
+        short = sum(not engine.exact_supported(len(r["input_keys"])) for r in reqs)
+        log(
+            f"exact output: row-stable from {engine.exact_min_rows} rows "
+            f"(calibrated to {engine.calibrated_rows}); {short} prompts recompute instead"
+        )
     mx.set_cache_limit(max(int(a.cache_limit_gb * 2**30), engine.workspace_bytes + 2**30))
     pool = engine.new_pool(max(cap, ccap))
     log(
@@ -140,14 +158,17 @@ def main() -> None:
         k = rep % len(specs)
         for pos, s in enumerate(specs[k:] + specs[:k]):
             t0 = time.time()
-            r = rp.replay(tr, reqs, s, cap, engine, pool)
+            r = rp.replay(tr, reqs, s, cap, engine, pool, audit=a.audit)
             ttft = sorted(t for t in r["ttft_s"] if t is not None)
             runs.append({**r, "rep": rep, "order": pos, "started_s": t0 - t_start})
             done = len(runs)
             eta = (time.time() - t_runs) / done * (n_runs - done)
+            au = r["audit"]
             log(
                 f"rep {rep} {s.name:15s} wall {r['wall_s']:6.1f}s hit {r['stats']['hit_ratio']:.4f}"
-                f" ttft p50 {ttft[len(ttft) // 2] * 1e3:7.1f} ms  ({done}/{n_runs}, eta {eta:.0f}s)"
+                f" ttft p50 {ttft[len(ttft) // 2] * 1e3:7.1f} ms"
+                + (f" audit {au['bitwise_equal']}/{au['n']} bitwise" if au else "")
+                + f"  ({done}/{n_runs}, eta {eta:.0f}s)"
             )
 
     summary = rp.summarize(runs, base="lru", n_boot=a.boot, seed=a.seed)
@@ -168,6 +189,12 @@ def main() -> None:
             "seed": a.seed,
             "kv_dtype": str(engine.dtype),
             "verified_output": a.verified_output,
+            "output": output,
+            "audit": a.audit,
+            "stable_rows": {
+                "x".join(map(str, k)): v for k, v in sorted(engine.stable_rows.items())
+            },
+            "calibrated_rows": engine.calibrated_rows,
             "block_bytes": engine.block_bytes,
             "pool_bytes": pool.nbytes,
             "workspace_bytes": engine.workspace_bytes,
@@ -178,8 +205,13 @@ def main() -> None:
             "loadavg_start": load0,
             "loadavg_end": os.getloadavg(),
             "elapsed_s": time.time() - t_start,
-            "ttft": "gather of cached blocks + forward of the new blocks + argmax, synchronized; "
-            "ttft_fwd excludes the gather",
+            "ttft": {
+                "cached": "gather of cached blocks + forward of the new blocks + argmax, "
+                "synchronized; ttft_fwd excludes the gather",
+                "verified": "full prefill + argmax on every request, synchronized",
+                "exact": "gather of cached blocks + row-stable forward of the new blocks + "
+                "argmax, synchronized; ttft_fwd excludes the gather; audits run after it",
+            }[output],
         },
         "dry_run": {k: {x: v[x] for x in v if x != "hit_arrivals"} for k, v in dry.items()},
         "check": check,

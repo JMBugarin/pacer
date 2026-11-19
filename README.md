@@ -93,11 +93,20 @@ What this shows:
   time to first token by 1.2% (95% CI over requests 0.1-2.4%, two repeats, run-to-run drift not
   covered); perfect knowledge (sampled Belady) gets 2.7%. Cached-prefix prefill picked the same
   next token as full prefill in 97.5% of 200 checks, short of the 99% target.
-- **The agreement gap comes from MLX, not the cache.** The pooled path is bitwise equal to stock
-  mlx-lm chunked prefill (64/64 fixed cases). Stock chunked and one-shot prefill already disagree
-  on near-ties. `--verified-output` recomputes full prefill on every hit, giving exact reference
-  tokens but no caching gain: on a new frozen workload Pacer hit more (0.551 vs 0.428) and was
-  3.6-5.0 ms slower per repeat. See [serving v3](docs/evidence/serving-v3/REPORT.md).
+- **The agreement gap comes from MLX, not the cache.** MLX picks the quantized matmul kernel
+  from the row count. Below 65-257 rows, depending on the weight shape, it splits the reduction,
+  so a short cached suffix rounds differently from a long full prefill.
+- **Exact output closes the gap.** `--exact-output` pads each quantized matmul up to its
+  calibrated row-stable threshold. Cached logits then equal full prefill bit for bit, and a hit
+  still costs less than a miss.
+- **Frozen v4 result.** On a new frozen synthetic workload (protocol v4), Pacer was 0.37-0.44 ms
+  faster than LRU in mean time to first token in all four paired repeats, about 2.5%. Median and
+  p95 were unchanged. All 664 served hits were audited and were bitwise equal to a full prefill.
+  See [serving v4](docs/evidence/serving-v4/REPORT.md).
+- **Why v3 showed Pacer slower.** v3's verified mode ran a redundant cached forward before
+  recomputing, so Pacer's extra hits made it 3.6-5.0 ms slower. The recompute mode is now
+  policy-neutral (−0.07 to +0.07 ms). v3's verified-mode logits check compared the full prefill
+  with itself; that is fixed too.
 
 | Where the headroom is (chat) | Predicting reuse on held-out time |
 |---|---|
@@ -187,6 +196,9 @@ make check     # cargo fmt, clippy, cargo test, ruff, pytest
 
 - Simulation, not a production deployment. The live replay runs a 0.6B model on a laptop with
   400 requests; it checks the mechanics and measures time to first token, not production gains.
+- Exact output relies on how MLX picks quantized matmul kernels, for one model on one device.
+  The thresholds are recalibrated every time the engine starts, but other MLX versions or
+  devices need their own evidence.
 - Two hours per trace and one temporal split; every number comes from one held-out hour, which
   was also looked at during development (see the protocol).
 - Capacities are fractions of each trace's unique blocks. At 1%, running requests pin a large

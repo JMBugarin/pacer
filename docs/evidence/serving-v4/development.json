@@ -1,0 +1,256 @@
+{
+ "kind": "development runs on generator seeds 101-103 (not frozen evidence); same generator and settings as protocol v4 except --boot 200 and, for exact-101, 2 repeats. pacer._core was the pre-rebuild extension; dry-run hit ratios are identical after the rebuild.",
+ "runs": [
+  {
+   "seed": 101,
+   "output": "exact",
+   "audit": true,
+   "repeats": 2,
+   "hit_ratio": {
+    "lru": 0.4617552334943639,
+    "pacer": 0.6026570048309179
+   },
+   "ttft_mean_ms_by_repeat": {
+    "lru": [
+     15.738,
+     15.769
+    ],
+    "pacer": [
+     15.107,
+     15.1
+    ]
+   },
+   "paired_mean_diff_ms": [
+    -0.631,
+    -0.67
+   ],
+   "check": {
+    "n": 72,
+    "argmax_equal_frac": 1.0,
+    "bitwise_equal_frac": 1.0
+   },
+   "check_max_abs": 0.0,
+   "audit_bitwise": {
+    "lru": [
+     "72/72",
+     "72/72"
+    ],
+    "pacer": [
+     "95/95",
+     "95/95"
+    ]
+   }
+  },
+  {
+   "seed": 102,
+   "output": "exact",
+   "audit": true,
+   "repeats": 4,
+   "hit_ratio": {
+    "lru": 0.43785772690106295,
+    "pacer": 0.5907604251839739
+   },
+   "ttft_mean_ms_by_repeat": {
+    "lru": [
+     15.921,
+     15.817,
+     15.863,
+     15.9
+    ],
+    "pacer": [
+     15.229,
+     15.235,
+     15.224,
+     15.216
+    ]
+   },
+   "paired_mean_diff_ms": [
+    -0.692,
+    -0.582,
+    -0.639,
+    -0.684
+   ],
+   "check": {
+    "n": 69,
+    "argmax_equal_frac": 1.0,
+    "bitwise_equal_frac": 1.0
+   },
+   "check_max_abs": 0.0,
+   "audit_bitwise": {
+    "lru": [
+     "69/69",
+     "69/69",
+     "69/69",
+     "69/69"
+    ],
+    "pacer": [
+     "91/91",
+     "91/91",
+     "91/91",
+     "91/91"
+    ]
+   }
+  },
+  {
+   "seed": 102,
+   "output": "exact",
+   "audit": false,
+   "repeats": 4,
+   "hit_ratio": {
+    "lru": 0.43785772690106295,
+    "pacer": 0.5907604251839739
+   },
+   "ttft_mean_ms_by_repeat": {
+    "lru": [
+     15.842,
+     15.841,
+     15.782,
+     15.841
+    ],
+    "pacer": [
+     14.952,
+     14.865,
+     14.957,
+     14.942
+    ]
+   },
+   "paired_mean_diff_ms": [
+    -0.89,
+    -0.976,
+    -0.825,
+    -0.898
+   ],
+   "check": {
+    "n": 69,
+    "argmax_equal_frac": 1.0,
+    "bitwise_equal_frac": 1.0
+   },
+   "check_max_abs": 0.0,
+   "audit_bitwise": null
+  },
+  {
+   "seed": 103,
+   "output": "exact",
+   "audit": true,
+   "repeats": 4,
+   "hit_ratio": {
+    "lru": 0.44747393744987973,
+    "pacer": 0.5838011226944667
+   },
+   "ttft_mean_ms_by_repeat": {
+    "lru": [
+     16.008,
+     15.979,
+     16.015,
+     15.993
+    ],
+    "pacer": [
+     15.33,
+     15.323,
+     15.309,
+     15.318
+    ]
+   },
+   "paired_mean_diff_ms": [
+    -0.678,
+    -0.656,
+    -0.706,
+    -0.675
+   ],
+   "check": {
+    "n": 72,
+    "argmax_equal_frac": 1.0,
+    "bitwise_equal_frac": 1.0
+   },
+   "check_max_abs": 0.0,
+   "audit_bitwise": {
+    "lru": [
+     "72/72",
+     "72/72",
+     "72/72",
+     "72/72"
+    ],
+    "pacer": [
+     "91/91",
+     "91/91",
+     "91/91",
+     "91/91"
+    ]
+   }
+  },
+  {
+   "seed": 101,
+   "output": "verified",
+   "audit": false,
+   "repeats": 4,
+   "hit_ratio": {
+    "lru": 0.4617552334943639,
+    "pacer": 0.6026570048309179
+   },
+   "ttft_mean_ms_by_repeat": {
+    "lru": [
+     17.762,
+     17.756,
+     17.822,
+     17.839
+    ],
+    "pacer": [
+     17.758,
+     17.783,
+     17.942,
+     18.533
+    ]
+   },
+   "paired_mean_diff_ms": [
+    -0.004,
+    0.027,
+    0.119,
+    0.694
+   ],
+   "check": {
+    "n": 72,
+    "argmax_equal_frac": 0.9722222222222222,
+    "bitwise_equal_frac": 0.0
+   },
+   "check_max_abs": 0.39801645278930664,
+   "audit_bitwise": null
+  },
+  {
+   "seed": 103,
+   "output": "cached",
+   "audit": false,
+   "repeats": 4,
+   "hit_ratio": {
+    "lru": 0.44747393744987973,
+    "pacer": 0.5838011226944667
+   },
+   "ttft_mean_ms_by_repeat": {
+    "lru": [
+     16.104,
+     16.241,
+     16.255,
+     16.29
+    ],
+    "pacer": [
+     15.588,
+     15.557,
+     15.618,
+     15.638
+    ]
+   },
+   "paired_mean_diff_ms": [
+    -0.516,
+    -0.684,
+    -0.637,
+    -0.652
+   ],
+   "check": {
+    "n": 72,
+    "argmax_equal_frac": 0.9861111111111112,
+    "bitwise_equal_frac": 0.013888888888888888
+   },
+   "check_max_abs": 0.3525874614715576,
+   "audit_bitwise": null
+  }
+ ]
+}

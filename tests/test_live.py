@@ -12,8 +12,9 @@ mx = pytest.importorskip("mlx.core")
 pytest.importorskip("mlx_lm")
 core = pytest.importorskip("pacer._core")
 
+import mlx.nn as nn  # noqa: E402
 from pacer.live import replay as rp  # noqa: E402
-from pacer.live.engine import DEFAULT_MODEL, Engine, block_tokens  # noqa: E402
+from pacer.live.engine import DEFAULT_MODEL, Engine, RowStableLinear, block_tokens  # noqa: E402
 from pacer.live.pool import BLOCK, BlockPool, PoolFull  # noqa: E402
 
 ROOT = Path(__file__).resolve().parents[1]
@@ -156,16 +157,136 @@ def test_pool_path_is_bitwise_stock_mlx_lm(engine):
     assert mx.array_equal(mine_k, stock_k).item()
 
 
-def test_verified_output_uses_full_prefill(engine):
+@pytest.fixture
+def output(engine):
+    """Sets the engine's output mode for one test and restores it after."""
+    prev = engine.output
+
+    def set_mode(mode: str):
+        engine.output = mode
+        return engine
+
+    yield set_mode
+    engine.output = prev
+
+
+@pytest.fixture(scope="module")
+def synth(tmp_path_factory):
+    """40 synthetic requests shaped like the serving-protocol workload: 16 shared session
+    blocks plus 1-8 unique blocks, so every prompt is 17-24 blocks long."""
+    import random
+
+    rng = random.Random(7)
+    rows = []
+    for i in range(40):
+        s = rng.randrange(4)
+        keys = list(range(5000 + 100 * s, 5016 + 100 * s))
+        keys += list(range(800000 + 10 * i, 800000 + 10 * i + rng.randrange(1, 9)))
+        rows.append(
+            dict(
+                chat_id=i,
+                parent_chat_id=-1,
+                timestamp=float(i),
+                input_length=BLOCK * len(keys),
+                output_length=16,
+                type="text",
+                turn=1,
+                hash_ids=keys,
+            )
+        )
+    path = tmp_path_factory.mktemp("live") / "synth.jsonl"
+    path.write_text("".join(json.dumps(r) + "\n" for r in rows))
+    tr = core.load_trace(str(path), tpot=0.002)
+    reqs = rp.requests(tr)
+    return tr, reqs, max(rp.cap_blocks(tr, 0.3), rp.min_cap_blocks(reqs))
+
+
+def test_verified_output_uses_full_prefill(engine, output):
     keys = list(range(90000, 90032))
     pool = engine.new_pool(16)
     pre = engine.run(None, [], keys[:16], logits=False)
     pool.write(keys[:16], pre.k_new, pre.v_new)
-    engine.verify_output = True
-    try:
-        got = engine.run(pool, keys[:16], keys[16:])
-        ref = engine.full_logits(keys)
-        assert mx.array_equal(got.logits, ref).item()
-        assert got.token == mx.argmax(ref).item()
-    finally:
-        engine.verify_output = False
+    output("verified")
+    got = engine.run(pool, keys[:16], keys[16:])
+    ref = engine.full_logits(keys)
+    assert mx.array_equal(got.logits, ref).item()
+    assert got.token == mx.argmax(ref).item()
+    assert got.cached_logits is None and got.gather_s == 0.0
+    assert (got.new_tokens, got.forward_tokens) == (16 * BLOCK, 32 * BLOCK)
+    full = engine.run(None, [], keys, logits=False)
+    assert mx.array_equal(got.k_new[2], full.k_new[2][16:]).item()
+
+
+def test_stable_rows_cover_every_projection(engine, output):
+    output("exact")
+    mods = [m for _, m in engine.model.model.named_modules() if isinstance(m, nn.QuantizedLinear)]
+    assert mods and all(type(m) is RowStableLinear for m in mods)
+    assert {m.min_rows for m in mods} == set(engine.stable_rows.values())
+    assert 1 < engine.exact_min_rows <= engine.calibrated_rows
+    assert engine.exact_supported(17) == (engine.exact_min_rows <= 17 * BLOCK)
+
+
+@pytest.mark.parametrize("n,m", [(17, 1), (18, 9), (20, 16), (22, 5), (24, 16), (24, 23)])
+def test_exact_output_is_bitwise_full_prefill(engine, output, n, m):
+    output("exact")
+    keys = list(range(3 << 28 | n << 8, (3 << 28 | n << 8) + n))
+    ref = engine.full_logits(keys)
+    for prefix in ("alone", "longer"):
+        pool = engine.new_pool(n)
+        if prefix == "alone":
+            pre = engine.run(None, [], keys[:m], logits=False)
+            pool.write(keys[:m], pre.k_new, pre.v_new)
+        else:
+            other = list(range(5 << 28 | n << 8, (5 << 28 | n << 8) + 6))
+            pre = engine.run(None, [], keys[:m] + other, logits=False)
+            pool.write(keys[:m], [a[:m] for a in pre.k_new], [a[:m] for a in pre.v_new])
+        got = engine.run(pool, keys[:m], keys[m:])
+        assert got.gather_s > 0 and got.forward_tokens == BLOCK * (n - m)
+        assert mx.array_equal(got.logits, ref).item(), (prefix, n, m)
+        pool.write(keys[m:], got.k_new, got.v_new)
+        redo = engine.run(pool, keys, [])
+        assert (redo.new_tokens, redo.forward_tokens) == (0, BLOCK)
+        assert mx.array_equal(redo.logits, ref).item(), (prefix, n, m, "full hit")
+
+
+def test_exact_output_recomputes_short_prompts(engine, output):
+    output("exact")
+    keys = list(range(7 << 28, (7 << 28) + 20))
+    assert not engine.exact_supported(4) and engine.exact_supported(20)
+    pool = engine.new_pool(20)
+    pre = engine.run(None, [], keys[:2], logits=False)
+    pool.write(keys[:2], pre.k_new, pre.v_new)
+    short = engine.run(pool, keys[:2], keys[2:4])
+    assert short.gather_s == 0.0 and short.cached_logits is None
+    assert mx.array_equal(short.logits, engine.full_logits(keys[:4])).item()
+    pool.write(keys[2:4], short.k_new, short.v_new)
+    long = engine.run(pool, keys[:4], keys[4:])
+    assert mx.array_equal(long.logits, engine.full_logits(keys)).item()
+
+
+def test_exact_replay_audits_every_hit_bitwise(engine, output, synth):
+    tr, reqs, cap = synth
+    output("exact")
+    engine.reserve(max(len(r["input_keys"]) + len(r["output_keys"]) for r in reqs))
+    spec = rp.policy_spec("lru")
+    picked = rp.dry_run(tr, spec, cap)["hit_arrivals"]
+    r = rp.replay(tr, reqs, spec, cap, engine, engine.new_pool(cap), check=set(picked), audit=True)
+    assert r["audit"]["n"] == len(picked) > 0
+    assert r["audit"]["bitwise_equal"] == r["audit"]["argmax_equal"] == r["audit"]["n"]
+    s = rp.check_summary(r["checks"])
+    assert s["n"] == len(picked) and s["bitwise_equal_frac"] == 1.0
+    assert all(c["served"] for c in r["checks"])
+
+
+def test_verified_check_compares_the_cached_path(engine, output, synth):
+    """Verified mode serves a full prefill, so its check must run the cached forward itself;
+    comparing the served logits would compare the reference with itself."""
+    tr, reqs, cap = synth
+    output("verified")
+    engine.reserve(max(len(r["input_keys"]) + len(r["output_keys"]) for r in reqs))
+    spec = rp.policy_spec("lru")
+    picked = rp.dry_run(tr, spec, cap)["hit_arrivals"]
+    r = rp.replay(tr, reqs, spec, cap, engine, engine.new_pool(cap), check=set(picked), audit=True)
+    assert r["audit"]["bitwise_equal"] == r["audit"]["n"] == len(picked)
+    assert not any(c["served"] for c in r["checks"])
+    assert max(c["max_abs"] for c in r["checks"]) > 0

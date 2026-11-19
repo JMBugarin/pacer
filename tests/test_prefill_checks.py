@@ -32,3 +32,9 @@ def test_boundary_is_not_certified(margin):
 def test_zero_error_and_empty_sample():
     assert check_summary([]) == {"n": 0}
     assert check_summary([sample(1, 0, True)])["clear_margin_n"] == 1
+
+
+def test_bitwise_fraction_counts_zero_error_only():
+    s = check_summary([sample(1, 0, True), sample(1, 1e-7, True)])
+    assert s["bitwise_equal_frac"] == 0.5
+    assert s["argmax_equal_frac"] == 1.0

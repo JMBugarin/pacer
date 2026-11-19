@@ -1,0 +1,20 @@
+dry lru             hit 0.4864 prefill 20224 output 1920 tokens
+dry pacer           hit 0.5681 prefill 17008 output 1920 tokens
+Fetching 9 files:   0%|          | 0/9 [00:00<?, ?it/s]Fetching 9 files: 100%|██████████| 9/9 [00:00<00:00, 4159.18it/s]
+exact output: row-stable from 257 rows (calibrated to 512); 0 prompts recompute instead
+120 requests, n_keys 853, cap 171 blocks (min 24), pool 0.29 GiB, workspace 0.04 GiB
+check: 77 of 77 arrivals with a cached prefix (lru)
+check: argmax equal 1.0000, max|dlogit| p50 0.000 max 0.000
+rep 0 lru             wall    5.2s hit 0.4864 ttft p50    14.6 ms audit 77/77 bitwise  (1/8, eta 37s)
+rep 0 pacer           wall    5.4s hit 0.5681 ttft p50    14.6 ms audit 89/89 bitwise  (2/8, eta 32s)
+rep 1 pacer           wall    5.4s hit 0.5681 ttft p50    14.6 ms audit 89/89 bitwise  (3/8, eta 27s)
+rep 1 lru             wall    5.3s hit 0.4864 ttft p50    14.6 ms audit 77/77 bitwise  (4/8, eta 21s)
+rep 2 lru             wall    5.3s hit 0.4864 ttft p50    14.7 ms audit 77/77 bitwise  (5/8, eta 16s)
+rep 2 pacer           wall    5.5s hit 0.5681 ttft p50    14.6 ms audit 89/89 bitwise  (6/8, eta 11s)
+rep 3 pacer           wall    5.4s hit 0.5681 ttft p50    14.6 ms audit 89/89 bitwise  (7/8, eta 5s)
+rep 3 lru             wall    5.3s hit 0.4864 ttft p50    14.7 ms audit 77/77 bitwise  (8/8, eta 0s)
+
+policy             hit   p50 ms            95% CI   p95 ms         vs lru p50
+lru              0.486     14.6 [  14.5,   14.8]     19.3  +0.0% [+0.0%,+0.0%]
+pacer            0.568     14.6 [  14.5,   14.7]     19.3  +0.1% [-0.8%,+1.1%]
+wrote docs/evidence/serving-v4/final-exact.json in 50s
