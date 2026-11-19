@@ -69,7 +69,7 @@ def main() -> None:
     ap.add_argument(
         "--verified-output",
         action="store_true",
-        help="Recompute full logits for every cache hit; includes verification cost in TTFT",
+        help="Serve a full prefill's logits on every cache hit; its cost is in TTFT",
     )
     ap.add_argument("--model", default=DEFAULT_MODEL)
     ap.add_argument("--chunk", type=int, default=DEFAULT_CHUNK)
@@ -100,7 +100,8 @@ def main() -> None:
         else:
             ctr, creqs, ccap = tr, reqs, cap
 
-    engine = Engine(a.model, a.chunk, a.seed, verify_output=a.verified_output)
+    output = "verified" if a.verified_output else "cached"
+    engine = Engine(a.model, a.chunk, a.seed, output=output)
     engine.reserve(max(len(r["input_keys"]) + len(r["output_keys"]) for r in reqs + (creqs or [])))
     mx.set_cache_limit(max(int(a.cache_limit_gb * 2**30), engine.workspace_bytes + 2**30))
     pool = engine.new_pool(max(cap, ccap))
@@ -168,6 +169,7 @@ def main() -> None:
             "seed": a.seed,
             "kv_dtype": str(engine.dtype),
             "verified_output": a.verified_output,
+            "output": output,
             "block_bytes": engine.block_bytes,
             "pool_bytes": pool.nbytes,
             "workspace_bytes": engine.workspace_bytes,
@@ -178,8 +180,11 @@ def main() -> None:
             "loadavg_start": load0,
             "loadavg_end": os.getloadavg(),
             "elapsed_s": time.time() - t_start,
-            "ttft": "gather of cached blocks + forward of the new blocks + argmax, synchronized; "
-            "ttft_fwd excludes the gather",
+            "ttft": {
+                "cached": "gather of cached blocks + forward of the new blocks + argmax, "
+                "synchronized; ttft_fwd excludes the gather",
+                "verified": "full prefill + argmax on every request, synchronized",
+            }[output],
         },
         "dry_run": {k: {x: v[x] for x in v if x != "hit_arrivals"} for k, v in dry.items()},
         "check": check,

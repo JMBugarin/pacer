@@ -4,6 +4,10 @@ Prompts are synthetic: every block key owns 16 token ids drawn from a hash of th
 always denotes the same tokens (and, since keys are prefix-chain positions, the same KV). A
 forward starts from the gathered KV of a cached block prefix and runs only the new blocks; the
 new blocks' KV is then sliced out of the mlx-lm caches for the pool.
+
+Output modes:
+- "cached": logits of the cached-prefix forward (experimental, not token-equivalent).
+- "verified": logits of a full prefill on every hit; the cached forward is skipped.
 """
 
 from __future__ import annotations
@@ -21,6 +25,7 @@ from .pool import BLOCK, BlockPool
 
 DEFAULT_MODEL = "mlx-community/Qwen3-0.6B-4bit"
 DEFAULT_CHUNK = 2048
+OUTPUTS = ("cached", "verified")
 
 _U = np.uint64
 
@@ -62,6 +67,7 @@ class Prefill:
     logits: mx.array | None
     k_new: list[mx.array]
     v_new: list[mx.array]
+    cached_logits: mx.array | None = None
 
 
 class Engine:
@@ -70,9 +76,8 @@ class Engine:
         model: str = DEFAULT_MODEL,
         chunk: int = DEFAULT_CHUNK,
         seed: int = 0,
-        verify_output: bool = False,
+        output: str = "cached",
     ):
-        self.verify_output = verify_output
         self.model, tok = load(model)
         args = self.model.args
         self.name = model
@@ -87,6 +92,18 @@ class Engine:
         self.dtype = probe[0].keys.dtype
         self._scratch = self.new_pool(1)
         self.workspace = 0
+        self._output = "cached"
+        self.output = output
+
+    @property
+    def output(self) -> str:
+        return self._output
+
+    @output.setter
+    def output(self, mode: str) -> None:
+        if mode not in OUTPUTS:
+            raise ValueError(f"output must be one of {OUTPUTS}, not {mode!r}")
+        self._output = mode
 
     def reserve(self, n_blocks: int) -> None:
         """Sizes the per-forward KV workspace (in blocks) to fit every prompt to come. Prompts
@@ -132,15 +149,45 @@ class Engine:
     ) -> Prefill:
         """Prefill `new` blocks on top of the pooled KV of the cached prefix `ctx`.
 
-        With no new blocks (a full hit) the last prompt token is recomputed to get its logits,
-        as servers do; its KV is not written back. `seconds` covers gather, forward and argmax.
+        `seconds` covers what precedes the first token: gather, forward and argmax for a cached
+        forward, the full prefill when the output mode recomputes. With no new blocks (a full
+        hit) the cached forward recomputes the last token to get its logits; that KV is not
+        written back.
         """
         n_ctx, n_new = len(ctx), len(new)
         if n_ctx + n_new == 0:
             raise ValueError("empty prompt")
+        if logits and n_ctx and self.output == "verified":
+            return self._recompute([*ctx, *new], n_ctx)
+        return self._cached(pool, ctx, new, logits)
+
+    def cached_logits(self, pool: BlockPool, ctx: Sequence[int], new: Sequence[int]) -> mx.array:
+        """Logits of this mode's cached-prefix forward, whatever the mode serves."""
+        return self._cached(pool, ctx, new, True).logits
+
+    def full_logits(self, keys: Sequence[int]) -> mx.array:
+        """Last-position logits of the whole prompt prefilled from scratch (float32)."""
+        return self._cached(None, [], keys, True).logits
+
+    def _new_kv(
+        self, cache: list[KVCache], base: int, n_new: int
+    ) -> tuple[list[mx.array], list[mx.array]]:
+        end, shape = base + BLOCK * n_new, (self.n_kv_heads, n_new, BLOCK, self.head_dim)
+        k_new = [c.keys[0, :, base:end].reshape(shape).transpose(1, 0, 2, 3) for c in cache]
+        v_new = [c.values[0, :, base:end].reshape(shape).transpose(1, 0, 2, 3) for c in cache]
+        return k_new, v_new
+
+    def _cached(
+        self,
+        pool: BlockPool | None,
+        ctx: Sequence[int],
+        new: Sequence[int],
+        logits: bool,
+    ) -> Prefill:
+        n_ctx, n_new = len(ctx), len(new)
         base = BLOCK * n_ctx
         redo = int(n_new == 0)
-        ids = self.tokens(ctx[-1:])[-1:] if redo else self.tokens(new)
+        ids = self.tokens(new) if n_new else self.tokens(ctx[-1:])[-1:]
         x = mx.array(ids[None])
         t0 = perf_counter()
         size = max(self.workspace, n_ctx + n_new)
@@ -153,14 +200,8 @@ class Engine:
         out = self._forward(x, cache, logits)
         y = mx.argmax(out) if logits else None
         mx.eval(y, [c.keys for c in cache], [c.values for c in cache])
-        if self.verify_output and logits and ctx:
-            out = self.full_logits([*ctx, *new])
-            y = mx.argmax(out)
-            mx.eval(y)
         t2 = perf_counter()
-        end, shape = base + BLOCK * n_new, (self.n_kv_heads, n_new, BLOCK, self.head_dim)
-        k_new = [c.keys[0, :, base:end].reshape(shape).transpose(1, 0, 2, 3) for c in cache]
-        v_new = [c.values[0, :, base:end].reshape(shape).transpose(1, 0, 2, 3) for c in cache]
+        k_new, v_new = self._new_kv(cache, base, n_new)
         return Prefill(
             token=y.item() if logits else None,
             seconds=t2 - t0,
@@ -170,8 +211,22 @@ class Engine:
             logits=out,
             k_new=k_new,
             v_new=v_new,
+            cached_logits=out,
         )
 
-    def full_logits(self, keys: Sequence[int]) -> mx.array:
-        """Last-position logits of the whole prompt prefilled from scratch (float32)."""
-        return self.run(None, [], keys).logits
+    def _recompute(self, keys: Sequence[int], n_ctx: int) -> Prefill:
+        """Full prefill of `keys` for the output; the new blocks' KV comes from the same
+        forward."""
+        full = self._cached(None, [], keys, True)
+        k_new = [a[n_ctx:] for a in full.k_new]
+        v_new = [a[n_ctx:] for a in full.v_new]
+        return Prefill(
+            token=full.token,
+            seconds=full.seconds,
+            gather_s=0.0,
+            new_tokens=BLOCK * (len(keys) - n_ctx),
+            forward_tokens=full.forward_tokens,
+            logits=full.logits,
+            k_new=k_new,
+            v_new=v_new,
+        )

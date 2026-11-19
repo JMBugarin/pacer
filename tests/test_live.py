@@ -156,16 +156,75 @@ def test_pool_path_is_bitwise_stock_mlx_lm(engine):
     assert mx.array_equal(mine_k, stock_k).item()
 
 
-def test_verified_output_uses_full_prefill(engine):
+@pytest.fixture
+def output(engine):
+    """Sets the engine's output mode for one test and restores it after."""
+    prev = engine.output
+
+    def set_mode(mode: str):
+        engine.output = mode
+        return engine
+
+    yield set_mode
+    engine.output = prev
+
+
+@pytest.fixture(scope="module")
+def synth(tmp_path_factory):
+    """40 synthetic requests shaped like the serving-protocol workload: 16 shared session
+    blocks plus 1-8 unique blocks, so every prompt is 17-24 blocks long."""
+    import random
+
+    rng = random.Random(7)
+    rows = []
+    for i in range(40):
+        s = rng.randrange(4)
+        keys = list(range(5000 + 100 * s, 5016 + 100 * s))
+        keys += list(range(800000 + 10 * i, 800000 + 10 * i + rng.randrange(1, 9)))
+        rows.append(
+            dict(
+                chat_id=i,
+                parent_chat_id=-1,
+                timestamp=float(i),
+                input_length=BLOCK * len(keys),
+                output_length=16,
+                type="text",
+                turn=1,
+                hash_ids=keys,
+            )
+        )
+    path = tmp_path_factory.mktemp("live") / "synth.jsonl"
+    path.write_text("".join(json.dumps(r) + "\n" for r in rows))
+    tr = core.load_trace(str(path), tpot=0.002)
+    reqs = rp.requests(tr)
+    return tr, reqs, max(rp.cap_blocks(tr, 0.3), rp.min_cap_blocks(reqs))
+
+
+def test_verified_output_uses_full_prefill(engine, output):
     keys = list(range(90000, 90032))
     pool = engine.new_pool(16)
     pre = engine.run(None, [], keys[:16], logits=False)
     pool.write(keys[:16], pre.k_new, pre.v_new)
-    engine.verify_output = True
-    try:
-        got = engine.run(pool, keys[:16], keys[16:])
-        ref = engine.full_logits(keys)
-        assert mx.array_equal(got.logits, ref).item()
-        assert got.token == mx.argmax(ref).item()
-    finally:
-        engine.verify_output = False
+    output("verified")
+    got = engine.run(pool, keys[:16], keys[16:])
+    ref = engine.full_logits(keys)
+    assert mx.array_equal(got.logits, ref).item()
+    assert got.token == mx.argmax(ref).item()
+    assert got.cached_logits is None and got.gather_s == 0.0
+    assert (got.new_tokens, got.forward_tokens) == (16 * BLOCK, 32 * BLOCK)
+    full = engine.run(None, [], keys, logits=False)
+    assert mx.array_equal(got.k_new[2], full.k_new[2][16:]).item()
+
+
+def test_verified_check_compares_the_cached_path(engine, output, synth):
+    """Verified mode serves a full prefill, so its check must run the cached forward itself;
+    comparing the served logits would compare the reference with itself."""
+    tr, reqs, cap = synth
+    output("verified")
+    engine.reserve(max(len(r["input_keys"]) + len(r["output_keys"]) for r in reqs))
+    spec = rp.policy_spec("lru")
+    picked = rp.dry_run(tr, spec, cap)["hit_arrivals"]
+    r = rp.replay(tr, reqs, spec, cap, engine, engine.new_pool(cap), check=set(picked))
+    assert len(r["checks"]) == len(picked) > 0
+    assert not any(c["served"] for c in r["checks"])
+    assert max(c["max_abs"] for c in r["checks"]) > 0

@@ -168,8 +168,14 @@ def replay(
                 write_s += perf_counter() - t0
                 p.k_new = p.v_new = []
                 if i in check and h:
-                    c = _check(engine, keys, h, p.logits, len(checks) < n_control)
-                    checks.append({"req": i, **c})
+                    served = p.cached_logits is not None
+                    cached = (
+                        p.cached_logits
+                        if served
+                        else engine.cached_logits(pool, keys[:h], keys[h:])
+                    )
+                    c = _check(engine, keys, h, cached, len(checks) < n_control)
+                    checks.append({"req": i, "served": served, **c})
                 del p
         else:
             outk = r["output_keys"]
@@ -278,6 +284,9 @@ def summarize(runs: Sequence[dict], base: str = "lru", n_boot: int = 2000, seed:
             ),
             "ttft_median_s_by_repeat": [
                 float(np.median([t for t in r["ttft_s"] if t is not None])) for r in rs
+            ],
+            "ttft_mean_s_by_repeat": [
+                float(np.mean([t for t in r["ttft_s"] if t is not None])) for r in rs
             ],
         }
     for name, fwd in (("ttft", False), ("ttft_fwd", True)):
