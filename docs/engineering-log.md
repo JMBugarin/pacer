@@ -146,3 +146,26 @@ Both use settings fixed in advance; nothing was tuned on the test hour (`scripts
   16 cells better than the best heuristic, none worse); the 1% margins shrink at 40 ms/token. The
   review had flagged this constant as the main untested assumption behind the largest gains.
 
+## 9. Serving v4: profiling the v3 gap
+
+Serving v3 ended with Pacer 3.6-5.0 ms slower than LRU in verified mode. Each layer was checked
+before changing anything ([serving v4](evidence/serving-v4/REPORT.md)).
+
+- **The controller was never the cost.** The Rust step across PyO3 takes about 5 us and runs
+  before the TTFT timer starts.
+- **The gap was a step function.** A per-request regression on the v3 runs puts it entirely on
+  "this request had a hit": +46 ms in verified mode, with a policy indicator at −0.06 ms. A hit
+  paid for a gather, the cached forward and a full prefill, while a miss paid only for the full
+  prefill. A policy that hit more had to lose.
+- **The v3 verified check was vacuous.** It compared the served logits, which in that mode are
+  the full prefill's, with a full prefill.
+- **The mismatch is MLX's row-count kernel choice.** Bisecting the forward op by op cleared
+  SDPA, RoPE and RMSNorm. The quantized matmuls give row-dependent results below 65, 129 or 257
+  rows, depending on the weight shape, and row-independent results above. Padding the whole
+  forward to 257 rows was exact but as slow as a full prefill. A dequantized dense matmul was not
+  exact. Padding each matmul only up to its own threshold was both exact and cheaper than a miss.
+  That became `--exact-output`.
+- **Development, then freeze.** Development used generator seeds 101-103 (−0.6 to −0.7 ms per
+  repeat with auditing). Protocol v4 was frozen and pushed before its workload was generated;
+  the final run met the pre-registered rule.
+

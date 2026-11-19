@@ -1,0 +1,36 @@
+commit cd2c41a52fdd10d852a3c6ef4100ca6d5afaa880 (code identical to the frozen protocol commit cd2c41a)
+cargo fmt: ok
+cargo clippy: ok
+     Running unittests src/lib.rs (target/debug/deps/pacer-43dd71927d316f85)
+test result: ok. 0 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.00s
+     Running unittests src/main.rs (target/debug/deps/pacer-49989202a51d9ee4)
+test result: ok. 0 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.00s
+     Running tests/gbdt.rs (target/debug/deps/gbdt-750a1d029af1e8b3)
+test result: ok. 10 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.02s
+     Running tests/invariants.rs (target/debug/deps/invariants-eb534996023dbd2e)
+test result: ok. 4 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 8.18s
+test result: ok. 0 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.00s
+All checks passed!
+44 files already formatted
+.................................................                        [100%]
+481 passed, 96 deselected in 20.60s
+tests/test_live.py::test_block_tokens_deterministic PASSED               [  5%]
+tests/test_live.py::test_pool_write_gather_free PASSED                   [ 10%]
+tests/test_live.py::test_replay_mirrors_controller[lru] PASSED           [ 15%]
+tests/test_live.py::test_replay_mirrors_controller[s3fifo] PASSED        [ 21%]
+tests/test_live.py::test_pool_refuses_to_exceed_capacity PASSED          [ 26%]
+tests/test_live.py::test_cached_prefill_matches_full PASSED              [ 31%]
+tests/test_live.py::test_full_hit_recomputes_last_token PASSED           [ 36%]
+tests/test_live.py::test_pool_path_is_bitwise_stock_mlx_lm PASSED        [ 42%]
+tests/test_live.py::test_verified_output_uses_full_prefill PASSED        [ 47%]
+tests/test_live.py::test_stable_rows_cover_every_projection PASSED       [ 52%]
+tests/test_live.py::test_exact_output_is_bitwise_full_prefill[17-1] PASSED [ 57%]
+tests/test_live.py::test_exact_output_is_bitwise_full_prefill[18-9] PASSED [ 63%]
+tests/test_live.py::test_exact_output_is_bitwise_full_prefill[20-16] PASSED [ 68%]
+tests/test_live.py::test_exact_output_is_bitwise_full_prefill[22-5] PASSED [ 73%]
+tests/test_live.py::test_exact_output_is_bitwise_full_prefill[24-16] PASSED [ 78%]
+tests/test_live.py::test_exact_output_is_bitwise_full_prefill[24-23] PASSED [ 84%]
+tests/test_live.py::test_exact_output_recomputes_short_prompts PASSED    [ 89%]
+tests/test_live.py::test_exact_replay_audits_every_hit_bitwise PASSED    [ 94%]
+tests/test_live.py::test_verified_check_compares_the_cached_path PASSED  [100%]
+============================= 19 passed in 14.15s ==============================

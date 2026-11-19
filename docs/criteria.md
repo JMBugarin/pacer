@@ -44,3 +44,5 @@ Each is measured from the result files by `python -m pacer.report fill`.
   10 test cells were re-run outside it (engineering log, test-hour use 6).
 
 C9 follow-up (Nov 2026, outside the generated table): root cause and frozen v3 results are in [serving v3](evidence/serving-v3/REPORT.md). Verified-output mode meets token agreement by construction and loses the latency gain. Cached mode measured 96.97% on the new workload, so C9 stays partial.
+
+C9 follow-up 2 ([serving v4](evidence/serving-v4/REPORT.md)): exact output, which pads each quantized matmul up to the row count where MLX's kernel choice stops depending on it, makes cached prefill bitwise equal to full prefill. That held on 77/77 checks and 664/664 audited hits. On the frozen synthetic v4 workload, Pacer's mean TTFT was below LRU's in all four paired repeats (−0.37 to −0.44 ms). This was not re-run on the held-out trace-A replay this criterion was set on, so C9 stays partial in the table.
