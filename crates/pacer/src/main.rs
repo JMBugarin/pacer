@@ -313,7 +313,10 @@ fn main() -> Result<()> {
                 "oracle" => Scorer::Oracle,
                 "model" => {
                     let m = model.context("--driver model needs --model")?;
-                    Scorer::Learned(Arc::new(pacer::gbdt::Gbdt::load(&m)?))
+                    let g = pacer::gbdt::Gbdt::load(&m)?;
+                    g.check_schema(&pacer::features::FEATURE_NAMES)
+                        .with_context(|| format!("--model {}", m.display()))?;
+                    Scorer::Learned(Arc::new(g))
                 }
                 d => bail!("unknown driver {d}"),
             };

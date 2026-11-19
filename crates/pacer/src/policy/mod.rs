@@ -6,10 +6,11 @@ pub mod sampled;
 mod sieve;
 mod wa;
 
+use crate::features;
 use crate::gbdt::Gbdt;
 use crate::sim::{Core, Pos};
 use crate::trace::Trace;
-use anyhow::{bail, Result};
+use anyhow::{bail, Context, Result};
 use std::collections::BTreeMap;
 use std::sync::Arc;
 
@@ -96,6 +97,13 @@ pub fn make(
                         Some(g) => g.clone(),
                         None => bail!("{name} needs a model (model={m}); load one with --model"),
                     };
+                    let expected: &[&str] = if name == "pacer" {
+                        &features::HAZARD_NAMES
+                    } else {
+                        &features::FEATURE_NAMES
+                    };
+                    g.check_schema(expected)
+                        .with_context(|| format!("{name} with model={m}"))?;
                     if name == "pacer" {
                         Scorer::Hazard(g, param(params, "mult", 1.0))
                     } else {
