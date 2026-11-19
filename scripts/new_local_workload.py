@@ -1,10 +1,19 @@
-"""Frozen synthetic workload generator; no real user requests."""
+"""Frozen synthetic workload generator; no real user requests.
 
+Defaults reproduce the serving v3 workload. Each protocol version names its own seed and output.
+"""
+
+import argparse
 import json
 import random
 from pathlib import Path
 
-rng = random.Random(20261115)
+ap = argparse.ArgumentParser(description=__doc__)
+ap.add_argument("--seed", type=int, default=20261115)
+ap.add_argument("--out", default="docs/evidence/serving-v3/new-local.jsonl")
+a = ap.parse_args()
+
+rng = random.Random(a.seed)
 rows = []
 for i in range(120):
     session = rng.randrange(12)
@@ -22,7 +31,8 @@ for i in range(120):
             hash_ids=hashes,
         )
     )
-p = Path("docs/evidence/serving-v3/new-local.jsonl")
+p = Path(a.out)
 if p.exists():
     raise SystemExit("Refusing to overwrite a frozen workload")
+p.parent.mkdir(parents=True, exist_ok=True)
 p.write_text("".join(json.dumps(row) + "\n" for row in rows))
